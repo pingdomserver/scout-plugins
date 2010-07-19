@@ -1,0 +1,72 @@
+metadata: 
+  btree_miss_ratio: 
+    units: "%"
+    precision: "1"
+    label: Btree miss ratio
+  data_size: 
+    units: bytes
+    precision: "0"
+    label: Data size
+  indexes: 
+    precision: "0"
+    label: Indexes
+  global_lock_ratio: 
+    units: "%"
+    precision: "1"
+    label: Global lock ratio
+  op_get_mores: 
+    units: /sec
+    precision: "2"
+    label: Get mores
+  btree_hits: 
+    units: /sec
+    precision: "2"
+    label: Btree hits
+  btree_misses: 
+    units: /sec
+    precision: "2"
+    label: Btree misses
+  btree_resets: 
+    units: /sec
+    precision: "2"
+    label: Btree resets
+  index_size: 
+    units: bytes
+    precision: "0"
+    label: Index size
+  op_updates: 
+    units: /sec
+    precision: "2"
+    label: Updates
+  storage_size: 
+    units: bytes
+    precision: "0"
+    label: Storage size
+  background_flushes_total: 
+    units: /sec
+    precision: "2"
+    label: Background flushes
+  btree_accesses: 
+    units: /sec
+    precision: "2"
+    label: Btree accesses
+  op_inserts: 
+    units: /sec
+    precision: "2"
+    label: Inserts
+  op_queries: 
+    units: /sec
+    precision: "2"
+    label: Queries
+  objects: 
+    units: ""
+    precision: "0"
+    label: Objects
+  op_commands: 
+    units: /sec
+    precision: "2"
+    label: Commands
+  op_deletes: 
+    units: /sec
+    precision: "2"
+    label: Deletes

@@ -62,7 +62,8 @@ class MongoOverview < Scout::Plugin
     lock_time = stats['globalLock']['lockTime']
     lock_total = stats['globalLock']['totalTime']
     if mem_lock_time = memory(:global_lock_lock_time) and mem_lock_total = memory(:global_lock_total_time)
-      report(:global_lock_ratio => (lock_time-mem_lock_time).to_f/(lock_total-mem_lock_total).to_f)
+      ratio = (lock_time-mem_lock_time).to_f/(lock_total-mem_lock_total).to_f
+      report(:global_lock_ratio => ratio*100) unless ratio.nan?
     end
     remember(:global_lock_lock_time,lock_time)
     remember(:global_lock_total_time,lock_total)
@@ -95,7 +96,8 @@ class MongoOverview < Scout::Plugin
     if mem_divisor = memory("_counter_#{divisor.keys.first.to_s}") and mem_dividend = memory("_counter_#{dividend.keys.first.to_s}")
       divisor_count   = divisor.values.first - mem_divisor[:value]
       dividend_count = dividend.values.first - mem_dividend[:value]
-      report(ratio_name => dividend_count.to_f / divisor_count.to_f)
+      ratio = dividend_count.to_f / divisor_count.to_f
+      report(ratio_name => ratio*100) unless ratio.nan?
     end
     counter(divisor.keys.first, divisor.values.first, :per => :second)
     counter(dividend.keys.first, dividend.values.first, :per => :second)

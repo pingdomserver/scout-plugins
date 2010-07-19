@@ -22,7 +22,7 @@ class MongoOverviewTest < Test::Unit::TestCase
   end
   
   def test_should_parse_stats    
-    opts = @options.merge({:path_to_db_yml => 'fixtures/database.yml'})
+    opts = @options.merge({:path_to_db_yml => File.dirname(__FILE__)+'/fixtures/database.yml'})
     plugin=MongoOverview.new(nil,{},opts)
     Mongo::DB.any_instance.stubs(:stats).returns(STATS)
     Mongo::DB.any_instance.stubs(:command).with('serverStatus' => 1).returns(SERVER_STATUS)
@@ -52,12 +52,44 @@ class MongoOverviewTest < Test::Unit::TestCase
         
         # check rate for btree hits
         assert_in_delta 10.0/(10*60), 
-                           res[:reports].find { |r| r.keys.include?(:btree_hits)}[:btree_hits], 0.001
-        
-        p res[:reports].size
+                           res[:reports].find { |r| r.keys.include?(:btree_hits)}[:btree_hits], 0.001        
       end # timecop
     end
   
+  end
+  
+  def test_should_parse_stats_if_no_change    
+    opts = @options.merge({:path_to_db_yml => File.dirname(__FILE__)+'/fixtures/database.yml'})
+    plugin=MongoOverview.new(nil,{},opts)
+    Mongo::DB.any_instance.stubs(:stats).returns(STATS)
+    Mongo::DB.any_instance.stubs(:command).with('serverStatus' => 1).returns(SERVER_STATUS)
+    
+    # 10 minutes in the past
+    time = Time.now
+    Timecop.travel(time-60*10) do     
+      res=plugin.run
+      assert_equal STATS['objects'], res[:reports].find { |r| r.keys.include?(:objects)}[:objects]
+      assert_nil res[:reports].find { |r| r.keys.include?(:btree_miss_ratio)}
+      first_run_memory = res[:memory]    
+      assert_equal SERVER_STATUS['globalLock']['totalTime'], 
+                   first_run_memory[:global_lock_total_time]
+    
+      # 2nd run, 10 minutes later, to test counters. 
+      Timecop.travel(time) do 
+        Mongo::DB.any_instance.stubs(:command).with('serverStatus' => 1).returns(SERVER_STATUS)
+        plugin=MongoOverview.new(time-60*10,first_run_memory,opts)
+        res=plugin.run()
+        
+        # check the global_lock_ratio
+        assert_nil res[:reports].find { |r| r.keys.include?(:global_lock_ratio)}
+      
+        # check btree hit ratio
+        assert_nil res[:reports].find { |r| r.keys.include?(:btree_miss_ratio)}
+        
+        # check rate for btree hits
+        assert_in_delta 0, res[:reports].find { |r| r.keys.include?(:btree_hits)}[:btree_hits], 0.001
+      end # timecop
+    end
   end
   
   STATS = {"collections"=>2, "objects"=>200, "dataSize"=>92, "storageSize"=>5632, "numExtents"=>2, 
