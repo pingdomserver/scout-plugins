@@ -71,11 +71,15 @@ class UrlMonitor < Scout::Plugin
     retry_url_trailing_slash = true
     retry_url_execution_expired = true
     begin
-      http = Net::HTTP.new(uri.host,uri.port)
+      connect_host = option('host_override').to_s.strip
+      connect_host = uri.host if connect_host.empty?
+
+      http = Net::HTTP.new(connect_host,uri.port)
       http.use_ssl = url =~ %r{\Ahttps://}
       http.start(){|http|
             http.open_timeout = TIMEOUT_LENGTH
             req = Net::HTTP::Get.new((uri.path != '' ? uri.path : '/' ) + (uri.query ? ('?' + uri.query) : ''))
+            req['host'] = uri.host
             if uri.user && uri.password
               req.basic_auth uri.user, uri.password
             end

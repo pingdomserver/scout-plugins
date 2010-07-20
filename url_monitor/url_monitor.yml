@@ -3,7 +3,9 @@ options:
     name: Url
     notes: The full URL (including http://) of the URL to monitor. You can provide basic authentication options as well (http://user:pass@domain.com)
     default: "http://www.scoutapp.com/"
-
+  host_override:
+    name: Host Override
+    notes: "Override what host to connect to. You can use 'localhost' to monitor this host while still providing a real Host: header"
 metadata:
   response_time:          
     label: Response Time
