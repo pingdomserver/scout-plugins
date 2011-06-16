@@ -23,18 +23,40 @@ class TungstenTest < Test::Unit::TestCase
   end
 
   def stub_datasources(plugin)
-    plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl | grep progress').
+    plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
       returns(<<-EOS
-|db01(master:ONLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
-|db02(slave:ONLINE, progress=446708701, latency=0.775)               |
+|Connected to manager db01:                                             |
+|  web-ubuntu.dc1.datacenter.com#284555555:ONLINE                       |
+|  db02.dc1.bookrenter.com#515555555:ONLINE                             |
+|Connected to manager db02:                                             |
+|db01(master:ONLINE, progress=472712251, VIP=(eth0:0:10.5.6.7           |
+|netmask 255.255.255.0))                                                |
+|  MANAGER(state=ONLINE)                                                |
+|  REPLICATOR(role=master, state=ONLINE)                                |
+|  DATASERVER(state=ONLINE)                                             |
+|db02(slave:ONLINE, progress=472712255, latency=0.368)                  |
+|  MANAGER(state=ONLINE)                                                |
+|  REPLICATOR(role=slave, master=db01, state=ONLINE)                    |
+|  DATASERVER(state=ONLINE)                                             |
 EOS
              )
   end
 
   def test_parse_datasources
     command_result = <<-EOS
-|db01(master:ONLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
-|db02(slave:ONLINE, progress=446708701, latency=0.775)               |
+|Connected to manager db01:                                             |
+|  web-ubuntu.dc1.datacenter.com#284555555:ONLINE                       |
+|  db02.dc1.bookrenter.com#284555555:ONLINE                             |
+|Connected to manager db02:                                             |
+|db01(master:ONLINE, progress=472712251, VIP=(eth0:0:10.5.6.7           |
+|netmask 255.255.255.0))                                                |
+|  MANAGER(state=ONLINE)                                                |
+|  REPLICATOR(role=master, state=ONLINE)                                |
+|  DATASERVER(state=ONLINE)                                             |
+|db02(slave:ONLINE, progress=472712255, latency=0.368)                  |
+|  MANAGER(state=ONLINE)                                                |
+|  REPLICATOR(role=slave, master=db01, state=ONLINE)                    |
+|  DATASERVER(state=ONLINE)                                             |
 EOS
 
     expected = { "db01" => "ONLINE", "db02" => "ONLINE" }
@@ -105,8 +127,14 @@ EOS
     result = @plugin.run
 
     assert_equal "Replication roles have changed.", result[:alerts].first[:subject]
-    assert_match /db01 is now acting as slave/, result[:alerts].first[:body]
-    assert_match /db02 is now acting as master/, result[:alerts].first[:body]
+    original_roles = result[:alerts].first[:body].split("\n\n\n").first
+    new_roles = result[:alerts].first[:body].split("\n\n\n").last
+    assert_match /^Formerly, roles were:/, original_roles
+    assert_match /db01 acting as master/, original_roles
+    assert_match /db02 acting as slave/, original_roles
+    assert_match /^New roles are:/, new_roles
+    assert_match /db01 acting as slave/, new_roles
+    assert_match /db02 acting as master/, new_roles
     expected_memory = { :replication_roles => { "db02" => "master", "db01" => "slave" } }
     assert_equal expected_memory, result[:memory]
   end
@@ -115,7 +143,7 @@ EOS
     stub_latency(@plugin)
     stub_online_status(@plugin)
     stub_replication_roles(@plugin)
-    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl | grep progress').
+    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
       returns(<<-EOS
 |db01(master:ONLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
 |db02(slave:ONLINE, progress=446708701, latency=0.775)               |
@@ -130,7 +158,7 @@ EOS
     stub_latency(@plugin)
     stub_online_status(@plugin)
     stub_replication_roles(@plugin)
-    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl | grep progress').
+    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
       returns(<<-EOS
 |db01(master:ONLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
 |db02(slave:OFFLINE, progress=446708701, latency=0.775)               |
@@ -146,7 +174,7 @@ EOS
     stub_latency(@plugin)
     stub_online_status(@plugin)
     stub_replication_roles(@plugin)
-    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl | grep progress').
+    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
       returns(<<-EOS
 |db01(master:OFFLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
 |db02(slave:OFFLINE, progress=446708701, latency=0.775)               |
@@ -162,7 +190,7 @@ EOS
     stub_latency(@plugin)
     stub_online_status(@plugin)
     stub_replication_roles(@plugin)
-    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl | grep progress').
+    @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
       returns(<<-EOS
 |db01(master:ONLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
 |db02(slave:OFFLINE, progress=446708701, latency=0.775)               |

@@ -19,7 +19,8 @@ class TungstenPlugin < Scout::Plugin
   EOS
 
   def parse_datasources(datasources_string)
-    datasources_string.split(/\|\n\|/).inject({}) do |datasources, string|
+    lines = datasources_string.select { |line| line.match(/\|[\w]+\((master|slave)/) }
+    lines.each.inject({}) do |datasources, string|
       if match = string.match(/^\|?([\w]+)\(([\w]+):([\w]+), /)
         datasources[match[1]] =  match[3]
       end
@@ -51,7 +52,7 @@ class TungstenPlugin < Scout::Plugin
     status_string = %x(/opt/tungsten/cluster-home/bin/check_tungsten_online)
     replication_string = %x(/opt/tungsten/cluster-home/bin/get_replicator_roles)
     replication_roles = parse_replication_roles(replication_string)
-    datasources_string = %x(echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl | grep progress)
+    datasources_string = %x(echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl)
     datasources = parse_datasources(datasources_string)
     latencies_string = %x(/opt/tungsten/cluster-home/bin/check_tungsten_latency -c 0)
     latencies = parse_latency(latencies_string)
@@ -66,10 +67,13 @@ class TungstenPlugin < Scout::Plugin
     end
 
     if memory(:replication_roles) and memory(:replication_roles) != replication_roles
-      roles_string = replication_roles.inject("") do |output, datasource|
-        output << "#{datasource.first} is now acting as #{datasource.last}"
+      old_roles_string = memory(:replication_roles).inject("") do |output, datasource|
+        output << "#{datasource.first} acting as #{datasource.last}.\n"
       end
-      alert(:subject => "Replication roles have changed.", :body => "#{roles_string}")
+      new_roles_string = replication_roles.inject("") do |output, datasource|
+        output << "#{datasource.first} acting as #{datasource.last}.\n"
+      end
+      alert(:subject => "Replication roles have changed.", :body => "Formerly, roles were:\n#{old_roles_string}\n\nNew roles are:\n#{new_roles_string}")
     end
     remember(:replication_roles => replication_roles)
 
