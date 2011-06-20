@@ -21,7 +21,8 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     res= @plugin.run()
 
     # assertions
-    assert_equal 1, res[:reports].first['Seconds Behind Master']
+    assert_equal 505440314, res[:reports].first["Binlog Position"]
+    assert_equal 1, res[:reports].last["Seconds Behind Master"]
   end
 
   def test_replication_failure
@@ -51,14 +52,17 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
       Slave_IO_Running: 'Yes'
       Slave_SQL_Running: 'Yes'
       Seconds_Behind_Master: 1
+      Exec_Master_Log_Pos: 505440314
     :failure:
       Slave_IO_Running: 'Yes'
       Slave_SQL_Running: 'No'
       Seconds_Behind_Master: NULL
+      Exec_Master_Log_Pos: NULL
     :failure_nil_seconds_behind:
       Slave_IO_Running: 'Yes'
       Slave_SQL_Running: 'Yes'
       Seconds_Behind_Master: NULL
+      Exec_Master_Log_Pos: NULL
     :full:
       Slave_IO_State: Waiting for master to send event
       Master_Host: mysql002.int
