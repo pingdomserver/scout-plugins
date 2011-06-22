@@ -81,6 +81,28 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     assert_equal 1, res[:alerts].size
   end
 
+  def test_in_ignore_window_no_options
+    @plugin=MysqlReplicationMonitor.new(nil,{},@options)
+    Timecop.freeze(Time.parse("6:30pm")) { assert !@plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("7:30pm")) { assert !@plugin.in_ignore_window? }
+  end
+
+  def test_in_ignore_window_daily_start_less_than_end
+    ignore_window = { :ignore_window_start => "1:00am", :ignore_window_end => "2:00am" }
+    @plugin=MysqlReplicationMonitor.new(nil,{},@options.merge(ignore_window))
+    Timecop.freeze(Time.parse("12:30am")) { assert !@plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("1:30am")) { assert @plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("2:30am")) { assert !@plugin.in_ignore_window? }
+  end
+
+  def test_in_ignore_window_daily_start_greater_than_end
+    ignore_window = { :ignore_window_start => "7:00pm", :ignore_window_end => "2:00am" }
+    @plugin=MysqlReplicationMonitor.new(nil,{},@options.merge(ignore_window))
+    Timecop.freeze(Time.parse("6:30pm")) { assert !@plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("7:30pm")) { assert @plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("2:30am")) { assert !@plugin.in_ignore_window? }
+  end
+
   FIXTURES=YAML.load(<<-EOS)
     :success:
       Slave_IO_Running: 'Yes'
