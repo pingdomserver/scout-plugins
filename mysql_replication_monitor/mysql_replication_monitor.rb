@@ -22,11 +22,19 @@ class MysqlReplicationMonitor < Scout::Plugin
     default:
   ignore_window_start:
     name: Ignore Window Start
-    notes: Time to start ignoring replication failures. Useful for disabling replication for backups. For Example, 7:00pm
+    notes: Time to start ignoring replication failures. Useful for disabling replication for daily backups. For Example, 7:00pm
     default:
   ignore_window_end:
     name: Ignore Window End
     notes: Time to resume alerting on replication failure. For Example,  2:00am
+    default:
+  hourly_ignore_window_start:
+    name: Hourly Ignore Window Start
+    notes: Time, in minutes, to start ignoring failures on an hourly basis.  Useful if you run your backups hourly, rather than daily.
+    default:
+  hourly_ignore_window_end:
+    name: Hourly Ignore Window End
+    notes: Time per-hour to resume alerting.
     default:
   binlog_interval:
     name: Binlog Check Interval
@@ -99,6 +107,12 @@ class MysqlReplicationMonitor < Scout::Plugin
         return(Time.now > start_time and Time.now < end_time)
       else
         return(Time.now > start_time or Time.now < end_time)
+      end
+    elsif s = option(:hourly_ignore_window_start).to_i and e = option(:hourly_ignore_window_end).to_i
+      if s <= e
+        return Time.now.min.between?(s, e)
+      else
+        return(Time.now.min > s or Time.now.min < e)
       end
     else
       false

@@ -103,6 +103,22 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     Timecop.freeze(Time.parse("2:30am")) { assert !@plugin.in_ignore_window? }
   end
 
+  def test_in_ignore_window_hourly_start_less_than_end
+    ignore_window = { :hourly_ignore_window_start => "15", :hourly_ignore_window_end => "30" }
+    @plugin=MysqlReplicationMonitor.new(nil,{},@options.merge(ignore_window))
+    Timecop.freeze(Time.parse("6:10pm")) { assert !@plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("6:20pm")) { assert @plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("6:40pm")) { assert !@plugin.in_ignore_window? }
+  end
+
+  def test_in_ignore_window_hourly_start_greater_than_end
+    ignore_window = { :hourly_ignore_window_start => "45", :hourly_ignore_window_end => "15" }
+    @plugin=MysqlReplicationMonitor.new(nil,{},@options.merge(ignore_window))
+    Timecop.freeze(Time.parse("6:40pm")) { assert !@plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("6:50pm")) { assert @plugin.in_ignore_window? }
+    Timecop.freeze(Time.parse("7:30pm")) { assert !@plugin.in_ignore_window? }
+  end
+
   FIXTURES=YAML.load(<<-EOS)
     :success:
       Slave_IO_Running: 'Yes'
