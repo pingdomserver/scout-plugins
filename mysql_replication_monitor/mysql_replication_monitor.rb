@@ -36,10 +36,6 @@ class MysqlReplicationMonitor < Scout::Plugin
     name: Hourly Ignore Window End
     notes: Time per-hour to resume alerting.
     default:
-  binlog_interval:
-    name: Binlog Check Interval
-    notes: In minutes, how frequently to check for binlog advancement.  Throw an alert if the binlog has not advanced.
-    default: 30
   EOS
 
   attr_accessor :connection
@@ -66,18 +62,6 @@ class MysqlReplicationMonitor < Scout::Plugin
       if h.nil?
         error("Replication not configured")
       else
-        binlog = h["Exec_Master_Log_Pos"]
-        report("Binlog Position" => binlog)
-        if memory(:time).nil?
-          time_to_remember = time
-        elsif binlog == memory(:binlog)
-          time_to_remember = memory(:time)
-          if memory(:time) < (time - 60 * option(:binlog_interval))
-            alert("Binlog is not advancing", "Binlog at #{memory(:binlog)} since #{memory(:time)}")
-          end
-        end
-        remember(:binlog => binlog, :time => time_to_remember || time)
-
         if h["Seconds_Behind_Master"].nil?
           alert("Replication not running",
             "IO Slave: #{h["Slave_IO_Running"]}\nSQL Slave: #{h["Slave_SQL_Running"]}") unless in_ignore_window?

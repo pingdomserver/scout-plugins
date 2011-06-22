@@ -9,8 +9,7 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     @options=parse_defaults("mysql_replication_monitor")
   end
 
-
-  def test_replication_success_binlog_nil
+  def test_replication_success
     # Stub the plugin instance where necessary and run
     # @plugin=PluginName.new(last_run, memory, options)
     #                        date      hash    hash
@@ -21,42 +20,7 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     Timecop.freeze(time = Time.now) { @res= @plugin.run() }
 
     # assertions
-    assert_equal 505440314, @res[:reports].first["Binlog Position"]
     assert_equal 1, @res[:reports].last["Seconds Behind Master"]
-    assert_equal 505440314, @res[:memory][:binlog]
-    assert_equal time, @res[:memory][:time]
-  end
-
-  def test_replication_success_binlog_acceptably_stale
-    old_time = Time.now - 300
-    @plugin=MysqlReplicationMonitor.new(nil, {:time => old_time, :binlog => 505440314} , @options)
-    ms_res=Mysql::Result.new
-    ms_res.stubs(:fetch_hash).returns(FIXTURES[:success])
-    Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
-    Timecop.freeze(time = Time.now) { @res= @plugin.run() }
-
-    # assertions
-    assert_equal 505440314, @res[:reports].first["Binlog Position"]
-    assert_equal 1, @res[:reports].last["Seconds Behind Master"]
-    assert_equal 505440314, @res[:memory][:binlog]
-    assert_equal old_time, @res[:memory][:time]
-  end
-
-  def test_replication_success_binlog_stuck_stale
-    old_time = Time.now - 2100
-    @plugin=MysqlReplicationMonitor.new(nil, {:time => old_time, :binlog => 505440314} , @options)
-    ms_res=Mysql::Result.new
-    ms_res.stubs(:fetch_hash).returns(FIXTURES[:success])
-    Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
-    Timecop.freeze(time = Time.now) { @res= @plugin.run() }
-
-    # assertions
-    assert_equal 505440314, @res[:reports].first["Binlog Position"]
-    assert_equal 1, @res[:reports].last["Seconds Behind Master"]
-    assert_equal 505440314, @res[:memory][:binlog]
-    assert_equal old_time, @res[:memory][:time]
-    assert_equal 1, @res[:alerts].size
-    assert_equal "Binlog is not advancing", @res[:alerts].first[:subject]
   end
 
   def test_replication_failure
