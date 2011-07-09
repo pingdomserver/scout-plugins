@@ -8,7 +8,7 @@ class NetworkThroughput < Scout::Plugin
 
     lines.each do |line|
       iface, rest = line.split(':', 2).collect { |e| e.strip }
-      next unless iface =~ /eth/
+      next unless iface =~ /eth|venet/
       cols = rest.split(/\s+/)
 
       in_bytes, in_packets, out_bytes, out_packets = cols.values_at(0, 1, 8, 9).collect { |i| i.to_i }
