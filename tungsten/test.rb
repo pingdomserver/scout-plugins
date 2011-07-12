@@ -5,26 +5,13 @@ class TungstenTest < Test::Unit::TestCase
 
   def setup
     @plugin = TungstenPlugin.new(nil, {}, {})
-  end
-
-  def stub_replication_roles(plugin)
-    plugin.stubs(:`).with("/opt/tungsten/cluster-home/bin/get_replicator_roles").
-      returns("\nmaster=db01\nslave=db02\n")
-  end
-
-  def stub_latency(plugin)
-    plugin.stubs(:`).with("/opt/tungsten/cluster-home/bin/check_tungsten_latency -c 0").
-      returns("CRITICAL: db02=0.769s, db03=8.5s")
-  end
-
-  def stub_online_status(plugin)
-    plugin.stubs(:`).with("/opt/tungsten/cluster-home/bin/check_tungsten_online").
-      returns("OK: All services are online\n")
-  end
-
-  def stub_datasources(plugin)
-    plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
-      returns(<<-EOS
+    @good_rep_roles = "\nmaster=db01\nslave=db02\n"
+    # Compatible with Tungsten 1.31
+    # @good_latency = "CRITICAL: db02=0.769s, db03=8.5s"
+    # Compatible with Tungsten 1.32
+    @good_latency = "OK: All slaves are running normally (max_latency=0.14) | db02=0.769;1800;3600;; db03=8.5;1800;3600;;"
+    @good_status = "OK: All services are online\n"
+    @good_datasources = <<-EOS
 |Connected to manager db01:                                             |
 |  web-ubuntu.dc1.datacenter.com#284555555:ONLINE                       |
 |  db02.dc1.bookrenter.com#515555555:ONLINE                             |
@@ -39,47 +26,66 @@ class TungstenTest < Test::Unit::TestCase
 |  REPLICATOR(role=slave, master=db01, state=ONLINE)                    |
 |  DATASERVER(state=ONLINE)                                             |
 EOS
-             )
+  end
+
+  def stub_replication_roles(plugin)
+    plugin.stubs(:`).with("/opt/tungsten/cluster-home/bin/get_replicator_roles").
+      returns(@good_rep_roles)
+  end
+
+  def stub_latency(plugin)
+    plugin.stubs(:`).with('/opt/tungsten/cluster-home/bin/check_tungsten_latency -w 180000 -c 360000 --perfdata --perslave-perfdata').
+      returns(@good_latency)
+  end
+
+  def stub_online_status(plugin)
+    plugin.stubs(:`).with("/opt/tungsten/cluster-home/bin/check_tungsten_online").
+      returns(@good_status)
+  end
+
+  def stub_datasources(plugin)
+    plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
+      returns(@good_datasources)
   end
 
   def test_parse_datasources
-    command_result = <<-EOS
-|Connected to manager db01:                                             |
-|  web-ubuntu.dc1.datacenter.com#284555555:ONLINE                       |
-|  db02.dc1.bookrenter.com#284555555:ONLINE                             |
-|Connected to manager db02:                                             |
-|db01(master:ONLINE, progress=472712251, VIP=(eth0:0:10.5.6.7           |
-|netmask 255.255.255.0))                                                |
-|  MANAGER(state=ONLINE)                                                |
-|  REPLICATOR(role=master, state=ONLINE)                                |
-|  DATASERVER(state=ONLINE)                                             |
-|db02(slave:ONLINE, progress=472712255, latency=0.368)                  |
-|  MANAGER(state=ONLINE)                                                |
-|  REPLICATOR(role=slave, master=db01, state=ONLINE)                    |
-|  DATASERVER(state=ONLINE)                                             |
-EOS
-
     expected = { "db01" => "ONLINE", "db02" => "ONLINE" }
-    assert_equal expected, @plugin.parse_datasources(command_result)
+    assert_equal expected, @plugin.parse_datasources(@good_datasources)
   end
 
   def test_parse_replication_roles
-    command_result = "\nmaster=db01\nslave=db02\n"
-
     expected = { "db01" => "master", "db02" => "slave" }
-    assert_equal expected, @plugin.parse_replication_roles(command_result)
+    assert_equal expected, @plugin.parse_replication_roles(@good_rep_roles)
   end
 
   def test_parse_latency
-    command_result = "CRITICAL: db02=0.769s, db03=8.5s"
-
     expected = { "db02" => 0.769, "db03" => 8.5 }
-    assert_equal expected, @plugin.parse_latency(command_result)
+    assert_equal expected, @plugin.parse_latency(@good_latency)
+  end
+
+  def test_build_report_times_out_acceptably
+    Timeout.stubs(:timeout).raises(Timeout::Error)
+
+    result = @plugin.run
+    assert_equal [], result[:alerts]
+    assert_equal 1, result[:memory][:timeout]
+  end
+
+  def test_build_report_times_out_too_much
+    Timeout.stubs(:timeout).raises(Timeout::Error)
+    memory = {:timeout  => 4}
+    @plugin = TungstenPlugin.new(nil, memory, {})
+
+    result = @plugin.run
+    expected = [{ :subject => "Tungsten plugin timed out",
+                  :body => "It has timed out 5 times in a row."}]
+    assert_equal expected, result[:alerts]
+    assert_equal 5, result[:memory][:timeout]
   end
 
   def test_build_report_alerts_ok_status
     @plugin.stubs(:`).with('/opt/tungsten/cluster-home/bin/check_tungsten_online').
-      returns("OK: All services are online\n")
+      returns(@good_status)
     stub_latency(@plugin)
     stub_replication_roles(@plugin)
     stub_datasources(@plugin)
@@ -103,13 +109,13 @@ EOS
   end
 
   def test_build_report_replication_roles_unchanged
-    memory = { :replication_roles => { "db01" => "master", "db02" => "slave" } }
+    memory = { :replication_roles => { "db01" => "master", "db02" => "slave" }, :timeout => 0 }
     @plugin = TungstenPlugin.new(nil, memory, {})
     stub_latency(@plugin)
     stub_datasources(@plugin)
     stub_online_status(@plugin)
     @plugin.stubs(:`).with("/opt/tungsten/cluster-home/bin/get_replicator_roles").
-      returns("\nmaster=db01\nslave=db02\n")
+      returns(@good_rep_roles)
     result = @plugin.run
 
     assert_equal [], result[:alerts]
@@ -135,7 +141,7 @@ EOS
     assert_match /^New roles are:/, new_roles
     assert_match /db01 acting as slave/, new_roles
     assert_match /db02 acting as master/, new_roles
-    expected_memory = { :replication_roles => { "db02" => "master", "db01" => "slave" } }
+    expected_memory = { :replication_roles => { "db02" => "master", "db01" => "slave" }, :timeout => 0 }
     assert_equal expected_memory, result[:memory]
   end
 
@@ -144,11 +150,7 @@ EOS
     stub_online_status(@plugin)
     stub_replication_roles(@plugin)
     @plugin.stubs(:`).with('echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl').
-      returns(<<-EOS
-|db01(master:ONLINE, progress=446708700, VIP=(eth0:0:10.5.6.7        |
-|db02(slave:ONLINE, progress=446708701, latency=0.775)               |
-EOS
-)
+      returns(@good_datasources)
     result = @plugin.run
 
     assert_equal [], result[:alerts]
