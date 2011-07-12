@@ -72,7 +72,7 @@ class MysqlReplicationMonitor < Scout::Plugin
           time_to_remember = time
         elsif binlog == memory(:binlog)
           time_to_remember = memory(:time)
-          if memory(:time) < (time - 60 * option(:binlog_interval))
+          if memory(:time) < (time - 60 * option(:binlog_interval).to_i)
             alert("Binlog is not advancing", "Binlog at #{memory(:binlog)} since #{memory(:time)}")
           end
         end
