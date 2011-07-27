@@ -1,0 +1,48 @@
+metadata: !map:HashWithIndifferentAccess 
+  lat_avg: !map:HashWithIndifferentAccess 
+    units: ms
+    delimiter: ","
+    precision: "0"
+    label: Latency Average
+  node_count: !map:HashWithIndifferentAccess 
+    units: nodes
+    delimiter: ","
+    precision: "0"
+    label: Node count
+  sent: !map:HashWithIndifferentAccess 
+    units: pkts/min
+    delimiter: ","
+    precision: "2"
+    label: Packets Sent
+  mode: !map:HashWithIndifferentAccess 
+    units: ""
+    delimiter: ","
+    precision: "1"
+    label: Node Mode
+  lat_max: !map:HashWithIndifferentAccess 
+    units: ms
+    delimiter: ","
+    precision: "0"
+    label: Latency Maximum
+  outstanding: !map:HashWithIndifferentAccess 
+    units: requests
+    delimiter: ","
+    precision: "0"
+    label: Outstanding
+  received: !map:HashWithIndifferentAccess 
+    units: pkts/min
+    delimiter: ","
+    precision: "2"
+    label: Packets Received
+  lat_min: !map:HashWithIndifferentAccess 
+    units: ms
+    delimiter: ","
+    precision: "0"
+    label: Latency Minimum
+
+triggers: 
+- max_value: 900.0
+  type: plateau
+  dname: outstanding
+  population_size: 0
+  duration: 10
