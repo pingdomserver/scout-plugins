@@ -1,0 +1,42 @@
+metadata:
+  size_of_indices:
+    label: Total size of the indices
+    units: MB
+    precision: "0"
+  num_docs:
+    label: Number of indexed documents
+    precision: "0"
+  open_file_descriptors:
+    label: Number of opened file descriptors
+    precision: "0"
+  heap_used:
+    label: Heap used
+    units: MB
+    precision: "0"
+  heap_committed:
+    label: Heap committed
+    units: MB
+    precision: "0"
+  non_heap_used:
+    label: Non-heap used
+    units: MB
+    precision: "0"
+  non_heap_committed:
+    label: Non-heap committed
+    units: MB
+    precision: "0"
+  threads_count:
+    label: Number of threads
+    precision: "0"
+  gc_collection_time:
+    label: GC - Total
+    precision: "ms"
+    precision: "0"
+  gc_parnew_collection_time:
+    label: GC - ParNew
+    precision: "ms"
+    precision: "0"
+  gc_cms_collection_time:
+    label: GC - ConcurrentMarkSweep
+    precision: "ms"
+    precision: "0"
