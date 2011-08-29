@@ -40,9 +40,10 @@ class ElasticsearchClusterNodeStatusPlugin < Scout::Plugin
     report(:non_heap_used => b_to_mb(response['jvm']['mem']['non_heap_used_in_bytes'] || 0))
     report(:non_heap_committed => b_to_mb(response['jvm']['mem']['non_heap_committed_in_bytes'] || 0))
     report(:threads_count => response['jvm']['threads']['count'] || 0)
-    report(:gc_collection_time => response['jvm']['gc']['collection_time_in_millis'] || 0)
-    report(:gc_parnew_collection_time => response['jvm']['gc']['collectors']['ParNew']['collection_time_in_millis'] || 0)
-    report(:gc_cms_collection_time => response['jvm']['gc']['collectors']['ConcurrentMarkSweep']['collection_time_in_millis'] || 0)
+
+    report(:gc_collection_time => gc_time(response['jvm']['gc']))
+    report(:gc_parnew_collection_time => gc_time(response['jvm']['gc']['collectors']['ParNew']))
+    report(:gc_cms_collection_time => gc_time(response['jvm']['gc']['collectors']['ConcurrentMarkSweep']))
 
   rescue OpenURI::HTTPError
     error("Stats URL not found", "Please ensure the base url for elasticsearch cluster node stats is correct. Current URL: \n\n#{base_url}")
@@ -52,6 +53,12 @@ class ElasticsearchClusterNodeStatusPlugin < Scout::Plugin
 
   def b_to_mb(bytes)
     bytes && bytes.to_f / 1024 / 1024
+  end
+
+  def gc_time(data)
+    collection_time = data['collection_time_in_millis'] || 0
+    gc_operations = data['collection_count'] || 1
+    collection_time / gc_operations
   end
 
 end
