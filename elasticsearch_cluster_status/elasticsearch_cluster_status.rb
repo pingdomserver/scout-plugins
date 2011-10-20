@@ -34,6 +34,12 @@ class ElasticsearchClusterStatus < Scout::Plugin
     report(:initializing_shards => response['initializing_shards'])
     report(:unassigned_shards => response['unassigned_shards'])
 
+    # Send an alert every time cluster status changes
+    if memory(:cluster_status) && memory(:cluster_status) != response['status']
+      alert("elasticsearch cluster health status changed from '#{memory(:cluster_status)}' to '#{response['status']}'")
+    end
+    remember :cluster_status => response['status']
+
   rescue OpenURI::HTTPError
     error("Stats URL not found", "Please ensure the base url for elasticsearch cluster stats is correct. Current URL: \n\n#{base_url}")
   rescue SocketError
