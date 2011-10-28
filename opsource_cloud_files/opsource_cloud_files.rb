@@ -38,7 +38,11 @@ class OpSourceCloudFiles < Scout::Plugin
   def percent_used(used, allocated)                                                          
     (used / allocated * 100).ceil
   end
-    
+                 
+  def headers
+    {'x-client-specification' => '2'}
+  end
+  
   def http(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
@@ -46,7 +50,7 @@ class OpSourceCloudFiles < Scout::Plugin
   end                        
 
   def request(path)
-    req = Net::HTTP::Get.new(path)
+    req = Net::HTTP::Get.new(path, headers)
     req.basic_auth(option('username'), option('password'))
     req
   end
