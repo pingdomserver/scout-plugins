@@ -29,8 +29,8 @@ class CouchDBOverallMonitoring< Scout::Plugin
       if option(:couchdb_host).nil? or option(:couchdb_port).nil?
         return error("Please provide the host & port", "The Couch DB Host and Port is required.\n\nCouch DB Host: #{option(:couchdb_host)}\n\nCouch DB Port: #{option(:couchdb_port)}")
       end
-      base_url = "#{option(:couchdb_host)}:#{option(:couchdb_port)}/"
-      @response = JSON.parse(open(base_url + "_stats").read)
+      @base_url = "#{option(:couchdb_host)}:#{option(:couchdb_port)}/"
+      @response = JSON.parse(open(@base_url + "_stats").read)
 
       report_metrics
       report_httpd_status_codes
