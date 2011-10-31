@@ -48,6 +48,24 @@ class CouchDBOverallMonitoringTest < Test::Unit::TestCase
     end # Timecop.travel
   end
   
+  def test_basic_auth
+    FakeWeb.clean_registry
+    FakeWeb.register_uri(:get, "http://testuser:password@127.0.0.1:5984/_stats", :body => FIXTURES[:initial])
+    
+    @plugin=CouchDBOverallMonitoring.new(nil,{},{:couchdb_host=>'http://127.0.0.1',:couchdb_port=>'5984', :couchdb_user => 'testuser', :couchdb_pwd => 'password'})
+    res = @plugin.run()
+    assert res[:errors].empty?
+    assert_equal res[:memory]["_counter_database_reads"][:value], 100
+  end
+  
+  def test_not_authenticated
+    FakeWeb.clean_registry
+    FakeWeb.register_uri(:get, "http://127.0.0.1:5984/_stats", :body => "Unauthorized", :status => ["401", "Unauthorized"])
+    @plugin=CouchDBOverallMonitoring.new(nil,{},{:couchdb_host=>'http://127.0.0.1',:couchdb_port=>'5984'})
+    res = @plugin.run()
+    assert res[:errors][0][:subject] == "Stats URL access denied"
+  end
+  
   def test_not_found
     CouchDBOverallMonitoring::METRICS.each do |metric|
       uri="http://127.0.0.1:5984/_stats"

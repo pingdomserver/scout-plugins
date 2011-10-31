@@ -7,6 +7,12 @@ class CouchDBOverallMonitoring< Scout::Plugin
       couchdb_host:
         notes: The host that CouchDB is running on
         default: http://127.0.0.1
+      couchdb_user:
+        notes: The CouchDB http basic authentication user
+        default: admin
+      couchdb_pwd:
+        notes: The CouchDB http basic authentication password
+        default: secret
     EOS
 
     needs 'open-uri', 'json'
@@ -29,13 +35,22 @@ class CouchDBOverallMonitoring< Scout::Plugin
       if option(:couchdb_host).nil? or option(:couchdb_port).nil?
         return error("Please provide the host & port", "The Couch DB Host and Port is required.\n\nCouch DB Host: #{option(:couchdb_host)}\n\nCouch DB Port: #{option(:couchdb_port)}")
       end
+      options = {}
       @base_url = "#{option(:couchdb_host)}:#{option(:couchdb_port)}/"
-      @response = JSON.parse(open(@base_url + "_stats").read)
+      options[:http_basic_authentication] = [option(:couchdb_user), option(:couchdb_pwd)] if option(:couchdb_user)
+      @response = JSON.parse(open(@base_url + "_stats", options).read)
 
       report_metrics
       report_httpd_status_codes
-    rescue OpenURI::HTTPError
-      error("Stats URL not found","Please ensure the base url for Couch DB Stats is correct. Current URL: \n\n#{@base_url}")
+    rescue OpenURI::HTTPError => e
+      if e.message.include? "401 Unauthorized"
+        status = "Stats URL access denied"
+        msg = "Please ensure the http basic auth user and password is correct. Current URL: \n\n#{@base_url}"
+      else
+        status = "Stats URL not found"
+        msg = "Please ensure the base url for Couch DB Stats is correct. Current URL: \n\n#{@base_url}"
+      end
+      error(status,msg)
     rescue SocketError
       error("Hostname is invalid","Please ensure the Couch DB Host is correct - the host could not be found. Current URL: \n\n#{@base_url}")
     end
