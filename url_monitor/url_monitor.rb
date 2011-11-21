@@ -5,7 +5,7 @@ require 'uri'
 
 class UrlMonitor < Scout::Plugin
   include Net
-  
+
   OPTIONS=<<-EOS
   url:
     name: Url
@@ -18,19 +18,19 @@ class UrlMonitor < Scout::Plugin
     default: '50'
     name: Timeout Length
     notes: "Seconds to wait until connection is opened."
-    attributes: advanced 
+    attributes: advanced
   EOS
-  
+
   def build_report
     url = option("url").to_s.strip
     if url.empty?
       return error("A url wasn't provided.", "Please enter a URL to monitor in the plugin settings.")
     end
-    
+
     unless url =~ %r{\Ahttps?://}
       url = "http://#{url}"
     end
-    
+
     response = nil
     response_time = Benchmark.realtime do
       response = http_response(url)
@@ -38,13 +38,13 @@ class UrlMonitor < Scout::Plugin
 
     report(:status => response.class.to_s[/^Net::HTTP(.*)$/, 1],
            :response_time => response_time)
-    
+
     is_up = valid_http_response?(response) ? 1 : 0
     report(:up => is_up)
-    
+
     if is_up != memory(:was_up)
       if is_up == 0
-        alert("The URL [#{url}] is not responding", unindent(<<-EOF))
+        alert("The URL #{url} is not responding", unindent(<<-EOF))
             URL: #{url}
 
             Code: #{response.is_a?(String) ? 'N/A' : response.code}
@@ -64,17 +64,17 @@ class UrlMonitor < Scout::Plugin
         memory.delete(:down_at)
       end
     end
-    
+
     remember(:was_up => is_up)
   rescue Exception => e
     error( "Error monitoring url [#{url}]",
            "#{e.message}<br><br>#{e.backtrace.join('<br>')}" )
   end
-  
+
   def valid_http_response?(result)
-    [HTTPOK,HTTPFound,HTTPServiceUnavailable].include?(result.class) 
+    [HTTPOK,HTTPFound,HTTPServiceUnavailable].include?(result.class)
   end
-  
+
   # returns the http response from a url
   # CONFUSING: note that the response is a String when an error occurs.
   def http_response(url)
@@ -115,7 +115,7 @@ class UrlMonitor < Scout::Plugin
         response = e.to_s
       end
     end
-        
+
     return response
   end
 

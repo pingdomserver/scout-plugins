@@ -5,11 +5,11 @@ require 'open-uri'
 class UrlMonitorTest < Test::Unit::TestCase
   def setup
   end
-  
+
   def teardown
-    FakeWeb.clean_registry    
+    FakeWeb.clean_registry
   end
-  
+
   def test_initial_run
     uri="http://scoutapp.com"
     FakeWeb.register_uri(:head, uri, :body => "the page")
@@ -19,7 +19,7 @@ class UrlMonitorTest < Test::Unit::TestCase
     assert_equal 1, res[:reports].find { |r| r.has_key?(:up)}[:up]
     assert res[:alerts].first[:subject] =~ /is responding/
   end
-  
+
   def test_404
     uri="http://scoutapp.com"
     FakeWeb.register_uri(:head, uri, :body => "the page", :status => ["404", "Not Found"])
@@ -29,7 +29,7 @@ class UrlMonitorTest < Test::Unit::TestCase
     assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
     assert res[:alerts].first[:subject] =~ /is not responding/
   end
-  
+
   def test_bad_host
     uri="http://fake"
     @plugin=UrlMonitor.new(nil,{},{:url=>uri})
