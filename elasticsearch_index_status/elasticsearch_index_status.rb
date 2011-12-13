@@ -26,16 +26,16 @@ class ElasticsearchIndexStatus < Scout::Plugin
 
     index_name = option(:index_name)
 
-    base_url = "#{option(:elasticsearch_host)}:#{option(:elasticsearch_port)}/#{index_name}/_status"
+    base_url = "#{option(:elasticsearch_host)}:#{option(:elasticsearch_port)}/#{index_name}/_stats"
     response = JSON.parse(Net::HTTP.get(URI.parse(base_url)))
 
     if response['error'] && response['error'] =~ /IndexMissingException/
       return error("No index found with the specified name", "No index could be found with the specified name.\n\nIndex Name: #{option(:index_name)}")
     end
 
-    report(:primary_size => b_to_mb(response['indices'][index_name]['index']['primary_size_in_bytes']) || 0)
-    report(:size => b_to_mb(response['indices'][index_name]['index']['size_in_bytes']) || 0)
-    report(:num_docs => response['indices'][index_name]['docs']['num_docs'] || 0)
+    report(:primary_size => b_to_mb(response['_all']['indices'][index_name]['primaries']['store']['size_in_bytes']) || 0)
+    report(:size => b_to_mb(response['_all']['indices'][index_name]['total']['store']['size_in_bytes']) || 0)
+    report(:num_docs => response['_all']['indices'][index_name]['primaries']['docs']['count'] || 0)
 
   rescue OpenURI::HTTPError
     error("Stats URL not found", "Please ensure the base url for elasticsearch index stats is correct. Current URL: \n\n#{base_url}")
