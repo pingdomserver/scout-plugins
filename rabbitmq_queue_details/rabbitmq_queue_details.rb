@@ -66,6 +66,9 @@ class RabbitmqQueueDetails < Scout::Plugin
           # Convert from bytes to megabytes
           report_data[item] = report_data[item].to_f / (1024 * 1024)
         end
+        if item == 'consumers'
+          report_data['no_consumers'] = (report_data[item].to_i == 0 ? 1 : 0)
+        end
       end
       report_data
     end
