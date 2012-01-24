@@ -19,6 +19,13 @@ class MemoryProfiler < Scout::Plugin
       raise "No such file or directory"
     end
     
+    mem_info['MemTotal'] ||= 0
+    mem_info['MemFree'] ||= 0
+    mem_info['Buffers'] ||= 0
+    mem_info['Cached'] ||= 0
+    mem_info['SwapTotal'] ||= 0
+    mem_info['SwapFree'] ||= 0
+    
     mem_total = mem_info['MemTotal'] / 1024
     mem_free = (mem_info['MemFree'] + mem_info['Buffers'] + mem_info['Cached']) / 1024
     mem_used = mem_total - mem_free
