@@ -1,3 +1,3 @@
 Created by [John Nunemaker](http://railstips.org/blog/archives/2010/07/13/mongo-scout-plugins/)
 
-Provides overview stats of a MongoDB installation. 
+Provides overview stats of a MongoDB installation.
