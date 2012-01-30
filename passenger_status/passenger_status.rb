@@ -27,9 +27,19 @@ class PassengerStatus < Scout::Plugin
         stats["inactive"] = $1
       elsif line =~ /^Waiting on global queue: (\d+)/
         stats["gq_wait"] = $1
-
+      elsif line =~ /PID:\s+(\d+).*Processed:\s+(\d+)/
+        processed[$1]=$2.to_i
       end
     end
+    
+    #determine if any of the workers are "underworked" - processed is less than the average
+    average_processed = processed.values.inject(:+)/processed.values.count
+    underworked_workers = processed.select{|k,v| v < average_processed}
+    underworked_workers = Hash[underworked_workers]
+    if underworked_workers.count > 0
+      stats["underworked"]= underworked_workers.keys.count || 0
+    end
+
 
     stats
   end
