@@ -1,0 +1,51 @@
+metadata: !map:HashWithIndifferentAccess 
+  access_requests: !map:HashWithIndifferentAccess 
+    label: Access Requests
+    units: /min
+    precision: "1"
+    delimiter: ","
+  access_challenges: !map:HashWithIndifferentAccess 
+    label: Access Challenges
+    units: /min
+    precision: "1"
+    delimiter: ","
+  auth_responses: !map:HashWithIndifferentAccess 
+    label: Auth Responses
+    units: /min
+    precision: "1"
+    delimiter: ","
+  invalid_requests: !map:HashWithIndifferentAccess 
+    label: Invalid Requests
+    units: /min
+    precision: "1"
+    delimiter: ","
+  access_accepts: !map:HashWithIndifferentAccess 
+    label: Access Accepts
+    units: /min
+    precision: "1"
+    delimiter: ","
+  access_rejects: !map:HashWithIndifferentAccess 
+    label: Access Rejects
+    units: /min
+    precision: "1"
+    delimiter: ","
+  dropped_requests: !map:HashWithIndifferentAccess 
+    label: Dropped Requests
+    units: /min
+    precision: "1"
+    delimiter: ","
+  duplicate_requests: !map:HashWithIndifferentAccess 
+    label: Duplicate Requests
+    units: /min
+    precision: "1"
+    delimiter: ","
+  unknown_types: !map:HashWithIndifferentAccess 
+    label: Unknown Types
+    units: /min
+    precision: "1"
+    delimiter: ","
+  malformed_requests: !map:HashWithIndifferentAccess 
+    label: Malformed Requests
+    units: /min
+    precision: "1"
+    delimiter: ","
