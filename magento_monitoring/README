@@ -1,0 +1,8 @@
+Magento Monitoring Plugin
+=========================
+Created by [Jean-Luc Geering](http://github.com/ufirstgroup)
+
+Overview
+--------
+
+Only monitors file system cache for now (size and # entries).
