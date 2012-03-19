@@ -40,7 +40,7 @@ class ElasticsearchClusterNodeStatusTest < Test::Unit::TestCase
   ###############
   
   def setup_urls
-      uri="http://127.0.0.1:9200/_cluster/nodes/#{@node_name}/stats"
+      uri="http://127.0.0.1:9200/_cluster/nodes/#{@node_name}/stats?all=true"
       FakeWeb.register_uri(:get, uri, 
         [
          {:body => FIXTURES[:initial]},
