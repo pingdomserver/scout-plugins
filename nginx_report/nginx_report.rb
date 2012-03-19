@@ -24,7 +24,10 @@ class NginxReport < Scout::Plugin
       requests = $3 if line =~ /^\s+(\d+)\s+(\d+)\s+(\d+)/  
       end
     }
-  
+
     report({:total => total, :reading => reading, :writing => writing, :waiting => waiting, :requests => requests})
+
+    counter(:requests_per_sec, requests, :per => :second)
+
   end
 end
