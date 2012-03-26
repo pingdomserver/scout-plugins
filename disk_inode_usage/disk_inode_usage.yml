@@ -1,0 +1,22 @@
+metadata:
+  inodes:
+    label: Inodes total
+    units: inodes
+    precision: 0
+  ifree:
+    label: Inodes free
+    units: inodes
+    precision: 0
+  iuse%:
+    label: Inodes used %
+    units: percent
+    precision: 0
+  iused:
+    label: Inodes used
+    units: inodes
+    precision: 0
+
+triggers:
+  - type: peak
+    dname: iuse%
+    max_value: 85
