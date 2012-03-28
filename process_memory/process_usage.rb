@@ -1,12 +1,14 @@
-class ProcessUsage < Scout::Plugin  
+class ProcessUsage < Scout::Plugin
   MEM_CONVERSION = 1024
-  
+
   def build_report
     if option(:command_name).nil? or option(:command_name) == ""
       return error("Please specify the name of the process you want to monitor.")
     end
     ps_command   = option(:ps_command) || "ps auxww"
     ps_regex     = (option(:ps_regex) || "(?i:\\bCOMMAND\\b)").to_s.gsub("COMMAND") { Regexp.escape(option(:command_name)) }
+
+    alert_command_not_found = options(:alert_command_not_found).to_s != '0'
 
     ps_output = `#{ps_command}`
     unless $?.success?
@@ -49,8 +51,10 @@ class ProcessUsage < Scout::Plugin
 
       remember(:pids => pids)
     else
-      error( "Command not found.",
-             "No processes found matching #{option(:command_name)}." )
+      if alert_command_not_found
+        error("Command not found.",
+          "No processes found matching #{option(:command_name)}.")
+      end
     end
   rescue Exception => e
     error("Error when executing: #{e.class}", e.message)

@@ -10,25 +10,29 @@ options:
     name: The regex used to match a command name.
     notes: "By default, this matches a command name anywhere in the ps output line.  The word COMMAND get's replaced with the command you gave (regex escaped).  You may wish to try the following pattern if you only want to match a command in the last column:  (?i:COMMAND\\s+$)"
     default: "(?i:\\bCOMMAND\\b)"
-    
+  alert_command_not_found:
+    name: Alert when command not found
+    notes: Specifies if an error is reported when no commands are found.  Use 0 to disable alert.
+    default: 1
+
 metadata:
-  memory:          
+  memory:
     label: Largest Process Memory Usage
     units: MB
     precision: 0
-  total_rss:          
+  total_rss:
     label: Total Memory Usage
     units: MB
     precision: 0
-  num_processes:          
+  num_processes:
     label: Number of Processes
     units: ""
     precision: 0
-  restarts:          
+  restarts:
     label: Restarts
     units: ""
     precision: 0
-     
+
 triggers:
   - type: peak
     dname: memory
