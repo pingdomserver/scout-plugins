@@ -3,7 +3,8 @@
 
 
 class MysqlQueryStatistics < Scout::Plugin
-  ENTRIES = %w(Com_insert Com_select Com_update Com_delete)
+  COM_ENTRIES = %w(Com_insert Com_select Com_update Com_delete)
+  INNODB_ENTRIES = %w(Innodb_data_read Innodb_data_written Innodb_rows_deleted Innodb_rows_inserted Innodb_rows_read Innodb_rows_updated)
 
   OPTIONS=<<-EOS
   user:
@@ -72,9 +73,15 @@ class MysqlQueryStatistics < Scout::Plugin
 
     total = 0
     mysql_status.each do |k,v|
-      if ENTRIES.include?(k)
+      if COM_ENTRIES.include?(k)
         total += v
         counter(k[/_(.*)$/, 1], v, :per => :second)
+      elsif INNODB_ENTRIES.include?(k)
+        if k =~ /_rows_/
+          counter(k, v, :per => :second)
+        else
+          counter(k, v / 1024.0 / 1024.0, :per => :second)
+        end
       end
     end
     counter(:total, total, :per => :second)
