@@ -21,7 +21,7 @@ class HaproxyMonitoring < Scout::Plugin
   user:
     notes: If protected under basic authentication provide the user name.
   password:
-    notes: If protected under basic authentication provide the password.   
+    notes: If protected under basic authentication provide the password.
     attributes: password
   EOS
 
@@ -46,7 +46,7 @@ class HaproxyMonitoring < Scout::Plugin
         if valid_proxy_types.include?(row["svname"])
           possible_proxies << row["# pxname"]
           next unless proxy.to_s.strip.downcase == row["# pxname"].downcase
-          
+
           if proxy_found
             data_for_server[:reports] = []
             data_for_server[:memory] = {}
@@ -54,11 +54,20 @@ class HaproxyMonitoring < Scout::Plugin
           else
             proxy_found = true
           end
-          
-          counter(:requests, row['stot'].to_i, :per => :minute)
-          counter(:errors_req, row['ereq'].to_i, :per => :minute) if row['ereq']     
-          counter(:errors_conn, row['econ'].to_i, :per => :minute) if row['econ']       
-          counter(:errors_resp, row['eresp'].to_i, :per => :minute) if row['eresp']  
+
+          counter(:requests,    row['stot'].to_i,  :per => :minute)
+          counter(:errors_req,  row['ereq'].to_i,  :per => :minute) if row['ereq']
+          counter(:errors_conn, row['econ'].to_i,  :per => :minute) if row['econ']
+          counter(:errors_resp, row['eresp'].to_i, :per => :minute) if row['eresp']
+
+          counter(:bytes_in,  row['bin'].to_i,  :per => :second) if row['bin']
+          counter(:bytes_out, row['bout'].to_i, :per => :second) if row['bout']
+
+          report(:active_sessions, row['scur'])
+          report(:queued_sessions, row['qcur'])
+
+          report(:active_servers, row['act'])
+
           report(:proxy_up=>%w(UP OPEN).find {|s| s == row['status']} ? 1 : 0)
         end
       end
@@ -79,5 +88,5 @@ class HaproxyMonitoring < Scout::Plugin
       error('Proxy not found',"The proxy '#{proxy}' was not found. The possible proxies to monitor:\n<ul>#{possible_proxies.map { |p| "<li>#{p}</li>"}.join('')}</ul>")
     end
   end
-  
+
 end
