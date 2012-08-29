@@ -124,6 +124,11 @@ class MongoOverview < Scout::Plugin
     counter(:op_updates, stats['opcounters']['update'], :per => :second)
     counter(:op_deletes, stats['opcounters']['delete'], :per => :second)
     counter(:op_get_mores, stats['opcounters']['getmore'], :per => :second)
+
+    # connections
+    report(:connections_current   => stats['connections']['current'])
+    report(:connections_available => stats['connections']['available'])
+
   end
 
   # Handles 3 metrics - a counter for the +divended+ and +divisor+ and a ratio, named +ratio_name+, 

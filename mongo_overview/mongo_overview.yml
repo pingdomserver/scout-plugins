@@ -58,7 +58,15 @@ metadata:
     units: /sec
     precision: "2"
     label: Op Get mores
-    
+  connections_current:
+    units: ""
+    precision: "0"
+    label: Connections Current
+  connections_available:
+    units: ""
+    precision: "0"
+    label: Connections Available
+
 triggers:    
   - type: trend
     data_series_name: op_queries

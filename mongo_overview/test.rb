@@ -47,6 +47,11 @@ class MongoOverviewTest < Test::Unit::TestCase
         first_run_memory = res[:memory]    
         assert_equal SERVER_STATUS['globalLock']['totalTime'], 
                      first_run_memory[:global_lock_total_time]
+
+        assert_equal SERVER_STATUS['connections']['current'],
+                    res[:reports].find { |r| r.keys.include?(:connections_current)}[:connections_current]
+        assert_equal SERVER_STATUS['connections']['available'],
+                    res[:reports].find { |r| r.keys.include?(:connections_available)}[:connections_available]
     
         # 2nd run, 10 minutes later, to test counters. 
         Timecop.travel(time) do 
