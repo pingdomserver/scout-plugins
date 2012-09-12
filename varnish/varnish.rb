@@ -28,7 +28,7 @@ class Varnish < Scout::Plugin
     end
 
     total = stats[:cache_miss] + stats[:cache_hit] + stats[:cache_hitpass]
-    hitrate = stats[:cache_hit].to_f / total * 100
+    hitrate = stats[:cache_hit].to_f / (total.nonzero? || 1) * 100
     report(:hitrate => hitrate)
 
     option(:metrics).split(/,\s*/).compact.each do |metric|
