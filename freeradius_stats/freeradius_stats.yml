@@ -49,3 +49,8 @@ metadata: !map:HashWithIndifferentAccess
     units: /min
     precision: "1"
     delimiter: ","
+    
+triggers:
+  - type: peak
+    dname: access_requests
+    min_value: 0

@@ -24,9 +24,16 @@ class FreeradiusStats < Scout::Plugin
   
   def build_report
     output = `echo "Message-Authenticator = 0x00, FreeRADIUS-Statistics-Type = 1" | radclient #{option(:host)}:#{option(:port)} status #{option(:secret)} 2>&1`
+    
     if !$?.success? or output =~ /no response/i
-      error("Could not connect to Freeradius status server on #{option(:host)}:#{option(:port)}", "Command Result:\n\n#{output}")
-    else 
+      # If the port was up last run, but not this run, report an error (cuts down on alerts)
+      if memory(:portStatus) == 1
+        error("Could not connect to Freeradius status server on #{option(:host)}:#{option(:port)}", "Command Result:\n\n#{output}")
+      end
+      
+      # Set the port status to down for the next run
+      remember(:portStatus => 0)
+    else
       lines = output.split(/\n/)
       
       # Filter out lines that are not important
@@ -53,6 +60,9 @@ class FreeradiusStats < Scout::Plugin
       counter(:invalid_requests, invalid_requests, :per => :minute)
       counter(:dropped_requests, dropped_requests, :per => :minute)
       counter(:unknown_types, unknown_types, :per => :minute)
+      
+      # Set the port status to up for the next run
+      remember(:portStatus => 1)
     end
   end
 end
