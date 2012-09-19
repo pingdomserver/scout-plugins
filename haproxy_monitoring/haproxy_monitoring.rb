@@ -31,7 +31,6 @@ class HaproxyMonitoring < Scout::Plugin
       return error('URI to HAProxy Stats Required', "It looks like the URI to the HAProxy stats page (in csv format) hasn't been provided. Please enter this URI in the plugin settings.")
     end
     proxy = option(:proxy)
-    valid_proxy_types = %w(FRONTEND BACKEND)
     if option(:proxy_type)
       proxy_type = option(:proxy_type)
       if option(:proxy_type) =~ /frontend|backend/i

@@ -94,7 +94,7 @@ class ApacheAnalyzer < Scout::Plugin
     if @request_count > 0
       # calculate the time btw runs in minutes
       interval = (Time.now-(@last_run || @previous_last_request_time))
-      interval < 1 ? inteval = 1 : nil # if the interval is less than 1 second (may happen on initial run) set to 1 second
+      interval < 1 ? interval = 1 : nil # if the interval is less than 1 second (may happen on initial run) set to 1 second
       interval = interval/60 # convert to minutes
       interval = interval.to_f
       # determine the rate of requests and slow requests in requests/min

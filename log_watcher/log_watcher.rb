@@ -19,7 +19,7 @@ class LogWatcher < Scout::Plugin
       return error( "Please provide a path to the log file." )
     end
     
-    exists = `test -e #{@log_file_path}`
+    `test -e #{@log_file_path}`
     
     unless $?.success?
       return error("Could not find the log file", "The log file could not be found at: #{@log_file_path}. Please ensure the full path is correct.")
