@@ -53,6 +53,9 @@ class RedisMonitor < Scout::Plugin
       report(:role              => info['role'])
       report(:up =>1)
 
+      counter(:hits_per_sec, info['keyspace_hits'].to_i, :per => :second)
+      counter(:misses_per_sec, info['keyspace_misses'].to_i, :per => :second)
+
       counter(:connections_per_sec, info['total_connections_received'].to_i, :per => :second)
       counter(:commands_per_sec,    info['total_commands_processed'].to_i,   :per => :second)
 
