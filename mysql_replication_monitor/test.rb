@@ -24,6 +24,17 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     assert_equal 1, res[:reports].first['Seconds Behind Master']
   end
 
+  def test_replication_not_configured
+    @plugin=MysqlReplicationMonitor.new(nil,{},@options)
+    ms_res=Mysql::Result.new
+    ms_res.stubs(:fetch_hash).returns(nil)
+    Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
+    res= @plugin.run()
+
+    # assertions
+    assert_equal 1, res[:errors].size
+  end
+
   def test_replication_failure
     @plugin=MysqlReplicationMonitor.new(nil,{},@options)
     ms_res=Mysql::Result.new
@@ -33,6 +44,7 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
 
     # assertions
     assert_equal 1, res[:alerts].size
+    assert_equal 1, res[:reports].first['Seconds Behind Master']
   end
 
   def test_replication_failure_nil_seconds_behind
@@ -54,7 +66,7 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     :failure:
       Slave_IO_Running: 'Yes'
       Slave_SQL_Running: 'No'
-      Seconds_Behind_Master: NULL
+      Seconds_Behind_Master: 1
     :failure_nil_seconds_behind:
       Slave_IO_Running: 'Yes'
       Slave_SQL_Running: 'Yes'

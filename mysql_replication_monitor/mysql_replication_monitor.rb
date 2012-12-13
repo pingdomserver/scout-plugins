@@ -47,7 +47,6 @@ class MysqlReplicationMonitor < Scout::Plugin
           down_at = Time.now
         end
       elsif h["Slave_IO_Running"] == "Yes" and h["Slave_SQL_Running"] == "Yes"
-        report("Seconds Behind Master"=>h["Seconds_Behind_Master"])
         if down_at
           alert("Replication running again","Replication was not running for #{(Time.now - down_at).to_i} seconds")
           down_at = nil
@@ -59,6 +58,7 @@ class MysqlReplicationMonitor < Scout::Plugin
           down_at = Time.now
         end
       end
+      report("Seconds Behind Master"=>h["Seconds_Behind_Master"]) if h && h["Seconds_Behind_Master"]
       remember(:down_at,down_at)
     rescue Mysql::Error=>e
       error("Unable to connect to MySQL",e.to_s)
