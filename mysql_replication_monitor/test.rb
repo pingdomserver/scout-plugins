@@ -9,24 +9,23 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
     @options=parse_defaults("mysql_replication_monitor")
   end
 
-
   def test_replication_success
     # Stub the plugin instance where necessary and run
     # @plugin=PluginName.new(last_run, memory, options)
     #                        date      hash    hash
-    @plugin=MysqlReplicationMonitor.new(nil,{},@options)
-    ms_res=Mysql::Result.new
+    @plugin = MysqlReplicationMonitor.new(nil, {}, @options)
+    ms_res = Mysql::Result.new
     ms_res.stubs(:fetch_hash).returns(FIXTURES[:success])
     Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
-    res= @plugin.run()
+    res = @plugin.run()
 
     # assertions
     assert_equal 1, res[:reports].first['Seconds Behind Master']
   end
 
   def test_replication_not_configured
-    @plugin=MysqlReplicationMonitor.new(nil,{},@options)
-    ms_res=Mysql::Result.new
+    @plugin = MysqlReplicationMonitor.new(nil, {}, @options)
+    ms_res = Mysql::Result.new
     ms_res.stubs(:fetch_hash).returns(nil)
     Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
     res= @plugin.run()
@@ -36,11 +35,11 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
   end
 
   def test_replication_failure
-    @plugin=MysqlReplicationMonitor.new(nil,{},@options)
-    ms_res=Mysql::Result.new
+    @plugin = MysqlReplicationMonitor.new(nil, {}, @options)
+    ms_res = Mysql::Result.new
     ms_res.stubs(:fetch_hash).returns(FIXTURES[:failure])
     Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
-    res= @plugin.run()
+    res = @plugin.run()
 
     # assertions
     assert_equal 1, res[:alerts].size
@@ -48,11 +47,11 @@ class MysqlReplicationMonitorTest < Test::Unit::TestCase
   end
 
   def test_replication_failure_nil_seconds_behind
-    @plugin=MysqlReplicationMonitor.new(nil,{},@options)
-    ms_res=Mysql::Result.new
+    @plugin = MysqlReplicationMonitor.new(nil, {}, @options)
+    ms_res = Mysql::Result.new
     ms_res.stubs(:fetch_hash).returns(FIXTURES[:failure_nil_seconds_behind])
     Mysql.any_instance.stubs(:query).with("show slave status").returns(ms_res).once
-    res= @plugin.run()
+    res = @plugin.run()
 
     # assertions
     assert_equal 1, res[:alerts].size
