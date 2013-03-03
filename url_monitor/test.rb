@@ -4,7 +4,7 @@ require File.expand_path('../url_monitor.rb', __FILE__)
 require 'open-uri'
 class UrlMonitorTest < Test::Unit::TestCase
 
-  DEFAULT_OPTIONS = {:valid_http_status_codes =>'200',:check_ssl=>'yes'}
+  DEFAULT_OPTIONS = {:valid_http_status_codes =>'200',:check_ssl=>'yes',:body_content=>'.*'}
 
   def setup
   end
@@ -17,7 +17,7 @@ class UrlMonitorTest < Test::Unit::TestCase
     UrlMonitor.new(nil,{},DEFAULT_OPTIONS.merge(options))
   end
 
-    def test_initial_run
+  def test_initial_run
     uri="http://scoutapp.com"
     FakeWeb.register_uri(:head, uri, :body => "the page",:status => ["200", "OK"])
     @plugin=url_mon({:url=>uri})
@@ -99,5 +99,24 @@ class UrlMonitorTest < Test::Unit::TestCase
     res = @plugin.run()
     assert res[:reports].any?
     assert_equal 1, res[:reports].find { |r| r.has_key?(:up)}[:up]
+  end
+
+  def test_200_regex
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "OK", :status => ["200", "OK"])
+    @plugin=url_mon({:url=>uri,:body_content=>'OK'})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 1, res[:reports].find { |r| r.has_key?(:up)}[:up]
+  end
+
+
+  def test_200_regex_invalid
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "error", :status => ["200", "OK"])
+    @plugin=url_mon({:url=>uri,:body_content=>'OK'})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
   end
 end

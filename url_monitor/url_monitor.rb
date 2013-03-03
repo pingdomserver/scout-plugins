@@ -20,6 +20,10 @@ class UrlMonitor < Scout::Plugin
     name: Timeout Length
     notes: "Seconds to wait until connection is opened."
     attributes: advanced
+  body_content: 
+    default '.*'
+    name: 'Body content'
+    notes 'Regex used to check for valid content the url should return'
   valid_http_status_codes:
     default: '200'
     name: 'Valid http status codes'
@@ -89,10 +93,15 @@ class UrlMonitor < Scout::Plugin
     raw_codes = option("valid_http_status_codes").to_s.strip
     codes = raw_codes.split(',')
     status = result.code
+    valid_code = false
     codes.each do |code|
-      return true if status.to_s.match(code)
+      valid_code = true if status.to_s.match(code)
     end
-    return false
+
+    #Some things dont have content such as 304  in which case the matcher OR the regex will catch it
+    body = result.body || ""
+
+    valid_code and body.match(option('body_content').to_s)
   end
 
   # returns the http response from a url
