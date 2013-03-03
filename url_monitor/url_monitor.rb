@@ -20,6 +20,11 @@ class UrlMonitor < Scout::Plugin
     name: Timeout Length
     notes: "Seconds to wait until connection is opened."
     attributes: advanced
+  valid_http_status_codes:
+    default: '200'
+    name: 'Valid http status codes'
+    notes: 'Comma seperated list of valid http status codes. You can also use basic regex'
+    attributes: advanced
   EOS
 
   def build_report
@@ -73,7 +78,17 @@ class UrlMonitor < Scout::Plugin
   end
 
   def valid_http_response?(result)
-    [HTTPOK,HTTPFound,HTTPServiceUnavailable].include?(result.class)
+    #Only attempt http responses that returned a value
+    return false unless result.kind_of?(Net::HTTPResponse)
+    
+    #Figure out if the http response is in the allowed list. 
+    raw_codes = option("valid_http_status_codes").to_s.strip
+    codes = raw_codes.split(',')
+    status = result.code
+    codes.each do |code|
+      return true if status.to_s.match(code)
+    end
+    return false
   end
 
   # returns the http response from a url
