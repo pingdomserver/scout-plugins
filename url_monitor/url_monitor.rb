@@ -25,6 +25,10 @@ class UrlMonitor < Scout::Plugin
     name: 'Valid http status codes'
     notes: 'Comma seperated list of valid http status codes. You can also use basic regex'
     attributes: advanced
+  check_ssl:
+    default: 'yes'
+    name: 'Check for valid cert'
+    notes: 'Checks if the ssl cert is valid, and issued correctly'
   EOS
 
   def build_report
@@ -104,7 +108,7 @@ class UrlMonitor < Scout::Plugin
 
       http = Net::HTTP.new(connect_host,uri.port)
       http.use_ssl = url =~ %r{\Ahttps://}
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless option('check_ssl').to_s == 'yes'
       http.open_timeout = option('timeout_length').to_i
       http.start(){|h|
             req = Net::HTTP::Head.new((uri.path != '' ? uri.path : '/' ) + (uri.query ? ('?' + uri.query) : ''))
