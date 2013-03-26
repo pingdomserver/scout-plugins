@@ -42,14 +42,14 @@ class MysqlReplicationMonitor < Scout::Plugin
       if h.nil?
         error("Replication not configured")
       else
-        if h["Seconds_Behind_Master"].nil? and !down_at
+        if h["Seconds_Behind_Master"].nil? && !down_at
           if in_ignore_window?
             res["Replication Running"]=1
           else
             res["Replication Running"]=0
             down_at = Time.now
           end
-        elsif h["Slave_IO_Running"] == "Yes" and h["Slave_SQL_Running"] == "Yes"
+        elsif h["Slave_IO_Running"] == "Yes" && h["Slave_SQL_Running"] == "Yes"
           res["Seconds Behind Master"] = h["Seconds_Behind_Master"]
           res["Replication Running"]=1
           down_at = nil if down_at
@@ -75,9 +75,9 @@ class MysqlReplicationMonitor < Scout::Plugin
       end_time = Time.parse("#{Date.today} #{e}")
 
       if start_time < end_time
-        return Time.now > start_time and Time.now < end_time
+        return Time.now > start_time && Time.now < end_time
       else
-        return Time.now > start_time or Time.now < end_time
+        return Time.now > start_time || Time.now < end_time
       end
     else
       false
