@@ -23,9 +23,6 @@ class ZookeeperMonitor < Scout::Plugin
 # Node count: 4
 
   def build_report
-    # Zero out all the variables we want to return
-    lat_min, lat_avg, lat_max, received, sent, outstanding, node_count, mode = nil
-
     # Ruby's error handling is weird, but this catches in the event that the port is incorrect, unresponsive
     begin
       # Ruby sockets! http://www.ruby-doc.org/stdlib/libdoc/socket/rdoc/index.html
@@ -33,27 +30,36 @@ class ZookeeperMonitor < Scout::Plugin
       socket.print("srvr")
       stats = socket.read
 
+      if stats =~ /This ZooKeeper instance is not currently serving requests/i
+        report(:up => 0)
+        error(:subject => "Zookeeper not servic requests", :body => stats)
+        return
+      end
+
       # Let's set the variables to the outputs, based on regexes
       stats.each_line do |line|
         # This line is smarter, thanks to Dan's regex-fu
-        lat_min, lat_avg, lat_max = $1, $2, $3 if line =~ /^Latency min\/avg\/max:\s+(\d+)+\/+(\d+)+\/+(\d+)/
-        received = $1 if line =~ /^Received:\s+(\d+)/
-        sent = $1 if line =~ /^Sent:\s+(\d+)/
-        outstanding = $1 if line =~ /^Outstanding:\s+(\d+)/
-        node_count = $1 if line =~ /^Node count:\s+(\d+)/
-        mode = $1 if line =~ /^Mode:\s+(\w+)/
+        case line
+        when %r{^Latency min/avg/max: (\d+)/(\d+)/(\d+)}
+          lat_min, lat_avg, lat_max = $1.to_i, $2.to_i, $3.to_i
+          report(:lat_min => lat_min, :lat_avg => lat_avg, :lat_max => lat_max)
+        when /^(Received|Sent): (\d+)/
+          counter($1.downcase, $2.to_i, :per => :minute)
+        when /^([^:]+): (\d+)$/
+          name, num = $1, $2
+          name = name.gsub(' ', '_').downcase
+          report(name => num.to_i)
+        when /^([^:]+): (\S+)$/
+          name, val = $1, $2
+          name = name.gsub(' ', '_').downcase
+          report(name => val)
+        end
       end
-    
-      # Build the output report
-      counter(:received, received.to_i,  :per => :minute)
-      counter(:sent,     sent.to_i,      :per => :minute)
-      report({:lat_min => lat_min, :lat_avg => lat_avg, :lat_max => lat_max, 
-        :outstanding => outstanding, :node_count => node_count, :mode => mode }) 
 
+      report(:up => 1)
     rescue Errno::ECONNREFUSED => e
+      report(:up => 0)
       error(:subject => 'Unable to connect to zookeeper', :body => "The zookeeper service is not running on the specified port (#{option(:port)}).\nFull error is:\n" + e)
     end
-
   end
-
 end
