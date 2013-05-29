@@ -1,0 +1,12 @@
+metadata:
+  NSync:
+    label: Synchronized?
+    precision: 0
+  polling_interval_in_seconds:
+    label: Polling Interval
+    precision: 0
+    units: s
+  accuracy_in_milliseconds:
+    label: Accuracy
+    precision: 0
+    units: ms
