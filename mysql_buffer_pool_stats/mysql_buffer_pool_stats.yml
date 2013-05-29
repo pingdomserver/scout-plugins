@@ -1,0 +1,44 @@
+metadata:
+  Innodb_buffer_pool_pages_flushed:
+    label: Pages flushed
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_read_ahead_rnd:
+    label: Read ahead rnd
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_read_ahead_seq:
+    label: Read ahead seq
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_read_requests:
+    label: Read requests
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_reads:
+    label: Reads
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_wait_free:
+    label: Wait free
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_write_requests:
+    label: Write requests
+    precision: "1"
+    units: /sec
+  Innodb_buffer_pool_pages_data:
+    label: Data pages
+    precision: "0"
+  Innodb_buffer_pool_pages_dirty:
+    label: Dirty pages
+    precision: "0"
+  Innodb_buffer_pool_pages_free:
+    label: Free pages
+    precision: "0"
+  Innodb_buffer_pool_pages_misc:
+    label: Misc pages
+    precision: "0"
+  Innodb_buffer_pool_pages_total:
+    label: Total pages
+    precision: "0"

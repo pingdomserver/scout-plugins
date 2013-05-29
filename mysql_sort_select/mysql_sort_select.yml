@@ -1,0 +1,37 @@
+metadata:
+  Select_full_join:
+    label: Select full join
+    units: /sec
+    precision: "1"
+  Sort_scan:
+    label: Sort scan
+    units: /sec
+    precision: "1"
+  Select_scan:
+    label: Select scan
+    units: /sec
+    precision: "1"
+  Select_full_range_join:
+    label: Select full range join
+    units: /sec
+    precision: "1"
+  Select_range_check:
+    label: Select range check
+    units: /sec
+    precision: "1"
+  Select_range:
+    label: Select range
+    units: /sec
+    precision: "1"
+  Sort_range:
+    label: Sort range
+    units: /sec
+    precision: "1"
+  Sort_rows:
+    label: Sort rows
+    units: /sec
+    precision: "1"
+  Sort_merge_passes:
+    label: Sort merge passes
+    units: /sec
+    precision: "1"

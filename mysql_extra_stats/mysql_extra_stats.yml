@@ -1,0 +1,45 @@
+metadata:
+  Aborted_clients:
+    label: Aborted clients
+    precision: "1"
+    units: /sec
+  Opened_tables:
+    label: Opened tables
+    precision: "1"
+    units: /sec
+  Opened_table_definitions:
+    label: Opened table definitions
+    precision: "1"
+    units: /sec
+  Opened_files:
+    label: Opened files
+    precision: "1"
+    units: /sec
+  Threads_created:
+    label: Threads created
+    precision: "1"
+    units: /sec
+  Created_tmp_tables:
+    label: Temp tables created
+    precision: "1"
+    units: /sec
+  Created_tmp_disk_tables:
+    label: Temp tables (disk) created
+    precision: "1"
+    units: /sec
+
+  Threads_running:
+    label: Threads running
+    precision: "0"
+  Threads_cached:
+    label: Threads cached
+    precision: "0"
+  Open_tables:
+    label: Open tables
+    precision: "0"
+  Open_table_definitions:
+    label: Open table definitions
+    precision: "0"
+  Open_files:
+    label: Open files
+    precision: "0"

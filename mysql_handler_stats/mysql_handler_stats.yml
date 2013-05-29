@@ -1,0 +1,61 @@
+metadata:
+  Handler_prepare:
+    label: Prepare
+    units: /sec
+    precision: "1"
+  Handler_read_next:
+    label: Read next
+    units: /sec
+    precision: "1"
+  Handler_read_rnd:
+    label: Read rnd
+    units: /sec
+    precision: "1"
+  Handler_update:
+    label: Update
+    units: /sec
+    precision: "1"
+  Handler_write:
+    label: Write
+    units: /sec
+    precision: "1"
+  Handler_read_key:
+    label: Read key
+    units: /sec
+    precision: "1"
+  Handler_commit:
+    label: Commit
+    units: /sec
+    precision: "1"
+  Handler_delete:
+    label: Delete
+    units: /sec
+    precision: "1"
+  Handler_rollback:
+    label: Rollback
+    units: /sec
+    precision: "1"
+  Handler_savepoint_rollback:
+    label: Savepoint rollback
+    units: /sec
+    precision: "1"
+  Handler_read_first:
+    label: Read first
+    units: /sec
+    precision: "1"
+  Handler_discover:
+    label: Discover
+    units: /sec
+    precision: "1"
+  Handler_read_rnd_next:
+    label: Read rnd next
+    units: /sec
+    precision: "1"
+  Handler_read_prev:
+    label: Read prev
+    units: /sec
+    precision: "1"
+  Handler_savepoint:
+    label: Savepoint
+    units: /sec
+    precision: "1"

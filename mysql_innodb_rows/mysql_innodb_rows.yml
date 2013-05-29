@@ -1,0 +1,21 @@
+metadata:
+  Innodb_rows_read:
+    label: Rows read
+    units: /sec
+    precision: "1"
+  Innodb_rows_deleted:
+    label: Rows deleted
+    units: /sec
+    precision: "1"
+  Innodb_rows_inserted:
+    label: Rows inserted
+    units: /sec
+    precision: "1"
+  Innodb_rows_updated:
+    label: Rows updated
+    units: /sec
+    precision: "1"
+  Innodb_row_lock_waits:
+    label: Row lock waits
+    units: /sec
+    precision: "1"

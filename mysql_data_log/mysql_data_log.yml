@@ -1,0 +1,64 @@
+metadata:
+  Innodb_data_fsyncs:
+    label: fsyncs
+    precision: "1"
+    units: /sec
+  Innodb_data_reads:
+    label: Reads
+    precision: "1"
+    units: /sec
+  Innodb_data_writes:
+    label: Writes
+    precision: "1"
+    units: /sec
+  Innodb_dblwr_pages_written:
+    label: Double write pages written
+    precision: "1"
+    units: /sec
+  Innodb_dblwr_writes:
+    label: Double write writes
+    precision: "1"
+    units: /sec
+  Innodb_log_waits:
+    label: Log waits
+    precision: "1"
+    units: /sec
+  Innodb_log_write_requests:
+    label: Log write requests
+    precision: "1"
+    units: /sec
+  Innodb_log_writes:
+    label: Log writes
+    precision: "1"
+    units: /sec
+  Innodb_os_log_fsyncs:
+    label: Log fsyncs
+    precision: "1"
+    units: /sec
+  Innodb_data_read:
+    label: Data read
+    precision: "1"
+    units: KB/s
+  Innodb_data_written:
+    label: Data written
+    precision: "1"
+    units: KB/s
+  Innodb_os_log_written:
+    label: Log written
+    precision: "1"
+    units: KB/s
+  Innodb_data_pending_fsyncs:
+    label: Data pending fsyncs
+    precision: "0"
+  Innodb_data_pending_reads:
+    label: Data pending reads
+    precision: "0"
+  Innodb_data_pending_writes:
+    label: Data pending writes
+    precision: "0"
+  Innodb_os_log_pending_fsyncs:
+    label: Log pending fsyncs
+    precision: "0"
+  Innodb_os_log_pending_writes:
+    label: Log pending writes
+    precision: "0"
