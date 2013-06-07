@@ -11,13 +11,19 @@ class Varnish < Scout::Plugin
       name: Varnishstat Metrics
       default: client_conn,client_req,cache_hit,cache_hitpass,cache_miss,backend_conn,backend_fail
       notes: A comma separated list of varnishstat metrics.
+    path:
+      name: Varnish Path
+      default:
+      notes: Locations to find varnishstat if it's not on the path.
+
   EOS
-  
-  RATE = :minute # counter metrics are reported per-minute
+
+  RATE = :second # counter metrics are reported per-second
 
   def build_report
     stats = {}
-    res = `varnishstat -1 2>&1`
+    varnishstat_executable = option(:path).strip.empty? ? "varnishstat" : File.join(option(:path), "varnishstat")
+    res = `#{varnishstat_executable} -1 2>&1`
     if !$?.success?
       return error("Unable to fetch stats",res)
     end
