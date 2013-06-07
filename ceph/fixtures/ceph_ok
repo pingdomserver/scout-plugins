@@ -1,0 +1,5 @@
+health HEALTH_OK
+   monmap e1: 1 mons at {a=10.62.202.65:6789/0}, election epoch 0, quorum 0 a
+   osdmap e981: 2 osds: 2 up, 2 in
+    pgmap v859069: 2304 pgs: 2304 active+clean; 411 GB data, 634 GB used, 1314 GB / 2024 GB avail
+   mdsmap e1: 0/0/1 up

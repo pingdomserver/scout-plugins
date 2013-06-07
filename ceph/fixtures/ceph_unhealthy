@@ -1,0 +1,5 @@
+   health HEALTH_WARN 2304 pgs degraded; 2304 pgs stuck unclean; recovery 306763/613526 degraded (50.000%); 1/2 in osds are down
+   monmap e1: 1 mons at {a=10.62.202.65:6789/0}, election epoch 0, quorum 0 a
+   osdmap e978: 2 osds: 1 up, 2 in
+    pgmap v858992: 2304 pgs: 2304 active+degraded; 411 GB data, 760 GB used, 1191 GB / 2024 GB avail; 306763/613526 degraded (50.000%)
+   mdsmap e1: 0/0/1 up

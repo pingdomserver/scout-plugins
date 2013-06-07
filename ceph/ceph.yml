@@ -1,0 +1,47 @@
+metadata:
+  health:
+    label: Health
+    units: ""
+    precision: 0
+  cluster_total_size:          
+    label: Cluster Size
+    units: GB
+    precision: 1
+  used:
+    label: Used
+    units: GB
+    precision: 1
+  available:
+    label: Available
+    units: GB
+    precision: 1
+    larger_is_better: true
+  data_size:
+    label: Size of stored data
+    units: GB
+    precision: 1
+  capacity:
+    label: Capacity
+    units: %
+    precision: 1
+    larger_is_better: true
+  num_osds:
+    label: Number of OSDs
+    units: ""
+    precision: 0
+  osds_up:
+    label: OSDs up
+    units: ""
+    precision: 0
+  osds_in:
+    label: OSDs in
+    units: ""
+    precision: 0
+
+triggers:
+  - type: peak
+    dname: capacity
+    max_value: 85
+  - type: peak
+    dname: health
+    low_value: 0
