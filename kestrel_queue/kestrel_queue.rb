@@ -28,18 +28,18 @@ class KestrelQueueMonitor < Scout::Plugin
     end
     
     report :items => gauge_stat(:items), :open_transactions => gauge_stat(:open_transactions),
-      :mem_items => gauge_stat(:mem_items), :age => gauge_stat(:age_msec).to_f / 1000,
+      :mem_items => gauge_stat(:mem_items), :age => gauge_stat(:age_msec) / 1000,
       :waiters => gauge_stat(:waiters)
       
     counter(:item_rate, counter_stat(:total_items), :per => :second)
   end
 
   def counter_stat(stat)
-    stats['counters']["q/#{option(:queue)}/#{stat.to_s}"]
+    stats['counters']["q/#{option(:queue)}/#{stat.to_s}"].to_f
   end
 
   def gauge_stat(stat)
-    stats['gauges']["q/#{option(:queue)}/#{stat.to_s}"]
+    stats['gauges']["q/#{option(:queue)}/#{stat.to_s}"].to_f
   end
   
   def stats
