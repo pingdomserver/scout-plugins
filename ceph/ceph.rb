@@ -73,11 +73,7 @@ class CephPlugin < Scout::Plugin
   end
   
   def build_report
-    ceph_status = new_ceph_status
-    unless ceph_status.cluster_ok?
-      alert("Ceph is unhealthy", "current status: #{ceph_status.ceph_health} - #{ceph_status.unhealthy_reason}")
-    end
-    report(ceph_status.to_h)
+    report(new_ceph_status.to_h)
   end
   
 end

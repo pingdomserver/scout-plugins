@@ -36,7 +36,6 @@ class CephTest < Test::Unit::TestCase
       plugin = CephPlugin.new(nil, {}, {})
       ceph_status = CephPlugin::CephStatus.new(data)
       plugin.stubs(:new_ceph_status).returns(ceph_status)
-      plugin.expects(:alert).with("Ceph is unhealthy", "current status: #{ceph_status.ceph_health} - #{ceph_status.unhealthy_reason}")
       plugin.expects(:report).with(ceph_status.to_h)
       res = plugin.run
     end
