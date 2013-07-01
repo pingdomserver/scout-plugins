@@ -26,6 +26,7 @@ class UrlMonitorTest < Test::Unit::TestCase
     @plugin=UrlMonitor.new(nil,{},{:url=>uri})
     res = @plugin.run()
     assert res[:reports].any?
+    assert_equal 404, res[:reports].find { |r| r.has_key?(:status) }[:status]
     assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
     assert res[:alerts].first[:subject] =~ /is not responding/
   end

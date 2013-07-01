@@ -3,8 +3,10 @@ metadata:
     label: Response Time
     units: secs
     precision: 2
-    larger_is_better: false
   up:          
     label: Url Reachable
     precision: 0
-    larger_is_better: true
+  status:
+    label: Status
+    units: response code
+    precision: 0

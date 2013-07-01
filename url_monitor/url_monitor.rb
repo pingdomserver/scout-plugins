@@ -37,7 +37,7 @@ class UrlMonitor < Scout::Plugin
       response = http_response(url)
     end
 
-    report(:status => response.class.to_s[/^Net::HTTP(.*)$/, 1],
+    report(:status => (response.is_a?(String) ? nil : response.code.to_i),
            :response_time => response_time)
 
     is_up = valid_http_response?(response) ? 1 : 0
