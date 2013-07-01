@@ -1,44 +1,30 @@
 class NTPTime < Scout::Plugin
-  needs 'net/ntp'
-
 OPTIONS=<<-EOS
+  ntpdate_binary:
+    default: /usr/sbin/ntpdate
+    name: "Location of ntpdate binary"
+ 
   host:
     default: pool.ntp.org
     name: NTP host to check
 EOS
-
+ 
   DEFAULT_NTP_HOST = 'pool.ntp.org'
-
+ 
   def build_report
     host = option(:host) || DEFAULT_NTP_HOST
-
-    begin
-      response = nil
-      try_count = 0
-
-      while !response
-        try_count += 1
-        begin
-          response  = Net::NTP.get(host, 'ntp', 10)
-        rescue Timeout::Error => e
-          if try_count > 3
-            raise e
-          end
-          sleep 5
-        end
-      end
-
-      localtime = Time.new.to_i
-      offset    = (response.receive_timestamp - response.originate_timestamp) + (response.transmit_timestamp - localtime) / 2
-
-      report(
-        :receive_timestamp   => response.receive_timestamp.to_f,
-        :originate_timestamp => response.originate_timestamp.to_f,
-        :transmit_timestamp  => response.transmit_timestamp.to_f,
-        :offset              => offset.to_f
-      )
-    rescue SocketError => e
-      error("Unable to connect to NTP server (#{host})", e.message)
+ 
+    ntpdate_result = `#{option(:ntpdate_binary)} -q #{host} 2>&1`
+    unless $?.success?
+      error("ntpdate failed to run: #{ntpdate_result}")
     end
+ 
+    ntpdate_lines   = ntpdate_result.split("\n")
+    ntpdate_report  = ntpdate_lines.pop
+    ntpdate_servers = ntpdate_lines.grep(/^server /)
+ 
+    offset = ntpdate_report[/ ntpdate.*offset ([^\s]+) sec/, 1].to_f
+ 
+    report(:offset => offset, :servers => ntpdate_servers.length)
   end
 end
