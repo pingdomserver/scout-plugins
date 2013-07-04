@@ -21,17 +21,22 @@ class CpuUsage < Scout::Plugin
   end
 
   class CpuStats
-    attr_accessor :user, :system, :idle, :iowait, :interrupts, :procs_running, :procs_blocked, :time
+    attr_accessor :user, :system, :idle, :iowait, :interrupts, :procs_running, :procs_blocked, :time, :steal, :guest, :guest_nice
 
     def self.fetch
       data      = %x(cat /proc/stat).split(/\n/).collect { |line| line.split }
       cpu_stats = CpuStats.new
 
       if cpu = data.detect { |line| line[0] == 'cpu' }
-        cpu_stats.user, nice, cpu_stats.system, cpu_stats.idle, cpu_stats.iowait, hardirq, softirq = *cpu[1..-1].collect { |c| c.to_i }
+        cpu_stats.user, nice, cpu_stats.system, cpu_stats.idle, cpu_stats.iowait,
+          hardirq, softirq, cpu_stats.steal, cpu_stats.guest, guest_nice = *cpu[1..-1].collect { |c| c.to_i }
 
         cpu_stats.user   += nice
         cpu_stats.system += hardirq + softirq
+
+        if cpu_stats.guest && guest_nice
+          cpu_stats.guest += guest_nice
+        end
       end
 
       if interrupts = data.detect { |line| line[0] == 'intr' }
@@ -74,7 +79,18 @@ class CpuUsage < Scout::Plugin
       diff_idle   = idle - other.idle
       diff_iowait = iowait - other.iowait
 
-      div   = diff_user + diff_system + diff_idle + diff_iowait
+      div = diff_user + diff_system + diff_idle + diff_iowait
+
+      if steal && other.steal && steal > 0
+        diff_steal = steal - other.steal
+        div += diff_steal
+      end
+
+      if guest && other.guest && guest > 0
+        diff_guest = guest - other.guest
+        div += diff_guest
+      end
+
       divo2 = div / 2
 
       results = {
@@ -85,6 +101,14 @@ class CpuUsage < Scout::Plugin
         :procs_running => self.procs_running,
         :procs_blocked => self.procs_blocked
       }
+
+      if diff_steal && steal > 0
+        results[:steal] = (100.0 * diff_steal + divo2) / div
+      end
+
+      if diff_guest && guest > 0
+        results[:guest] = (100.0 * diff_guest + divo2) / div
+      end
 
       if self.time && other.time
         diff_in_seconds = self.time.to_f - other.time.to_f
@@ -99,7 +123,8 @@ class CpuUsage < Scout::Plugin
       {
         :user => user, :system => system, :idle => idle, :iowait => iowait,
         :interrupts => interrupts, :procs_running => procs_running,
-        :procs_blocked => procs_blocked, :time => Time.now.to_s
+        :procs_blocked => procs_blocked, :time => Time.now.to_s,
+        :steal => steal, :guest => guest
       }
     end
   end
