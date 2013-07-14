@@ -34,7 +34,7 @@ class SidekiqMonitor < Scout::Plugin
     path = "#{option(:host)}:#{option(:port)}/#{option(:db)}"
 
     url = protocol
-    url += auth if auth && auth != ':'
+    url += auth + '@' if auth && auth != ':'
     url += path
 
     Sidekiq.configure_client do |config|
