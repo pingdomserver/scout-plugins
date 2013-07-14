@@ -9,7 +9,7 @@ class SidekiqMonitor < Scout::Plugin
     default: localhost
   port:
     name: Port
-    notes: Redis port to pass to the client library. 
+    notes: Redis port to pass to the client library.
     default: 6379
   db:
     name: Database
@@ -23,6 +23,10 @@ class SidekiqMonitor < Scout::Plugin
     name: Password
     notes: If you're using Redis' username/password authentication.
     attributes: password
+  queues:
+    name: Queues
+    notes: Comma separated list of queues to monitor (* for all).
+		default: *
   namespace:
     name: Namespace
     notes: Redis namespace used for Sidekiq keys
@@ -47,6 +51,14 @@ class SidekiqMonitor < Scout::Plugin
       [:enqueued, :failed, :processed].each do |nsym|
         report(nsym => stats.send(nsym))
         counter("#{nsym}_per_minute".to_sym, stats.send(nsym), :per => :minute)
+      end
+
+      queues = option(:queues)
+      queues = (queues=='*') ? '*' : queues.split(',')
+      stats.queues.each do |q, v|
+        next if queues != '*' and !queues.include? q.to_s
+        report("#{q}_enqueued" => v)
+        counter("#{q}_enqueued_per_minute".to_sym, v, :per => :minute)
       end
     end
   rescue Exception => e
