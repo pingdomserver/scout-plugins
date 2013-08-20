@@ -3,8 +3,6 @@
 class MysqlQueryStatistics < Scout::Plugin
   ENTRIES = %w(Com_insert Com_select Com_update Com_delete)
 
-  require 'shellwords'
-
   OPTIONS=<<-EOS
   user:
     name: MySQL username
@@ -85,7 +83,7 @@ class MysqlQueryStatistics < Scout::Plugin
   def connection_options
     opts = {'u' => get_option(:user) || 'root'}
     if p = get_option(:password)
-      opts['p'] = '"'+p.shellescape+'"' # quote the password, and escape quotes within the password
+      opts['p'] = '"' + p.gsub('"', '\"') + '"' # quote the password, and escape quotes within the password
     end
     opts['h'] = get_option(:host) if get_option(:host)
     opts['P'] = get_option(:port) if get_option(:port)
