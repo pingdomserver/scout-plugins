@@ -1,0 +1,15 @@
+--- 
+metadata:
+  messages:
+    precision: 0
+  queues:
+    precision: 0
+  queue_memory_used:
+    units: MB
+    precision: 0
+  bindings:
+    precision: 0
+  exchanges:
+    precision: 0
+  connections:
+    precision: 0

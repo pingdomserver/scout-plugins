@@ -1,0 +1,16 @@
+--- 
+metadata:
+  messages:
+    precision: 0
+  messages_unacknowledged:
+    precision: 0
+  memory:
+    precision: 0
+  messages_ready:
+    precision: 0
+  consumers:
+    precision: 0
+  durable:
+    precision: 0
+  pending_acks:
+    precision: 0

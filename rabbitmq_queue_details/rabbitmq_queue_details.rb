@@ -10,8 +10,8 @@ class RabbitmqQueueDetails < Scout::Plugin
 
   OPTIONS=<<-EOS
     management_url:
-        default: http://localhost:55672
-        notes: The base URL of your RabbitMQ Management server.
+        default: http://localhost:15672
+        notes: The base URL of your RabbitMQ Management server. (Use port 55672 if you are using RabbitMQ older than 3.x)
     username:
         default: guest
     password:
