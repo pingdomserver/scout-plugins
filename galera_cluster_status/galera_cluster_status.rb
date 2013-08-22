@@ -11,9 +11,9 @@ class GaleraClusterStatus < Scout::Plugin
     report(
       :local_state => status[:wsrep_local_state].to_i,
       :local_state_comment => status[:wsrep_local_state_comment],
-      :cluster_status => status[:wsrep_cluster_status],
-      :ready => status[:wsrep_ready],
-      :connected => status[:wsrep_connected]
+      :primary => (status[:wsrep_cluster_status] == 'Primary' ? 1 : 0),
+      :ready => (status[:wsrep_ready] == 'ON' ? 1 : 0),
+      :connected => (status[:wsrep_connected] == 'ON' ? 1 : 0)
     )
 
   end
