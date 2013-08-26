@@ -20,6 +20,11 @@ class UrlMonitor < Scout::Plugin
     name: Timeout Length
     notes: "Seconds to wait until connection is opened."
     attributes: advanced
+  request_method:
+    default: 'HEAD'
+    name: Request Method
+    notes: "The method of the request sent to the url. Options are 'GET' or 'HEAD'. Defaults to 'HEAD'."
+    attributes: advanced
   EOS
 
   def build_report
@@ -92,7 +97,12 @@ class UrlMonitor < Scout::Plugin
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       http.open_timeout = option('timeout_length').to_i
       http.start(){|h|
-            req = Net::HTTP::Head.new((uri.path != '' ? uri.path : '/' ) + (uri.query ? ('?' + uri.query) : ''))
+            path_and_query = (uri.path != '' ? uri.path : '/') + (uri.query ? ('?' + uri.query) : '')
+            if(option('request_method').to_s.upcase.strip == 'GET')
+              req = Net::HTTP::Get.new(path_and_query)
+            else
+              req = Net::HTTP::Head.new(path_and_query)
+            end
             req['User-Agent'] = "ScoutURLMonitor/#{Scout::VERSION}"
             req['host'] = uri.host
             if uri.user && uri.password

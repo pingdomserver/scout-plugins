@@ -32,11 +32,26 @@ class UrlMonitorTest < Test::Unit::TestCase
   end
 
   def test_bad_host
-    uri="http://fake"
-    @plugin=UrlMonitor.new(nil,{},{:url=>uri})
+    uri = "http://fake"
+    @plugin = UrlMonitor.new(nil,{},{:url=>uri})
     res = @plugin.run()
     assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
     assert res[:alerts].first[:subject] =~ /is not responding/
-    assert res[:alerts].first[:body] =~ /Message: getaddrinfo: nodename nor servname provided, or not known/
+  end
+
+  def test_sends_head_request
+    uri = "http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "the page")
+    @plugin = UrlMonitor.new(nil,{},{:url=>uri})
+    res = @plugin.run()
+    assert_equal "HEAD", FakeWeb.last_request.method
+  end
+
+  def test_sends_get_request
+    uri = "http://scoutapp.com"
+    FakeWeb.register_uri(:get, uri, :body => "the page")
+    @plugin = UrlMonitor.new(nil, {}, {:url => uri, :request_method => 'GET'})
+    res = @plugin.run()
+    assert_equal "GET", FakeWeb.last_request.method
   end
 end
