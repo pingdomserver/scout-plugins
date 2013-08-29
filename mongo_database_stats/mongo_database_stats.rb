@@ -19,51 +19,20 @@ class MongoDatabaseStats < Scout::Plugin
       default: 27017
       notes: MongoDB standard port is 27017.
       attributes: advanced
-    path_to_db_yml:
-      name: Path to database.yml
-      notes: "If a database.yml file exists with MongoDB connection information, provide the full path here. This will override other settings if provided."
-      attributes: advanced
-    rails_env:
-      name: Rails Environment
-      default: production
-      attributes: advanced
-      notes: "If a database.yml exists, specify the Rails environment that should be used."
   EOS
 
   needs 'mongo', 'yaml'
 
   def build_report 
-    # check if database.yml path provided
-    if option('path_to_db_yml').nil?
-      @db_yml = false
-      # check if options provided
-      @database = option('database')
-      @host     = option('host') 
-      @port     = option('port')
-      if [@database,@host,@port].compact.size < 3
-        return error("Connection settings not provided.", "Either the full path to the MongoDB database file (ie - /var/www/apps/APP_NAME/current/config/database.yml) or the database name, host, and port must be provided in the advanced settings.")
-      end
-      @username = option('username')
-      @password = option('password')
-    else
-      @db_yml = true
+    @database = option('database')
+    @host     = option('host') 
+    @port     = option('port')
+    if [@database,@host,@port].compact.size < 3
+      return error("Connection settings not provided.", "The database name, host, and port must be provided in the advanced settings.")
     end
+    @username = option('username')
+    @password = option('password')
     
-    # check if database.yml loads
-    if @db_yml
-      begin
-        yaml = YAML::load_file(option('path_to_db_yml'))
-      rescue Errno::ENOENT
-        return error("Unable to find the database.yml file", "Could not find a MongoDB config file at: #{option(:path_to_db_yml)}. Please ensure the path is correct.")
-      end
-      config = yaml[option('rails_env')]
-      @host     = config['host']
-      @port     = config['port']
-      @database = config['database']
-      @username = config['username']
-      @password = config['password'] 
-    end
-
     begin
       connection = Mongo::Connection.new(@host,@port,:slave_ok=>true)
     rescue Mongo::ConnectionFailure
