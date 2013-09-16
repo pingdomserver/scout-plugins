@@ -1,6 +1,6 @@
 class RedisMonitor < Scout::Plugin
   needs 'redis', 'yaml'
-  
+
   attr_accessor :socket
 
   OPTIONS = <<-EOS
@@ -57,6 +57,21 @@ class RedisMonitor < Scout::Plugin
 
       counter(:connections_per_sec, info['total_connections_received'].to_i, :per => :second)
       counter(:commands_per_sec,    info['total_commands_processed'].to_i,   :per => :second)
+
+      if mem_hits = memory(:hits) and mem_misses = memory(:misses)
+        # hits and misses since the last measure
+        hits   = info['keyspace_hits'].to_i   - mem_hits
+        misses = info['keyspace_misses'].to_i - mem_misses
+
+        # total queries since the last measure
+        total = hits + misses
+
+        if total > 0
+          report(:hits_ratio => 100 * hits / total)
+        end
+      end
+      remember(:hits, info['keyspace_hits'].to_i)
+      remember(:misses, info['keyspace_misses'].to_i)
 
       if info['role'] == 'slave'
         master_link_status = case info['master_link_status']

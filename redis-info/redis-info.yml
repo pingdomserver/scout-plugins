@@ -24,6 +24,8 @@ metadata:
     larger_is_better: 1
     precision: 2
     label: Hits
+  hits_ratio:
+    label: Hits Ratio
   misses_per_sec:
     units: /sec
     larger_is_better: 0
