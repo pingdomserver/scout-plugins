@@ -22,7 +22,7 @@ class Varnish < Scout::Plugin
 
   def build_report
     stats = {}
-    varnishstat_executable = option(:path).strip.empty? ? "varnishstat" : File.join(option(:path), "varnishstat")
+    varnishstat_executable = option(:path).blank? ? "varnishstat" : File.join(option(:path), "varnishstat")
     res = `#{varnishstat_executable} -1 2>&1`
     if !$?.success?
       return error("Unable to fetch stats",res)
