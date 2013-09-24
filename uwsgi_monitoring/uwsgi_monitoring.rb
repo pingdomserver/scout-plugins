@@ -8,12 +8,15 @@ class UWSGIMonitoring < Scout::Plugin
     EOS
 
     def build_report
-        location = option(:location) || '127.0.0.1:1717'
+        location = option(:location) 
         hostname, port = location.split(':')
 
         s = TCPSocket.open(hostname, port.to_i)
         data = JSON.parse(s.read)
+        process_uwsgi_stats(data)
+    end
 
+    def process_uwsgi_stats(data)
         total_requests = 0
         total_avg_rt = 0
         total_rss = 0
@@ -29,7 +32,7 @@ class UWSGIMonitoring < Scout::Plugin
         counter(:requests_per_sec, total_requests, :per => :second)
         report(
             :workers => data['workers'].length,
-            :avg_rt => (total_avg_rt / data['workers'].length), 
+            :avg_rt => (total_avg_rt / data['workers'].length) / 1000,
             :rss => to_mb(total_rss),
             :vsz => to_mb(total_vsz)
         )
