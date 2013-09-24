@@ -1,0 +1,1208 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 3
+  },
+  "solr-mbeans": [
+    "CORE",
+    {
+      "core": {
+        "class": "collection1",
+        "version": "1.0",
+        "description": "SolrCore",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/SolrCore.java $",
+        "stats": {
+          "coreName": "collection1",
+          "startTime": "2013-09-23T09:11:10.26Z",
+          "refCount": 2,
+          "indexDir": "\/Users\/solr\/solr-4.4.0\/example\/solr\/collection1\/data\/index\/",
+          "aliases": [
+            "collection1"
+          ]
+        }
+      },
+      "searcher": {
+        "class": "org.apache.solr.search.SolrIndexSearcher",
+        "version": "1.0",
+        "description": "index searcher",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/SolrIndexSearcher.java $",
+        "stats": {
+          "searcherName": "Searcher@6b64bff9 main",
+          "caching": true,
+          "numDocs": 500,
+          "maxDoc": 501,
+          "deletedDocs": 1,
+          "reader": "StandardDirectoryReader(segments_1:1)",
+          "readerDir": "org.apache.lucene.store.NRTCachingDirectory:NRTCachingDirectory(org.apache.lucene.store.NIOFSDirectory@\/Users\/solr\/solr-4.4.0\/example\/solr\/collection1\/data\/index lockFactory=org.apache.lucene.store.NativeFSLockFactory@65c2fee; maxCacheMB=48.0 maxMergeSizeMB=4.0)",
+          "indexVersion": 1,
+          "openedAt": "2013-09-23T09:11:10.601Z",
+          "registeredAt": "2013-09-23T09:11:10.856Z",
+          "warmupTime": 0
+        }
+      },
+      "Searcher@6b64bff9 main": {
+        "class": "org.apache.solr.search.SolrIndexSearcher",
+        "version": "1.0",
+        "description": "index searcher",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/SolrIndexSearcher.java $",
+        "stats": {
+          "searcherName": "Searcher@6b64bff9 main",
+          "caching": true,
+          "numDocs": 500,
+          "maxDoc": 501,
+          "deletedDocs": 1,
+          "reader": "StandardDirectoryReader(segments_1:1)",
+          "readerDir": "org.apache.lucene.store.NRTCachingDirectory:NRTCachingDirectory(org.apache.lucene.store.NIOFSDirectory@\/Users\/solr\/solr-4.4.0\/example\/solr\/collection1\/data\/index lockFactory=org.apache.lucene.store.NativeFSLockFactory@65c2fee; maxCacheMB=48.0 maxMergeSizeMB=4.0)",
+          "indexVersion": 1,
+          "openedAt": "2013-09-23T09:11:10.601Z",
+          "registeredAt": "2013-09-23T09:11:10.856Z",
+          "warmupTime": 0
+        }
+      }
+    },
+    "QUERYHANDLER",
+    {
+      "\/admin\/system": {
+        "class": "org.apache.solr.handler.admin.SystemInfoHandler",
+        "version": "4.4.0",
+        "description": "Get System Info",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/SystemInfoHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470699,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/admin\/logging": {
+        "class": "org.apache.solr.handler.admin.LoggingHandler",
+        "version": "4.4.0",
+        "description": "Logging Handler",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/LoggingHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470741,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/admin\/plugins": {
+        "class": "org.apache.solr.handler.admin.PluginInfoHandler",
+        "version": "4.4.0",
+        "description": "Registry",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/PluginInfoHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470739,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "org.apache.solr.handler.RealTimeGetHandler": {
+        "class": "org.apache.solr.handler.RealTimeGetHandler",
+        "version": "4.4.0",
+        "description": "The realtime get handler",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/RealTimeGetHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470512,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/admin\/file": {
+        "class": "org.apache.solr.handler.admin.ShowFileRequestHandler",
+        "version": "4.4.0",
+        "description": "Admin Get File -- view config files directly",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/ShowFileRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470742,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/admin\/luke": {
+        "class": "org.apache.solr.handler.admin.LukeRequestHandler",
+        "version": "4.4.0",
+        "description": "Lucene Index Browser.  Inspired and modeled after Luke: http:\/\/www.getopt.org\/luke\/",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/LukeRequestHandler.java $",
+        "docs": [
+          "http:\/\/wiki.apache.org\/solr\/LukeRequestHandler"
+        ],
+        "stats": {
+          "handlerStart": 1379927470698,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/update": {
+        "class": "org.apache.solr.handler.UpdateRequestHandler",
+        "version": "4.4.0",
+        "description": "Add documents using XML (with XSLT), CSV, JSON, or javabin",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/UpdateRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470515,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/terms": {
+        "class": "Lazy[solr.SearchHandler]",
+        "version": null,
+        "description": "Lazy[solr.SearchHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "org.apache.solr.handler.PingRequestHandler": {
+        "class": "org.apache.solr.handler.PingRequestHandler",
+        "version": "4.4.0",
+        "description": "Reports application health to a load-balancer",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/PingRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470526,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/admin\/threads": {
+        "class": "org.apache.solr.handler.admin.ThreadDumpHandler",
+        "version": "4.4.0",
+        "description": "Thread Dump",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/ThreadDumpHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470740,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/query": {
+        "class": "org.apache.solr.handler.component.SearchHandler",
+        "version": "4.4.0",
+        "description": "Search using components: query,facet,mlt,highlight,stats,debug,",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/SearchHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470510,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/replication": {
+        "class": "org.apache.solr.handler.ReplicationHandler",
+        "version": "4.4.0",
+        "description": "ReplicationHandler provides replication of index and configuration files from Master to Slaves",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/ReplicationHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470532,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0,
+          "indexSize": "65 bytes",
+          "indexVersion": 0,
+          "generation": 1,
+          "indexPath": "\/Users\/solr\/solr-4.4.0\/example\/solr\/collection1\/data\/index\/",
+          "isMaster": "true",
+          "isSlave": "false",
+          "replicateAfter": [
+            "commit"
+          ],
+          "replicationEnabled": "true"
+        }
+      },
+      "org.apache.solr.handler.UpdateRequestHandler": {
+        "class": "org.apache.solr.handler.UpdateRequestHandler",
+        "version": "4.4.0",
+        "description": "Add documents using XML (with XSLT), CSV, JSON, or javabin",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/UpdateRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470515,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "org.apache.solr.handler.JsonUpdateRequestHandler": {
+        "class": "org.apache.solr.handler.JsonUpdateRequestHandler",
+        "version": "4.4.0",
+        "description": "Add documents with JSON",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/JsonUpdateRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470517,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/analysis\/field": {
+        "class": "Lazy[solr.FieldAnalysisRequestHandler]",
+        "version": null,
+        "description": "Lazy[solr.FieldAnalysisRequestHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "\/browse": {
+        "class": "org.apache.solr.handler.component.SearchHandler",
+        "version": "4.4.0",
+        "description": "Search using components: query,facet,mlt,highlight,stats,spellcheck,debug,",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/SearchHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470512,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "org.apache.solr.handler.CSVRequestHandler": {
+        "class": "org.apache.solr.handler.CSVRequestHandler",
+        "version": "4.4.0",
+        "description": "Add\/Update multiple documents with CSV formatted rows",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/CSVRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470519,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/admin\/ping": {
+        "class": "org.apache.solr.handler.PingRequestHandler",
+        "version": "4.4.0",
+        "description": "Reports application health to a load-balancer",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/PingRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470526,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/select": {
+        "class": "org.apache.solr.handler.component.SearchHandler",
+        "version": "4.4.0",
+        "description": "Search using components: query,facet,mlt,highlight,stats,debug,",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/SearchHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470510,
+          "requests": 1,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 87.741,
+          "avgRequestsPerSecond": 0.0032435988363537,
+          "5minRateReqsPerSecond": 0.074812428920417,
+          "15minRateReqsPerSecond": 0.14410462363288,
+          "avgTimePerRequest": 81.741,
+          "medianRequestTime": 82.741,
+          "75thPcRequestTime": 83.741,
+          "95thPcRequestTime": 84.741,
+          "99thPcRequestTime": 85.741,
+          "999thPcRequestTime": 86.741
+        }
+      },
+      "\/admin\/mbeans": {
+        "class": "org.apache.solr.handler.admin.SolrInfoMBeanHandler",
+        "version": "4.4.0",
+        "description": "Get Info (and statistics) for registered SolrInfoMBeans",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/SolrInfoMBeanHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470739,
+          "requests": 5,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 67.756,
+          "avgRequestsPerSecond": 0.0129840551518,
+          "5minRateReqsPerSecond": 0.012433114979139,
+          "15minRateReqsPerSecond": 0.0043411871974647,
+          "avgTimePerRequest": 16.939,
+          "medianRequestTime": 6.728,
+          "75thPcRequestTime": 41.065,
+          "95thPcRequestTime": 51.591,
+          "99thPcRequestTime": 51.591,
+          "999thPcRequestTime": 51.591
+        }
+      },
+      "\/analysis\/document": {
+        "class": "Lazy[solr.DocumentAnalysisRequestHandler]",
+        "version": null,
+        "description": "Lazy[solr.DocumentAnalysisRequestHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "org.apache.solr.handler.ReplicationHandler": {
+        "class": "org.apache.solr.handler.ReplicationHandler",
+        "version": "4.4.0",
+        "description": "ReplicationHandler provides replication of index and configuration files from Master to Slaves",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/ReplicationHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470532,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0,
+          "indexSize": "65 bytes",
+          "indexVersion": 0,
+          "generation": 1,
+          "indexPath": "\/Users\/solr\/solr-4.4.0\/example\/solr\/collection1\/data\/index\/",
+          "isMaster": "true",
+          "isSlave": "false",
+          "replicateAfter": [
+            "commit"
+          ],
+          "replicationEnabled": "true"
+        }
+      },
+      "\/update\/csv": {
+        "class": "org.apache.solr.handler.CSVRequestHandler",
+        "version": "4.4.0",
+        "description": "Add\/Update multiple documents with CSV formatted rows",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/CSVRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470519,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/elevate": {
+        "class": "Lazy[solr.SearchHandler]",
+        "version": null,
+        "description": "Lazy[solr.SearchHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "\/admin\/": {
+        "class": "org.apache.solr.handler.admin.AdminHandlers",
+        "version": "4.4.0",
+        "description": "Register Standard Admin Handlers",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/AdminHandlers.java $",
+        "stats": null
+      },
+      "\/get": {
+        "class": "org.apache.solr.handler.RealTimeGetHandler",
+        "version": "4.4.0",
+        "description": "The realtime get handler",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/RealTimeGetHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470512,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/update\/json": {
+        "class": "org.apache.solr.handler.JsonUpdateRequestHandler",
+        "version": "4.4.0",
+        "description": "Add documents with JSON",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/JsonUpdateRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470517,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "org.apache.solr.handler.admin.AdminHandlers": {
+        "class": "org.apache.solr.handler.admin.AdminHandlers",
+        "version": "4.4.0",
+        "description": "Register Standard Admin Handlers",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/AdminHandlers.java $",
+        "stats": null
+      },
+      "org.apache.solr.handler.DumpRequestHandler": {
+        "class": "org.apache.solr.handler.DumpRequestHandler",
+        "version": "4.4.0",
+        "description": "Dump handler (debug)",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/DumpRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470528,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/update\/extract": {
+        "class": "Lazy[solr.extraction.ExtractingRequestHandler]",
+        "version": null,
+        "description": "Lazy[solr.extraction.ExtractingRequestHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "\/admin\/properties": {
+        "class": "org.apache.solr.handler.admin.PropertiesRequestHandler",
+        "version": "4.4.0",
+        "description": "Get System Properties",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/admin\/PropertiesRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470740,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/tvrh": {
+        "class": "Lazy[solr.SearchHandler]",
+        "version": null,
+        "description": "Lazy[solr.SearchHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "org.apache.solr.handler.component.SearchHandler": {
+        "class": "org.apache.solr.handler.component.SearchHandler",
+        "version": "4.4.0",
+        "description": "Search using components: query,facet,mlt,highlight,stats,spellcheck,debug,",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/SearchHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470512,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      },
+      "\/spell": {
+        "class": "Lazy[solr.SearchHandler]",
+        "version": null,
+        "description": "Lazy[solr.SearchHandler]",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/core\/RequestHandlers.java $",
+        "stats": {
+          "note": "not initialized yet"
+        }
+      },
+      "\/debug\/dump": {
+        "class": "org.apache.solr.handler.DumpRequestHandler",
+        "version": "4.4.0",
+        "description": "Dump handler (debug)",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/DumpRequestHandler.java $",
+        "stats": {
+          "handlerStart": 1379927470528,
+          "requests": 0,
+          "errors": 0,
+          "timeouts": 0,
+          "totalTime": 0,
+          "avgRequestsPerSecond": 0,
+          "5minRateReqsPerSecond": 0,
+          "15minRateReqsPerSecond": 0,
+          "avgTimePerRequest": 0,
+          "medianRequestTime": 0,
+          "75thPcRequestTime": 0,
+          "95thPcRequestTime": 0,
+          "99thPcRequestTime": 0,
+          "999thPcRequestTime": 0
+        }
+      }
+    },
+    "UPDATEHANDLER",
+    {
+      "updateHandler": {
+        "class": "org.apache.solr.update.DirectUpdateHandler2",
+        "version": "1.0",
+        "description": "Update handler that efficiently directly updates the on-disk main lucene index",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/update\/DirectUpdateHandler2.java $",
+        "stats": {
+          "commits": 0,
+          "autocommit maxTime": "15000ms",
+          "autocommits": 0,
+          "soft autocommits": 0,
+          "optimizes": 0,
+          "rollbacks": 0,
+          "expungeDeletes": 0,
+          "docsPending": 0,
+          "adds": 0,
+          "deletesById": 0,
+          "deletesByQuery": 0,
+          "errors": 0,
+          "cumulative_adds": 0,
+          "cumulative_deletesById": 0,
+          "cumulative_deletesByQuery": 0,
+          "cumulative_errors": 0
+        }
+      }
+    },
+    "CACHE",
+    {
+      "queryResultCache": {
+        "class": "org.apache.solr.search.LRUCache",
+        "version": "1.0",
+        "description": "LRU Cache(maxSize=512, initialSize=512)",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/LRUCache.java $",
+        "stats": {
+          "lookups": 0,
+          "hits": 0,
+          "hitratio": 0,
+          "inserts": 1,
+          "evictions": 0,
+          "size": 1,
+          "warmupTime": 0,
+          "cumulative_lookups": 0,
+          "cumulative_hits": 0,
+          "cumulative_hitratio": 0,
+          "cumulative_inserts": 0,
+          "cumulative_evictions": 0
+        }
+      },
+      "fieldCache": {
+        "class": "org.apache.solr.search.SolrFieldCacheMBean",
+        "version": "1.0",
+        "description": "Provides introspection of the Lucene FieldCache, this is **NOT** a cache that is managed by Solr.",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/SolrFieldCacheMBean.java $",
+        "stats": {
+          "entries_count": 0,
+          "insanity_count": 0
+        }
+      },
+      "documentCache": {
+        "class": "org.apache.solr.search.LRUCache",
+        "version": "1.0",
+        "description": "LRU Cache(maxSize=512, initialSize=512)",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/LRUCache.java $",
+        "stats": {
+          "lookups": 0,
+          "hits": 0,
+          "hitratio": 0,
+          "inserts": 0,
+          "evictions": 0,
+          "size": 0,
+          "warmupTime": 0,
+          "cumulative_lookups": 0,
+          "cumulative_hits": 0,
+          "cumulative_hitratio": 0,
+          "cumulative_inserts": 0,
+          "cumulative_evictions": 0
+        }
+      },
+      "fieldValueCache": {
+        "class": "org.apache.solr.search.FastLRUCache",
+        "version": "1.0",
+        "description": "Concurrent LRU Cache(maxSize=10000, initialSize=10, minSize=9000, acceptableSize=9500, cleanupThread=false)",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/FastLRUCache.java $",
+        "stats": {
+          "lookups": 0,
+          "hits": 0,
+          "hitratio": 0,
+          "inserts": 0,
+          "evictions": 0,
+          "size": 0,
+          "warmupTime": 0,
+          "cumulative_lookups": 0,
+          "cumulative_hits": 0,
+          "cumulative_hitratio": 0,
+          "cumulative_inserts": 0,
+          "cumulative_evictions": 0
+        }
+      },
+      "filterCache": {
+        "class": "org.apache.solr.search.FastLRUCache",
+        "version": "1.0",
+        "description": "Concurrent LRU Cache(maxSize=512, initialSize=512, minSize=460, acceptableSize=486, cleanupThread=false)",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/FastLRUCache.java $",
+        "stats": {
+          "lookups": 0,
+          "hits": 0,
+          "hitratio": 0,
+          "inserts": 0,
+          "evictions": 0,
+          "size": 0,
+          "warmupTime": 0,
+          "cumulative_lookups": 0,
+          "cumulative_hits": 0,
+          "cumulative_hitratio": 0,
+          "cumulative_inserts": 0,
+          "cumulative_evictions": 0
+        }
+      }
+    },
+    "HIGHLIGHTING",
+    {
+      "org.apache.solr.highlight.RegexFragmenter": {
+        "class": "org.apache.solr.highlight.RegexFragmenter",
+        "version": "4.4.0",
+        "description": "RegexFragmenter ([-\\w ,\/\\n\\\"']{20,200})",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/RegexFragmenter.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.BreakIteratorBoundaryScanner": {
+        "class": "org.apache.solr.highlight.BreakIteratorBoundaryScanner",
+        "version": "4.4.0",
+        "description": "BreakIteratorBoundaryScanner",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/BreakIteratorBoundaryScanner.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.HtmlFormatter": {
+        "class": "org.apache.solr.highlight.HtmlFormatter",
+        "version": "4.4.0",
+        "description": "HtmlFormatter",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/HtmlFormatter.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.GapFragmenter": {
+        "class": "org.apache.solr.highlight.GapFragmenter",
+        "version": "4.4.0",
+        "description": "GapFragmenter",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/GapFragmenter.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.HtmlEncoder": {
+        "class": "org.apache.solr.highlight.HtmlEncoder",
+        "version": "4.4.0",
+        "description": "HtmlEncoder",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/HtmlEncoder.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.WeightedFragListBuilder": {
+        "class": "org.apache.solr.highlight.WeightedFragListBuilder",
+        "version": "4.4.0",
+        "description": "WeightedFragListBuilder",
+        "src": "$URL: http:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/branch_4x\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/WeightedFragListBuilder.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.ScoreOrderFragmentsBuilder": {
+        "class": "org.apache.solr.highlight.ScoreOrderFragmentsBuilder",
+        "version": "4.4.0",
+        "description": "ScoreOrderFragmentsBuilder",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/ScoreOrderFragmentsBuilder.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.SimpleFragListBuilder": {
+        "class": "org.apache.solr.highlight.SimpleFragListBuilder",
+        "version": "4.4.0",
+        "description": "SimpleFragListBuilder",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/SimpleFragListBuilder.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.SingleFragListBuilder": {
+        "class": "org.apache.solr.highlight.SingleFragListBuilder",
+        "version": "4.4.0",
+        "description": "SingleFragListBuilder",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/SingleFragListBuilder.java $",
+        "stats": {
+          "requests": 0
+        }
+      },
+      "org.apache.solr.highlight.SimpleBoundaryScanner": {
+        "class": "org.apache.solr.highlight.SimpleBoundaryScanner",
+        "version": "4.4.0",
+        "description": "SimpleBoundaryScanner",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/highlight\/SimpleBoundaryScanner.java $",
+        "stats": {
+          "requests": 0
+        }
+      }
+    },
+    "QUERYPARSER",
+    {
+      "term": {
+        "class": "org.apache.solr.search.TermQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "func": {
+        "class": "org.apache.solr.search.FunctionQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "field": {
+        "class": "org.apache.solr.search.FieldQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "boost": {
+        "class": "org.apache.solr.search.BoostQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "bbox": {
+        "class": "org.apache.solr.search.SpatialBoxQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "frange": {
+        "class": "org.apache.solr.search.FunctionRangeQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "prefix": {
+        "class": "org.apache.solr.search.PrefixQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "switch": {
+        "class": "org.apache.solr.search.SwitchQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "raw": {
+        "class": "org.apache.solr.search.RawQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "join": {
+        "class": "org.apache.solr.search.JoinQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "surround": {
+        "class": "org.apache.solr.search.SurroundQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "geofilt": {
+        "class": "org.apache.solr.search.SpatialFilterQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "edismax": {
+        "class": "org.apache.solr.search.ExtendedDismaxQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "dismax": {
+        "class": "org.apache.solr.search.DisMaxQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "lucenePlusSort": {
+        "class": "org.apache.solr.search.OldLuceneQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "lucene": {
+        "class": "org.apache.solr.search.LuceneQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      },
+      "maxscore": {
+        "class": "org.apache.solr.search.MaxScoreQParserPlugin",
+        "version": null,
+        "description": "",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/search\/QParserPlugin.java $",
+        "docs": [
+          
+        ],
+        "stats": null
+      }
+    },
+    "OTHER",
+    {
+      "mlt": {
+        "class": "mlt",
+        "version": "4.4.0",
+        "description": "More Like This",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/MoreLikeThisComponent.java $",
+        "stats": null
+      },
+      "terms": {
+        "class": "terms",
+        "version": "4.4.0",
+        "description": "A Component for working with Term Enumerators",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/TermsComponent.java $",
+        "stats": null
+      },
+      "query": {
+        "class": "query",
+        "version": "4.4.0",
+        "description": "query",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/QueryComponent.java $",
+        "stats": null
+      },
+      "facet": {
+        "class": "facet",
+        "version": "4.4.0",
+        "description": "Handle Faceting",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/FacetComponent.java $",
+        "stats": null
+      },
+      "get": {
+        "class": "get",
+        "version": "4.4.0",
+        "description": "query",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/RealTimeGetComponent.java $",
+        "stats": null
+      },
+      "highlight": {
+        "class": "highlight",
+        "version": "4.4.0",
+        "description": "Highlighting",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/HighlightComponent.java $",
+        "stats": null
+      },
+      "spellcheck": {
+        "class": "spellcheck",
+        "version": "4.4.0",
+        "description": "A Spell Checker component",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/SpellCheckComponent.java $",
+        "stats": null
+      },
+      "tvComponent": {
+        "class": "tvComponent",
+        "version": "4.4.0",
+        "description": "A Component for working with Term Vectors",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/TermVectorComponent.java $",
+        "stats": null
+      },
+      "debug": {
+        "class": "debug",
+        "version": "4.4.0",
+        "description": "Debug Information",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/DebugComponent.java $",
+        "stats": null
+      },
+      "stats": {
+        "class": "stats",
+        "version": "4.4.0",
+        "description": "Calculate Statistics",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/StatsComponent.java $",
+        "stats": null
+      },
+      "elevator": {
+        "class": "elevator",
+        "version": "4.4.0",
+        "description": "Query Boosting -- boost particular documents for a given query",
+        "src": "$URL: https:\/\/svn.apache.org\/repos\/asf\/lucene\/dev\/branches\/lucene_solr_4_4\/solr\/core\/src\/java\/org\/apache\/solr\/handler\/component\/QueryElevationComponent.java $",
+        "docs": [
+          "http:\/\/wiki.apache.org\/solr\/QueryElevationComponent"
+        ],
+        "stats": null
+      }
+    }
+  ]
+}
