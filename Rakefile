@@ -29,6 +29,9 @@ end
 desc 'Run all tests'
 task :test => [:lint, :unit]
 
+desc 'Run all tests including code coverage'
+task :testc => [:lint, :unitc]
+
 desc 'Run linter'
 task :lint => %w{rubocop}
 
@@ -37,8 +40,10 @@ task :rubocop do
   Rubocop::RakeTask.new
 end
 
-desc 'Run tests with code coverage'
-task :coverage do
-  ENV['COVERAGE'] = true
-  Rake::Task['test'].execute
+desc 'Run unit tests with code coverage'
+task :unitc do
+  ENV['COVERAGE'] = 'true'
+  task = Rake::Task['unit']
+  task.reenable
+  task.invoke
 end

@@ -5,4 +5,5 @@ rvm:
 before_script:
   - bundle install
 script:
-  - bundle exec rake coverage
+  #- bundle exec rake testc
+  - bundle exec rake unitc
