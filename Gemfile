@@ -8,6 +8,8 @@ group :test do
   gem 'timecop'
   gem 'pry'
   gem 'pry-doc'
+  gem 'rubocop'
+  gem 'simplecov'
 end
 
 # plugin-specific
