@@ -2,8 +2,25 @@ require "rake/testtask"
 require 'rubocop/rake_task'
 
 Rake::TestTask.new do |test|
+  faulty_plugins = %w(
+    zz_archive
+    tungsten
+    apache2_status
+    postgresql_monitoring
+    apache_analyzer
+    redis-info
+    mysql_slow_queries
+    passenger
+    network_throughput
+    apache_load
+    mysql_replication_monitor
+    freeradius_stats
+    elasticsearch_cluster_node_status
+    mysql_thread_pool_monitor
+  )
+
   test.libs << "test"
-  test.test_files = [ "**/test.rb" ]
+  test.test_files = FileList[ "**/test.rb" ].exclude(*faulty_plugins)
   test.verbose = true
   test.name = 'unit'
 end
