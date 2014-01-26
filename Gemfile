@@ -10,6 +10,7 @@ group :test do
   gem 'pry-doc'
   gem 'rubocop'
   gem 'simplecov'
+  gem 'coveralls'
 end
 
 # plugin-specific
