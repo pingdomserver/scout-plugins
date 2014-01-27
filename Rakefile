@@ -18,9 +18,10 @@ Rake::TestTask.new do |test|
     elasticsearch_cluster_node_status
     mysql_thread_pool_monitor
   )
+  excludes = faulty_plugins + %w(vendor)
 
   test.libs << "test"
-  test.test_files = FileList[ "**/test.rb" ].exclude(*faulty_plugins)
+  test.test_files = FileList[ "**/test.rb" ].exclude(*excludes)
   test.verbose = true
   test.name = 'unit'
 end
