@@ -101,6 +101,7 @@ DEPENDENCIES
   pg
   pry
   pry-doc
+  rake
   redis
   request-log-analyzer
   resque

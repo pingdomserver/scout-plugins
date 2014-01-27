@@ -11,6 +11,7 @@ group :test do
   gem 'rubocop'
   gem 'simplecov'
   gem 'coveralls'
+  gem 'rake'
 end
 
 # plugin-specific
