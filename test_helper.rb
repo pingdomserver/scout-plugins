@@ -10,6 +10,17 @@ rescue LoadError
   # not using pry
 end
 
+if ENV['TRAVIS'] || ENV['COVERAGE']
+  require 'simplecov'
+
+  if ENV['TRAVIS']
+    require 'coveralls'
+    SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+  end
+
+  SimpleCov.start
+end
+
 class Test::Unit::TestCase
   # Reads the code and extracts default options. The argument should be the name of
   #  both the plugin directory and the file. This assumes the directory and filename are the same.

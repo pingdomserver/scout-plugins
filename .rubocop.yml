@@ -1,0 +1,8 @@
+HashSyntax:
+  Enabled: false
+LineLength:
+  Enabled: false
+MethodLength:
+  Max: 30
+Documentation:
+  Enabled: false

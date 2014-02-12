@@ -1,6 +1,9 @@
 Scout Plugins Library
 =====================
 
+[![Build Status](https://travis-ci.org/scoutapp/scout-plugins.png?branch=master)](https://travis-ci.org/scoutapp/scout-plugins)
+[![Coverage Status](https://coveralls.io/repos/scoutapp/scout-plugins/badge.png?branch=master)](https://coveralls.io/r/scoutapp/scout-plugins?branch=master)
+
 [Scout](http://scoutapp.com) is a hosted monitoring solution. Scout uses open-source plugins (written in Ruby)
 to monitor a wide variety of system, OS, and application metrics.
 
