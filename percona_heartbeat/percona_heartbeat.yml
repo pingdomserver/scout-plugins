@@ -1,0 +1,4 @@
+metadata:
+  seconds_behind_master:
+    units: seconds
+    precision: 0

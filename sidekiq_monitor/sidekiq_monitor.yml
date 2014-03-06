@@ -1,6 +1,27 @@
-metadata: 
+metadata:
   failed:
     label: Failed
+    unit: ""
+    precision: "0"
+  processed:
+    label: Processed
+    units: ""
+    precision: "0"
+  enqueued:
+    label: Enqueued
+    units: ""
+    precision: "0"
+  scheduled_size:
+    label: Scheduled
+    units: ""
+    precision: "0"
+  retry_size:
+    label: Retrying
+    units: ""
+    precision: "0"
+  running:
+    label: Running
+    units: ""
     precision: "0"
   processed_per_minute:
     label: Processed Rate
@@ -14,11 +35,15 @@ metadata:
     label: Enqueued Rate
     units: /min
     precision: "1"
-  processed:
-    label: Processed
-    units: ""
-    precision: "0"
-  enqueued:
-    label: Enqueued
-    units: ""
-    precision: "0"
+  scheduled_size_per_minute:
+    label: Scheduled Rate
+    units: /min
+    precision: "1"
+  retry_size_per_minute:
+    label: Retry Rate
+    units: /min
+    precision: "1"
+  running_per_minute:
+    label: Running Rate
+    units: /min
+    precision: "1"

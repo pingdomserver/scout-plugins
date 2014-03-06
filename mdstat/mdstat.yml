@@ -1,0 +1,7 @@
+metadata:
+  active_disks:
+    precision: 0
+  spares:
+    precision: 0
+  failed_disks:
+    precision: 0
