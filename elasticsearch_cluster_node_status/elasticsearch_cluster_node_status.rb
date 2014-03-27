@@ -27,7 +27,7 @@ class ElasticsearchClusterNodeStatus < Scout::Plugin
 
     node_name = CGI.escape(option(:node_name))
 
-    base_url = "#{option(:elasticsearch_host)}:#{option(:elasticsearch_port)}/_cluster/nodes/#{node_name}/stats?all=true"
+    base_url = "#{option(:elasticsearch_host)}:#{option(:elasticsearch_port)}/_nodes/#{node_name}/stats?all=true"
     resp = JSON.parse(Net::HTTP.get(URI.parse(base_url)))
 
     if resp['nodes'].nil? or resp['nodes'].empty?
