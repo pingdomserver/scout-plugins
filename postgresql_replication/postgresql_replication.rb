@@ -26,34 +26,26 @@ class PostgresqlReplication < Scout::Plugin
       default: 5432
   EOS
 
-  NON_COUNTER_ENTRIES = ['total_lag']
-  
   def build_report
     report = {}
     
     begin
       PGconn.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
 
-        result = pgconn.exec("SELECT max(total_lag),
-                                     sum(CASE WHEN state ilike 'catchup' 
-                                              THEN 1::INT ELSE 0 END) AS
-                                     replicas_catching_up
-                                FROM pg_monitoring_lag_info()");
-        row = result[0]
+      result = pgconn.exec("SELECT max(total_lag),
+                                   sum(CASE WHEN state ilike 'catchup' 
+                                            THEN 1::INT ELSE 0 END) AS
+                                   replicas_catching_up
+                              FROM pg_monitoring_lag_info()");
+      row = result[0]
 
-        row.each do |name, val|
-          if NON_COUNTER_ENTRIES.include?(name)
-            report[name] = val.to_i
-          else
-            counter(name,val.to_i,:per => :second)
-          end
-        end
+      report[name] = val.to_i
 
-        result = pgconn.exec('select pg_monitoring_time_since_replay 
-                                  as time_since_replay')
-        row = result[0]
-        report['time_since_replay'] = row.time_since_replay.to_i
-      end
+      result = pgconn.exec('select pg_monitoring_time_since_replay()
+                                as time_since_replay')
+      row = result[0]
+      report['time_since_replay'] = row.time_since_replay.to_i
+    end
 
     rescue PGError => e
       return errors << {:subject => "Unable to connect to PostgreSQL.",
