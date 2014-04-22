@@ -1,0 +1,27 @@
+PostgreSQL Replication Monitoring Plugin
+======================
+Created by [Binary.com](http://www.binary.com) vaguely based on the PostgreSQL
+monitoring plugin by [Koordinates](http://koordinates.com)
+
+This plugin provides a summary of PostgreSQL replication activity.  The 
+statistics covered vary by role in replication.  Replicas both handling master 
+and slave roles,  for example, in cascading replication environments, can use 
+all.
+
+Master Role Monitoring
+--------------------------
+
+This collects statistics on maximum byte offset of the replica set.
+
+Slave Role Monitoring
+-------------------------
+Statistics are collected on time since last transaction write.
+
+Information from Alerts
+-------------------------
+
+While currently we do not support collecting statistics on the servers of this 
+sort, you can run the following function to identify down replicas on the 
+server:
+
+SELECT * FROM scout_get_lag_info();
