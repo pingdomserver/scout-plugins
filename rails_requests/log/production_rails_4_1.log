@@ -1,0 +1,65 @@
+I, [2014-05-06T14:05:25.182820 #29544]  INFO -- : Started GET "/home" for 172.16.76.1 at 2014-05-06 14:05:25 -0600
+I, [2014-05-06T14:05:25.184064 #29544]  INFO -- : Processing by HomeController#index as HTML
+I, [2014-05-06T14:05:26.188132 #29544]  INFO -- :   Rendered home/index.html.erb within layouts/application (1.4ms)
+I, [2014-05-06T14:05:26.188569 #29544]  INFO -- : Completed 200 OK in 6000ms (Views: 2100.0ms | ActiveRecord: 200.0ms)
+
+
+I, [2014-05-06T14:05:49.467675 #29544]  INFO -- : Started GET "/" for 172.16.76.1 at 2014-05-06 14:05:49 -0600
+I, [2014-05-06T14:05:49.499425 #29544]  INFO -- : Processing by ClientsController#index as HTML
+I, [2014-05-06T14:05:50.519549 #29544]  INFO -- :   Rendered clients/index.html.erb within layouts/application (1.7ms)
+I, [2014-05-06T14:05:50.520241 #29544]  INFO -- : Completed 200 OK in 1021ms (Views: 3.3ms | ActiveRecord: 3.4ms)
+
+
+I, [2014-05-06T14:05:51.853562 #29544]  INFO -- : Started GET "/clients/new" for 172.16.76.1 at 2014-05-06 14:05:51 -0600
+I, [2014-05-06T14:05:51.855263 #29544]  INFO -- : Processing by ClientsController#new as HTML
+I, [2014-05-06T14:05:52.866345 #29544]  INFO -- :   Rendered clients/_form.html.erb (6.8ms)
+I, [2014-05-06T14:05:52.866576 #29544]  INFO -- :   Rendered clients/new.html.erb within layouts/application (7.9ms)
+I, [2014-05-06T14:05:52.866944 #29544]  INFO -- : Completed 200 OK in 1012ms (Views: 8.9ms | ActiveRecord: 3.3ms)
+
+
+I, [2014-05-06T14:05:56.057352 #29544]  INFO -- : Started POST "/clients" for 172.16.76.1 at 2014-05-06 14:05:56 -0600
+I, [2014-05-06T14:05:56.058528 #29544]  INFO -- : Processing by ClientsController#create as HTML
+I, [2014-05-06T14:05:56.058635 #29544]  INFO -- :   Parameters: {"utf8"=>"✓", "authenticity_token"=>"kTZkYfRuWVKnWBGtZZp/DtSU+EC7xxCEThExTQYV9ek=", "client"=>{"name"=>"Alice"}, "commit"=>"Create Client"}
+I, [2014-05-06T14:05:57.070319 #29544]  INFO -- : Redirected to http://172.16.76.137:3001/clients/1
+I, [2014-05-06T14:05:57.070709 #29544]  INFO -- : Completed 302 Found in 1012ms (ActiveRecord: 4.5ms)
+
+
+I, [2014-05-06T14:05:57.076649 #29544]  INFO -- : Started GET "/clients/1" for 172.16.76.1 at 2014-05-06 14:05:57 -0600
+I, [2014-05-06T14:05:57.077716 #29544]  INFO -- : Processing by ClientsController#show as HTML
+I, [2014-05-06T14:05:57.077792 #29544]  INFO -- :   Parameters: {"id"=>"1"}
+I, [2014-05-06T14:05:58.083065 #29544]  INFO -- :   Rendered clients/show.html.erb within layouts/application (1.2ms)
+I, [2014-05-06T14:05:58.083713 #29544]  INFO -- : Completed 200 OK in 1006ms (Views: 2.9ms | ActiveRecord: 2.3ms)
+
+
+I, [2014-05-06T14:05:59.042503 #29544]  INFO -- : Started GET "/clients" for 172.16.76.1 at 2014-05-06 14:05:59 -0600
+I, [2014-05-06T14:05:59.043629 #29544]  INFO -- : Processing by ClientsController#index as HTML
+I, [2014-05-06T14:06:00.046440 #29544]  INFO -- :   Rendered clients/index.html.erb within layouts/application (1.2ms)
+I, [2014-05-06T14:06:00.046761 #29544]  INFO -- : Completed 200 OK in 1003ms (Views: 1.7ms | ActiveRecord: 2.2ms)
+
+
+I, [2014-05-06T14:06:01.259749 #29544]  INFO -- : Started GET "/clients/new" for 172.16.76.1 at 2014-05-06 14:06:01 -0600
+I, [2014-05-06T14:06:01.260584 #29544]  INFO -- : Processing by ClientsController#new as HTML
+I, [2014-05-06T14:06:02.263967 #29544]  INFO -- :   Rendered clients/_form.html.erb (1.5ms)
+I, [2014-05-06T14:06:02.264241 #29544]  INFO -- :   Rendered clients/new.html.erb within layouts/application (2.0ms)
+I, [2014-05-06T14:06:02.264923 #29544]  INFO -- : Completed 200 OK in 1004ms (Views: 2.9ms | ActiveRecord: 4.7ms)
+
+
+I, [2014-05-06T14:06:05.167139 #29544]  INFO -- : Started POST "/clients" for 172.16.76.1 at 2014-05-06 14:06:05 -0600
+I, [2014-05-06T14:06:05.168002 #29544]  INFO -- : Processing by ClientsController#create as HTML
+I, [2014-05-06T14:06:05.168067 #29544]  INFO -- :   Parameters: {"utf8"=>"✓", "authenticity_token"=>"kTZkYfRuWVKnWBGtZZp/DtSU+EC7xxCEThExTQYV9ek=", "client"=>{"name"=>"Bob"}, "commit"=>"Create Client"}
+I, [2014-05-06T14:06:05.174190 #29544]  INFO -- : Redirected to http://172.16.76.137:3001/clients/2
+I, [2014-05-06T14:06:05.174377 #29544]  INFO -- : Completed 302 Found in 6ms (ActiveRecord: 2.8ms)
+
+
+I, [2014-05-06T14:06:05.179052 #29544]  INFO -- : Started GET "/clients/2" for 172.16.76.1 at 2014-05-06 14:06:05 -0600
+I, [2014-05-06T14:06:05.179835 #29544]  INFO -- : Processing by ClientsController#show as HTML
+I, [2014-05-06T14:06:05.179913 #29544]  INFO -- :   Parameters: {"id"=>"2"}
+I, [2014-05-06T14:06:05.181788 #29544]  INFO -- :   Rendered clients/show.html.erb within layouts/application (0.3ms)
+I, [2014-05-06T14:06:05.182076 #29544]  INFO -- : Completed 200 OK in 3ms (Views: 0.9ms | ActiveRecord: 2.1ms)
+
+
+I, [2014-05-06T14:06:06.742632 #29544]  INFO -- : Started GET "/clients" for 172.16.76.1 at 2014-05-06 14:06:06 -0600
+I, [2014-05-06T14:06:06.743425 #29544]  INFO -- : Processing by ClientsController#index as HTML
+I, [2014-05-06T14:06:07.748220 #29544]  INFO -- :   Rendered clients/index.html.erb within layouts/application (2.5ms)
+I, [2014-05-06T14:06:07.748769 #29544]  INFO -- : Completed 200 OK in 1005ms (Views: 3.4ms | ActiveRecord: 1.3ms)
+

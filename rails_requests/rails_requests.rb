@@ -35,7 +35,7 @@ class RailsRequests < Scout::Plugin
     notes: Takes a regex. Any URIs matching this regex will NOT count as slow requests, and you will NOT be notified if they exceed Max Request Length. Matching actions will still be included in daily summaries.
     attributes: advanced
   rails_version:
-    notes: "The version of Ruby on Rails used for this application (examples: 2, 2.2, 3). If none is provided, defaults to 2."
+    notes: "The version of Ruby on Rails used for this application (examples: 2, 2.2, 3, 4). If none is provided, defaults to 4."
   EOS
 
   needs "request_log_analyzer"
@@ -162,8 +162,10 @@ class RailsRequests < Scout::Plugin
               when 3
                 # TODO - Add Oink processing for Rails3 files
                 RequestLogAnalyzer::FileFormat::Rails3
+              when 4
+                RequestLogAnalyzer::FileFormat::Rails3
               else
-                RequestLogAnalyzer::FileFormat::Oink
+                RequestLogAnalyzer::FileFormat::Rails3
               end
   rescue LoadError # Oink format not available on RLA < 1.8
     @file_format_class = RequestLogAnalyzer::FileFormat::Rails
