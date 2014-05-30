@@ -9,3 +9,6 @@ triggers:
   - type: peak
     dname: "Replication Running"
     low_value: 0
+  - type: peak
+    dname: "Seconds Behind Master"
+    max_value: 600
