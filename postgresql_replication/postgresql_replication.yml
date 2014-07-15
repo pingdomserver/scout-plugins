@@ -1,0 +1,13 @@
+metadata:
+  total_lag: 
+    label: Total Lag
+    units: Bytes
+    precision: 1
+  replicas_catching_up:
+    label: Replicas catching up
+    units: systems
+    precision: 1
+  time_since_last_write:
+    label: Time Since Last Write (Replica Only)
+    units: seconds
+    precision: 1

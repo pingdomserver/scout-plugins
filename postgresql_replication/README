@@ -1,0 +1,59 @@
+PostgreSQL Replication Monitoring Plugin
+======================
+Created by [Binary.com](http://www.binary.com) based on the PostgreSQL
+monitoring plugin by [Koordinates](http://koordinates.com)
+
+This plugin provides a summary of PostgreSQL replication activity.  The 
+statistics covered vary by role in replication.  Replicas both handling master 
+and slave roles,  for example, in cascading replication environments, can use 
+all.
+
+Master Role Monitoring
+--------------------------
+
+This collects statistics on maximum byte offset of the replica set.
+
+Slave Role Monitoring
+-------------------------
+Statistics are collected on time since last transaction write.
+
+Dependencies and Installation
+------------------------------
+
+This module depends on the pg_monitoring extension on pgxn, version 0.0.1 or 
+higher.  You can obtain this extension at http://pgxn.org/dist/pg_monitoring/ or
+find it on github at https://github.com/einhverfr/pgxn-postgres_monitoring
+
+If you install this extension from source you must have pg_config installed. 
+to install it, enter into the directory of the extension source and simply type:
+
+sudo make install;
+
+then in each db that will be monitored, simply:
+
+CREATE EXTENSION pg_monitoring;
+
+This monitoring extension can given you other stats as well.  Please see the
+documentation that comes with the extension.
+
+Statistics Tracked
+-----------------------------
+The following statistics are available on master and are checked:
+
+1.  total_lag in bytes.  This is not a counter.
+2.  Number of replicas in catchup phase.  This is not expected to be used for 
+    alerts, but it can be very helpful.
+
+On the slave, the only measurement tracked is time_since_replay, measured in
+seconds.
+
+Caveats
+--------------------------
+time_since_replay is the number of seconds since the slave received a write from
+the master  It perpetually increments until a write comes in, but in the event
+that replication is delayed or contact with the master lost, will increment 
+perpetually.
+
+In the event that you promote a slave to master, this value is not unset until
+you restart Postgres.  This means, effectively, that you may see alerts on 
+promoted systems as long as you monitor this value on them.
