@@ -8,8 +8,9 @@
 #   dr_only: Short for "Data Replication Only".  For use on a backup cluster, the only difference is that
 #     this expects that all datasources are OFFLINE.  With dr_only on, the expectation is that
 #     all datasources are ONLINE.  No difference to other services.
-
 class TungstenPlugin < Scout::Plugin
+  needs 'timeout'
+
   attr_accessor :datasources
 
   OPTIONS = <<-EOS
@@ -38,8 +39,9 @@ class TungstenPlugin < Scout::Plugin
   end
 
   def parse_latency(latency_string)
-    latency_string.split(/, /).inject({}) do |latencies, string|
-      if match = string.match(/([\w]+)=([\d]+\.[\d]*)s/)
+    perf_string = latency_string.split(/ \| /).last || ""
+    perf_string.split(/;; /).inject({}) do |latencies, string|
+      if match = string.match(/([\w]+)=([\d]+\.[\d]*);/)
         latencies[match[1]] = match[2].to_f
       end
       latencies
@@ -49,46 +51,63 @@ class TungstenPlugin < Scout::Plugin
   def build_report
     datasources = {}
 
-    status_string = %x(/opt/tungsten/cluster-home/bin/check_tungsten_online)
-    replication_string = %x(/opt/tungsten/cluster-home/bin/get_replicator_roles)
-    replication_roles = parse_replication_roles(replication_string)
-    datasources_string = %x(echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl)
-    datasources = parse_datasources(datasources_string)
-    latencies_string = %x(/opt/tungsten/cluster-home/bin/check_tungsten_latency -c 0)
-    latencies = parse_latency(latencies_string)
-
-    alert(:subject => "Could not parse online status", :body => status_string) if status_string.empty?
-    alert(:subject => "Could not parse replication roles", :body => replication_string) if replication_roles.empty?
-    alert(:subject => "Could not parse datasources", :body => datasources_string) if datasources.empty?
-    alert(:subject => "Could not parse latencies", :body => latencies_string) if latencies.empty?
-
-    if !status_string.empty? and !status_string.match(/OK/)
-      alert("#{status_string}")
+    begin
+      # Scout's timeout is 1 minute, so allow 55s for the calls and 5s for everything else
+      # Ruby's timeout lib may not work, depending on whether the nagios scrips make kernel calls
+      timeout(55) do
+        @status_string = %x(/opt/tungsten/cluster-home/bin/check_tungsten_online)
+        @replication_string = %x(/opt/tungsten/cluster-home/bin/get_replicator_roles)
+        @replication_roles = parse_replication_roles(@replication_string)
+        @datasources_string = %x(echo "ls" | /opt/tungsten/tungsten-manager/bin/cctrl)
+        @datasources = parse_datasources(@datasources_string)
+        @latencies_string = %x(/opt/tungsten/cluster-home/bin/check_tungsten_latency -w 180000 -c 360000 --perfdata --perslave-perfdata)
+        @latencies = parse_latency(@latencies_string)
+        remember(:timeout => 0)
+      end
+    rescue Timeout::Error  => e
+      timeout = memory(:timeout).to_i + 1
+      remember(:timeout  => timeout)
     end
 
-    if memory(:replication_roles) and memory(:replication_roles) != replication_roles
-      old_roles_string = memory(:replication_roles).inject("") do |output, datasource|
-        output << "#{datasource.first} acting as #{datasource.last}.\n"
+    if timeout
+      if timeout >= 5
+        alert(:subject => "Tungsten plugin timed out", :body  => "It has timed out #{timeout} times in a row.")
       end
-      new_roles_string = replication_roles.inject("") do |output, datasource|
-        output << "#{datasource.first} acting as #{datasource.last}.\n"
-      end
-      alert(:subject => "Replication roles have changed.", :body => "Formerly, roles were:\n#{old_roles_string}\n\nNew roles are:\n#{new_roles_string}")
-    end
-    remember(:replication_roles => replication_roles)
-
-    if option(:dr_only)
-      datasources.each_pair do |source, status|
-        alert(:subject => "#{source} datasource is ONLINE but should be OFFLINE.") if status == "ONLINE"
-      end
+      return
     else
-      datasources.each_pair do |source, status|
-        alert(:subject => "#{source} datasource is OFFLINE but should be ONLINE.") if status == "OFFLINE"
-      end
-    end
+      alert(:subject => "Could not parse online status", :body => @status_string) if @status_string.empty?
+      alert(:subject => "Could not parse replication roles", :body => @replication_string) if @replication_roles.empty?
+      alert(:subject => "Could not parse datasources", :body => @datasources_string) if @datasources.empty?
+      alert(:subject => "Could not parse latencies", :body => @latencies_string) if @latencies.empty?
 
-    latencies.each_pair do |db, latency|
-      report(:"#{db}_latency" => latency)
+      if !@status_string.empty? and !@status_string.match(/OK/)
+        alert("#{@status_string}")
+      end
+
+      if memory(:replication_roles) and memory(:replication_roles) != @replication_roles
+        old_roles_string = memory(:replication_roles).inject("") do |output, datasource|
+          output << "#{datasource.first} acting as #{datasource.last}.\n"
+        end
+        new_roles_string = @replication_roles.inject("") do |output, datasource|
+          output << "#{datasource.first} acting as #{datasource.last}.\n"
+        end
+        alert(:subject => "Replication roles have changed.", :body => "Formerly, roles were:\n#{old_roles_string}\n\nNew roles are:\n#{new_roles_string}")
+      end
+      remember(:replication_roles => @replication_roles)
+
+      if option(:dr_only)
+        @datasources.each_pair do |source, status|
+          alert(:subject => "#{source} datasource is ONLINE but should be OFFLINE.") if status == "ONLINE"
+        end
+      else
+        @datasources.each_pair do |source, status|
+          alert(:subject => "#{source} datasource is OFFLINE but should be ONLINE.") if status == "OFFLINE"
+        end
+      end
+
+      @latencies.each_pair do |db, latency|
+        report(:"#{db}_latency" => latency)
+      end
     end
   end
 end
