@@ -47,11 +47,8 @@ class ElasticsearchClusterNodeStatus < Scout::Plugin
     end
 
     uri = URI.parse(base_url)
-    response = Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') {|http|
-      http.request(req)
-    }
+    response = Net::HTTP.get_response(uri)
     resp = JSON.parse(response.body)
-
     if resp['nodes'].nil? or resp['nodes'].empty?
       return error("No node found with the specified name", "No node in the cluster could be found with the specified name.\n\nNode Name: #{option(:node_name)}")
     end
@@ -116,9 +113,7 @@ class ElasticsearchClusterNodeStatus < Scout::Plugin
     end
 
     uri = URI.parse(base_url)
-    response = Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') {|http|
-      http.request(req)
-    }
+    response = Net::HTTP.get_response(uri)
     resp = JSON.parse(response.body)
     if resp['version'] and resp['version']['number'].to_f >= 1
       '/_nodes'
@@ -126,5 +121,4 @@ class ElasticsearchClusterNodeStatus < Scout::Plugin
       '/_cluster/nodes'
     end
   end
-
 end

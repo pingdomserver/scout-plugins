@@ -46,9 +46,7 @@ class ElasticsearchClusterStatus < Scout::Plugin
     end
 
     uri = URI.parse(base_url)
-    resp = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') {|http|
-      http.request(req)
-    }
+    resp = Net::HTTP.get_response(uri)
     response = JSON.parse(resp.body)
 
     report(:status => status(response['status']))
@@ -75,7 +73,7 @@ class ElasticsearchClusterStatus < Scout::Plugin
   end
 
   def truthy?(val)
-    !val.nil? && val.downcase.strip == "true"
+    !val.nil? && val.to_s.downcase.strip == "true"
   end
 
   # Generates a status string like "2 (green)" so triggers can be run off the status.
