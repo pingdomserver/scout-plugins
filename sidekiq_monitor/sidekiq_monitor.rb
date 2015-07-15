@@ -65,7 +65,7 @@ class SidekiqMonitor < Scout::Plugin
     end
   rescue Exception => e
     return error( "Could not connect to Redis.",
-                  "#{e.message} \n\nMake certain you've specified the correct host and port, DB, username, and password, and that Redis is accepting connections." )
+                  "#{e.message} \n\nMake certain you've specified the correct host and port, DB, username, and password, and that Redis is accepting connections.\n\n#{e.backtrace}" )
   end
 end
 

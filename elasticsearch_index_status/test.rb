@@ -7,13 +7,13 @@ class ElasticsearchIndexStatusTest < Test::Unit::TestCase
     @options['index_name'] = 'test_index'
     @plugin = ElasticsearchIndexStatus.new(nil, {}, @options)
   end
-  
+
   def teardown
     FakeWeb.clean_registry
   end
 
   def test_initial_run
-    FakeWeb.register_uri(:get, "http://127.0.0.1:9200/test_index/_stats", 
+    FakeWeb.register_uri(:get, "http://127.0.0.1:9200/test_index/_stats",
       [
        {:body => File.read("./fixtures/index_stats.json")},
       ]
@@ -24,7 +24,7 @@ class ElasticsearchIndexStatusTest < Test::Unit::TestCase
   end
 
   def test_second_run
-        FakeWeb.register_uri(:get, "http://127.0.0.1:9200/test_index/_stats", 
+        FakeWeb.register_uri(:get, "http://127.0.0.1:9200/test_index/_stats",
       [
        {:body => File.read("./fixtures/index_stats.json")},
        {:body => File.read("./fixtures/index_stats_second_run.json")},
@@ -38,8 +38,15 @@ class ElasticsearchIndexStatusTest < Test::Unit::TestCase
         res = plugin.run
         assert res[:errors].empty?, "Error: #{res[:errors].inspect}"
         assert res[:reports].any?
+
         assert_equal 10.to_f, res[:reports].find { |r| r[:query_time] }[:query_time]
-        assert_in_delta (10.to_f/(10*60)), res[:reports].find { |r| r[:query_rate] }[:query_rate]
+        assert_in_delta (10.to_f/(10*60)), res[:reports].find { |r| r[:query_rate] }[:query_rate], 0.001
+
+        assert_equal 10.to_f, res[:reports].find { |r| r[:index_time] }[:index_time]
+        assert_in_delta (10.to_f/(10*60)), res[:reports].find { |r| r[:index_rate] }[:index_rate], 0.001
+
+        assert_equal 10.to_f, res[:reports].find { |r| r[:delete_time] }[:delete_time]
+        assert_in_delta (10.to_f/(10*60)), res[:reports].find { |r| r[:delete_rate] }[:delete_rate], 0.001
       end
     end
   end

@@ -12,6 +12,14 @@ metadata:
     label: Query Throughput
     precision: 1
     units: "/sec"
+  index_rate:
+    label: Index Throughput
+    precision: 1
+    units: "/sec"
+  delete_rate:
+    label: Delete Throughput
+    precision: 1
+    units: "/sec"
   query_time:
     label: Query Reponse Time
     precision: "1"
