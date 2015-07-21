@@ -6,7 +6,7 @@ class SidekiqMonitor < Scout::Plugin
   # require is generally discouraged in Scout plugins (use "needs" to make loading more efficient and errors more consistent)
   # used here to allow rescuing the require for older versions of Sidekiq
   require 'rubygems'
-  require 'sidekiq/api' rescue nil
+  begin; require 'sidekiq/api'; rescue LoadError; nil; end
 
   OPTIONS = <<-EOS
   host:
