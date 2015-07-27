@@ -55,12 +55,13 @@ class MongoDatabaseStats < Scout::Plugin
     @username = option('username')
     @password = option('password')
 
-    stats = get_stats
-    report(:objects      => stats['objects'])
-    report(:indexes      => stats['indexes'])
-    report(:data_size    => as_mb(stats['dataSize']))
-    report(:storage_size => as_mb(stats['storageSize']))
-    report(:index_size   => as_mb(stats['indexSize']))
+    if stats = get_stats
+      report(:objects      => stats['objects'])
+      report(:indexes      => stats['indexes'])
+      report(:data_size    => as_mb(stats['dataSize']))
+      report(:storage_size => as_mb(stats['storageSize']))
+      report(:index_size   => as_mb(stats['indexSize']))
+    end
   end
 
   def as_mb(metric)
@@ -82,7 +83,8 @@ class MongoDatabaseStats < Scout::Plugin
     begin
       connection = Mongo::Connection.new(@host,@port,:ssl=>@ssl,:slave_ok=>true,:connect_timeout=>@connect_timeout,:op_timeout=>@op_timeout)
     rescue Mongo::ConnectionFailure
-      return error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+      error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+      return nil
     end
     
     # Try to connect to the database
@@ -90,7 +92,8 @@ class MongoDatabaseStats < Scout::Plugin
     begin 
       db.authenticate(@username,@password) unless @username.nil?
     rescue Mongo::AuthenticationError
-      return error("Unable to authenticate to MongoDB Database.",$!.message)
+      error("Unable to authenticate to MongoDB Database.",$!.message)
+      return nil
     end
     db.stats()
   end
@@ -99,9 +102,11 @@ class MongoDatabaseStats < Scout::Plugin
     # Mongo Gem >= 2.0
     begin
       client = Mongo::Client.new(["#{@host}:#{@port}"], :database=>@database, :username=>@username, :password=>@password, :ssl=>@ssl, :connect_timeout=>@connect_timeout, :socket_timeout=>@op_timeout, :server_selection_timeout => 1, :connect=>:direct)
-      client.database.command({'dbstats' => 1}).first
+      db_stats = client.database.command({'dbstats' => 1}).first
+      return db_stats
     rescue
-      return error("Unable to retrive MongoDB stats.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+      error("Unable to retrive MongoDB stats.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+      return nil
     end
   end
 end
