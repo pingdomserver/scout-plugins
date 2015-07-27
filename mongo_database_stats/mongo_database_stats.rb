@@ -56,6 +56,7 @@ class MongoDatabaseStats < Scout::Plugin
     @password = option('password')
 
     if stats = get_stats
+      puts "MONGO DEBUG: #{stats.inspect}"
       report(:objects      => stats['objects'])
       report(:indexes      => stats['indexes'])
       report(:data_size    => as_mb(stats['dataSize']))
