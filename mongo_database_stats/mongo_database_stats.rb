@@ -103,10 +103,10 @@ class MongoDatabaseStats < Scout::Plugin
     # Mongo Gem >= 2.0
     begin
       client = Mongo::Client.new(["#{@host}:#{@port}"], :database=>@database, :username=>@username, :password=>@password, :ssl=>@ssl, :connect_timeout=>@connect_timeout, :socket_timeout=>@op_timeout, :server_selection_timeout => 1, :connect=>:direct)
-      db_stats = client.database.command({'dbstats' => 1}).first
+      db_stats = client.database.command({'dbStats' => 1, 'scale' => 1}).first
       return db_stats
     rescue
-      error("Unable to retrive MongoDB stats.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+      error("Unable to retrieve MongoDB stats.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
       return nil
     end
   end
