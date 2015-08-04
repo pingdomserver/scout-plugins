@@ -1,6 +1,5 @@
-require 'resolv'
-
 class NameResolver < Scout::Plugin
+  needs 'resolv'
   OPTIONS=<<-EOS
     nameserver:
       default: 8.8.8.8
@@ -12,9 +11,11 @@ class NameResolver < Scout::Plugin
     resolver = Resolv::DNS.new(:nameserver => [option(:nameserver)])
 
     begin
-      result = resolver.getaddress(option(:resolve_address))
-    rescue Resolv::ResolvError => err
-      alert('Failed to resolve', err)
+      resolver.getaddress(option(:resolve_address))
+    rescue Resolv::ResolvError, Resolv::ResolvTimeout => err
+      report(:resolved? => 0, :result => err)
+    else
+      report(:resolved? => 1)
     end
   end
 end
