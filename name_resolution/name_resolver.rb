@@ -12,7 +12,7 @@ class NameResolver < Scout::Plugin
   def build_report
     begin
       # Only Ruby >= 2.0.0 supports setting a timeout, so use this
-      Timeout.timeout(option(:timeout)) do
+      Timeout.timeout(option(:timeout).to_i) do
         resolver = Resolv::DNS.new(:nameserver => [option(:nameserver)])
         resolver.getaddress(option(:resolve_address))
       end
