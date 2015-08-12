@@ -1,4 +1,4 @@
-class NameResolver < Scout::Plugin
+class SimpleDnsResolver < Scout::Plugin
   needs 'resolv'
   needs 'ipaddr'
   OPTIONS=<<-EOS
