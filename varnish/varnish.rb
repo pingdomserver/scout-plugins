@@ -29,16 +29,20 @@ class Varnish < Scout::Plugin
     end
     res.each_line do |line|
       #client_conn 211980 0.30 Client connections accepted
-      next unless /^(\w+)\s+(\d+)\s+(\d+\.\d+)\s(.+)$/.match(line)
-      stats[$1.to_sym] = $2.to_i
+      next unless /\A([\.\w]+)\s+(\d+)\s+(\d+\.\d+)\s(.+)\Z/.match(line)
+      stats[$1] = $2.to_i
     end
 
-    total = stats[:cache_miss] + stats[:cache_hit] + stats[:cache_hitpass]
-    hitrate = stats[:cache_hit].to_f / (total.nonzero? || 1) * 100
+    # support Varnish 3 or 4 keys
+    cache_miss = stats["cache_miss"] || stats["MAIN.cache_miss"]
+    cache_hit = stats["cache_hit"] || stats["MAIN.cache_hit"]
+    cache_hitpass = stats["cache_hitpass"] || stats["MAIN.cache_hitpass"]
+
+    total = cache_miss + cache_hit + cache_hitpass
+    hitrate = cache_hit.to_f / (total.nonzero? || 1) * 100
     report(:hitrate => hitrate)
 
     option(:metrics).split(/,\s*/).compact.each do |metric|
-      metric = metric.to_sym
       if stats[metric]
         counter(metric, stats[metric], :per=>RATE)
       else
