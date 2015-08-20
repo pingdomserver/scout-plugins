@@ -56,7 +56,7 @@ class SslMonitor < Scout::Plugin
 
   def cmd_certificate_end_date(domain, port)
     uri = "#{domain}:#{port}"
-    `echo | openssl s_client -connect #{Shellwords.escape(uri)} 2> /dev/null | openssl x509 -noout -enddate`.split(/\n/).first
+    `echo | openssl s_client -connect #{Shellwords.escape(uri)} 2> /dev/null | openssl x509 -noout -enddate 2> /dev/null`.split(/\n/).first
   end
 
   def fetch_certificate_end_date(domain, port)
