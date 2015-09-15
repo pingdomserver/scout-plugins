@@ -30,6 +30,11 @@ class ProcessUsage < Scout::Plugin
     notes: Time to resume alerting.
     default:
     attributes: advanced
+  boot_start_delay:
+    name: Boot start delay
+    notes: Wait until this server has been up for at least X seconds before this plugin will start monitoring.
+    default:
+    attributes: advanced
   EOS
   
   def build_report
@@ -39,6 +44,8 @@ class ProcessUsage < Scout::Plugin
     ps_command   = option(:ps_command) || "ps auxww"
     ps_regex     = (option(:ps_regex) || "(?i:\\bCOMMAND\\b)").to_s.gsub("COMMAND") { Regexp.escape(option(:command_name)) }
     alert_when_command_not_found = option(:alert_when_command_not_found).to_s != '0'
+
+    return if in_boot_start_delay?
 
     ps_output = `#{ps_command} 2>&1`
     unless $?.success?
@@ -115,6 +122,18 @@ class ProcessUsage < Scout::Plugin
     else
       false
     end
+  end
+
+  # only works in linux by checking /proc/uptime
+  def in_boot_start_delay?
+    start_delay_secs = option(:boot_start_delay).to_i
+    return false unless start_delay_secs > 0
+    if File.exist?("/proc/uptime")
+      uptime_secs = `cat /proc/uptime 2>/dev/null`.split[0].to_i
+      return true if uptime_secs > start_delay_secs
+    end
+  rescue
+    return false
   end
 
 end
