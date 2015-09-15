@@ -130,9 +130,11 @@ class ProcessUsage < Scout::Plugin
     return false unless start_delay_secs > 0
     if File.exist?("/proc/uptime")
       uptime_secs = `cat /proc/uptime 2>/dev/null`.split[0].to_i
-      return true if uptime_secs > start_delay_secs
+      return true if uptime_secs > 0 && uptime_secs <= start_delay_secs
     end
   rescue
+    return false
+  else
     return false
   end
 
