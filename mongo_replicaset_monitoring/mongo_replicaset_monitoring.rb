@@ -130,6 +130,6 @@ class MongoReplicaSetMonitoring < Scout::Plugin
         report(:faulty_member_count => 0)
       end
     end  
-    report(:member_healthy => current_member['health'] ? 1 : 0)
+    report(:member_healthy => (current_member && current_member['health']) ? 1 : 0)
   end  
 end
