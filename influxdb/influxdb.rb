@@ -27,6 +27,23 @@ class InfluxDb < Scout::Plugin
            write_req:         find_value_in_series(httpd_series, "write_req"),
            write_req_bytes:   find_value_in_series(httpd_series, "write_req_bytes"),
           )
+
+    runtime_series = find_series(stats, "runtime")
+    report( alloc:          find_value_in_series(runtime_series, "Alloc"),
+            frees:          find_value_in_series(runtime_series, "Frees"),
+            heap_alloc:     find_value_in_series(runtime_series, "HealAlloc"),
+            heap_idle:      find_value_in_series(runtime_series, "HeapIdle"),
+            heap_in_use:    find_value_in_series(runtime_series, "HeapInUse"),
+            heap_objects:   find_value_in_series(runtime_series, "HeapObjects"),
+            heap_released:  find_value_in_series(runtime_series, "HeapReleased"),
+            heap_sys:       find_value_in_series(runtime_series, "HeapSys"),
+            lookups:        find_value_in_series(runtime_series, "Lookups"),
+            num_gc:         find_value_in_series(runtime_series, "NumGC"),
+            num_goroutine:  find_value_in_series(runtime_series, "NumGoroutine"),
+            pause_total_ns: find_value_in_series(runtime_series, "PauseTotalNs"),
+            sys:            find_value_in_series(runtime_series, "Sys"),
+            total_alloc:    find_value_in_series(runtime_series, "TotalAlloc"),
+    )
   end
 
   def find_series(stats, series)
@@ -38,3 +55,4 @@ class InfluxDb < Scout::Plugin
     series["values"].first[ix]
   end
 end
+
