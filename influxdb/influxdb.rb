@@ -4,11 +4,11 @@ class InfluxDb < Scout::Plugin
   needs 'json'
 
   OPTIONS=<<-EOS
-  server_url: HTTP query endpoint
-    name: Base
-  server_port:
-    name: HTTP query port
-    default: 8086
+    server_url:
+      name: HTTP query endpoint
+    server_port:
+      name: HTTP query port
+      default: 8086
   EOS
 
   def build_report
