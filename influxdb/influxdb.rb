@@ -31,7 +31,7 @@ class InfluxDb < Scout::Plugin
     runtime_series = find_series(stats, "runtime")
     report( alloc:          find_value_in_series(runtime_series, "Alloc"),
             frees:          find_value_in_series(runtime_series, "Frees"),
-            heap_alloc:     find_value_in_series(runtime_series, "HealAlloc"),
+            heap_alloc:     find_value_in_series(runtime_series, "HeapAlloc"),
             heap_idle:      find_value_in_series(runtime_series, "HeapIdle"),
             heap_in_use:    find_value_in_series(runtime_series, "HeapInUse"),
             heap_objects:   find_value_in_series(runtime_series, "HeapObjects"),
