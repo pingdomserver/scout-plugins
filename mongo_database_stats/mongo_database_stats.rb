@@ -69,11 +69,9 @@ class MongoDatabaseStats < Scout::Plugin
   end
 
   def get_stats
-    if Mongo::constants.include?(:VERSION)
-      # Mongo gem 2.0 and above have Mongo::VERSION
+    if(Mongo::constants.include?(:VERSION) && Mongo::VERSION.split(':').first.to_i >= 2)
       stats_mongo_v2
     else
-      # Mongo Gem < 2.0 does not have Mongo::VERSION
       stats_mongo_v1
     end
   end
