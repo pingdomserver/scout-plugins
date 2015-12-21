@@ -3,6 +3,7 @@
 #
 # Created by Erik Wickstrom on 2011-08-23.
 # Updated by Joshua Tuberville on 2012-08-29.
+# Updated by Matt Chesler on 2015-12-21.
 # =================================================================================
 
 class Varnish < Scout::Plugin
@@ -20,6 +21,11 @@ class Varnish < Scout::Plugin
 
   RATE = :second # counter metrics are reported per-second
 
+  V3_V4_MAP = {
+    'client_conn'       => 'MAIN.sess_conn',
+    'client_drop'       => 'MAIN.sess_drop'
+  }
+
   def build_report
     stats = {}
     varnishstat_executable = option(:path).to_s.empty? ? "varnishstat" : File.join(option(:path), "varnishstat")
@@ -34,17 +40,17 @@ class Varnish < Scout::Plugin
     end
 
     # support Varnish 3 or 4 keys
-    cache_miss = stats["cache_miss"] || stats["MAIN.cache_miss"]
-    cache_hit = stats["cache_hit"] || stats["MAIN.cache_hit"]
-    cache_hitpass = stats["cache_hitpass"] || stats["MAIN.cache_hitpass"]
+    cache_miss = stats['cache_miss'] || stats['MAIN.cache_miss']
+    cache_hit = stats['cache_hit'] || stats['MAIN.cache_hit']
+    cache_hitpass = stats['cache_hitpass'] || stats['MAIN.cache_hitpass']
 
     total = cache_miss + cache_hit + cache_hitpass
     hitrate = cache_hit.to_f / (total.nonzero? || 1) * 100
     report(:hitrate => hitrate)
 
     option(:metrics).split(/,\s*/).compact.each do |metric|
-      if stats[metric]
-        counter(metric, stats[metric], :per=>RATE)
+      if stats[metric] || stats["MAIN.#{metric}"] || stats[V3_V4_MAP[metric]]
+        counter(metric, stats[metric] || stats["MAIN.#{metric}"] || stats[V3_V4_MAP[metric]], :per=> RATE)
       else
         error("No such metric - #{metric}")
       end
