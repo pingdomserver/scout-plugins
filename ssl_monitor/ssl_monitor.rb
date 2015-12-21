@@ -29,6 +29,10 @@ class SslMonitor < Scout::Plugin
       name: Port
       default: 443
       notes: Port to monitor
+    sni_name:
+      default:
+      notes: When connecting to a server using SNI, specify the domain name here
+      attributes: advanced
   EOS
 
   def build_report
@@ -56,7 +60,8 @@ class SslMonitor < Scout::Plugin
 
   def cmd_certificate_end_date(domain, port)
     uri = "#{domain}:#{port}"
-    `echo "QUIT" | openssl s_client -connect #{Shellwords.escape(uri)} 2> /dev/null | openssl x509 -noout -enddate 2> /dev/null`.split(/\n/).first
+    servername_opt= option(:sni_name) ? "-servername #{Shellwords.escape(option(:sni_name))}" : ""
+    `echo "QUIT" | openssl s_client -connect #{Shellwords.escape(uri)} #{servername_opt} 2> /dev/null | openssl x509 -noout -enddate 2> /dev/null`.split(/\n/).first
   end
 
   def fetch_certificate_end_date(domain, port)
