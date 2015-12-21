@@ -30,7 +30,7 @@ class SslMonitor < Scout::Plugin
       default: 443
       notes: Port to monitor
     sni_name:
-      default: nil
+      default:
       notes: When connecting to a server using SNI, specify the domain name here
       attributes: advanced
   EOS
