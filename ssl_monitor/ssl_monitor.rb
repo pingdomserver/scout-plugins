@@ -60,7 +60,7 @@ class SslMonitor < Scout::Plugin
 
   def cmd_certificate_end_date(domain, port)
     uri = "#{domain}:#{port}"
-    servername_opt= option(:sni_name) ? "-servername #{Shellwords.escape(options(sni_name))}" : ""
+    servername_opt= option(:sni_name) ? "-servername #{Shellwords.escape(option(:sni_name))}" : ""
     `echo "QUIT" | openssl s_client -connect #{Shellwords.escape(uri)} #{servername_opt} 2> /dev/null | openssl x509 -noout -enddate 2> /dev/null`.split(/\n/).first
   end
 
