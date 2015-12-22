@@ -35,7 +35,7 @@ class LogWatcher < Scout::Plugin
     `#{@sudo_cmd}test -e #{@log_file_path}`
     
     unless $?.success?
-      error("Could not find the log file", "The log file could not be found at: #{@log_file_path}. Please ensure the full path is correct and your user has permissions to access the log file.") if option("send_error_if_no_log") == "1"
+      error("Could not find the log file", "The log file could not be found at: #{@log_file_path}. Please ensure the full path is correct and your user has permissions to access the log file.") if option("send_error_if_no_log").to_i == 1
       return
     end
 
