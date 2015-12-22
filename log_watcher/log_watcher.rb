@@ -1,5 +1,4 @@
 class LogWatcher < Scout::Plugin
-  
   OPTIONS = <<-EOS
   log_path:
     name: Log path
@@ -36,7 +35,7 @@ class LogWatcher < Scout::Plugin
     `#{@sudo_cmd}test -e #{@log_file_path}`
     
     unless $?.success?
-      error("Could not find the log file", "The log file could not be found at: #{@log_file_path}. Please ensure the full path is correct and your user has permissions to access the log file.") if option("send_error_if_no_log") == "1"
+      error("Could not find the log file", "The log file could not be found at: #{@log_file_path}. Please ensure the full path is correct and your user has permissions to access the log file.") if option("send_error_if_no_log").to_i == 1
       return
     end
 
@@ -51,7 +50,15 @@ class LogWatcher < Scout::Plugin
     return if init()
     
     last_bytes = memory(:last_bytes) || 0
-    current_length = `#{@sudo_cmd}wc -c #{@log_file_path}`.split(' ')[0].to_i
+    output = `#{@sudo_cmd}wc -c #{@log_file_path}  2>&1`
+
+    unless $?.success?
+      error("Unable to access the log file", "The log file at [#{@log_file_path}] could not be accessed. Please ensure file permissions are correct. Error:\n\n#{output}")
+      return
+    end
+
+    current_length = output.split(' ')[0].to_i
+
     count = 0
     elapsed_seconds = 0
     # don't run it the first time
