@@ -62,7 +62,7 @@ class LogWatcher < Scout::Plugin
     count = 0
     elapsed_seconds = 0
     # don't run it the first time
-    if (last_bytes > 0 )
+    if memory(:last_bytes)
       read_length = current_length - last_bytes
       # Check to see if this file was rotated. This occurs when the +current_length+ is less than 
       # the +last_run+. Don't return a count if this occured.
