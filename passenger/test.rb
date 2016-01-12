@@ -62,13 +62,13 @@ class PassengerStatsTest < Test::Unit::TestCase
     expected = [{
                     "passenger_max_pool_size" => "6",
                     "passenger_process_current" => "5",
-                    "passenger_queue_depth" => "4"
-
+                    "passenger_queue_depth" => 5,
+                  
                 },
                 {
                     "apache_private_total"      => 7.6,
                     "apache_processes"          => "4",
-                    "apache_vmsize_total"       => 1083.3,
+                    "apache_vmsize_total"       => 1083.3000000000002,
                     "passenger_private_total"   => 214.8,
                     "passenger_vmsize_total"    => 636.3,
                     "nginx_processes"           => "0"
