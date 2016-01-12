@@ -1,6 +1,7 @@
 $VERBOSE=false
 require "time"
 require "digest/md5"
+require "mongo"
 require "bson"
 
 # MongoDB Slow Queries Monitoring plug in for scout.
@@ -49,10 +50,16 @@ class ScoutMongoSlow < Scout::Plugin
   # In order to limit the alert body size, only the first +MAX_QUERIES+ are listed in the alert body. 
   MAX_QUERIES = 10
 
-  def enable_profiling(db)
+  def enable_profiling_v1(db)
     # set to slow_only or higher (>100ms)
     if db.profiling_level == :off
       db.profiling_level = :slow_only
+    end
+  end
+
+  def enable_profiling_v2(db)
+    if db.command(:profile => -1).first['was'] == 0
+      db.command(:profile => 1, :slowms => @threshold)
     end
   end
 
@@ -62,43 +69,78 @@ class ScoutMongoSlow < Scout::Plugin
   end
 
   def build_report
-    database = option("database").to_s.strip
-    server = option("server").to_s.strip
-    ssl    = option("ssl").to_s.strip == 'true'
-    connect_timeout = option_to_f('connect_timeout')
-    op_timeout      = option_to_f('op_timeout')
+    @database = option("database").to_s.strip
+    @server = option("server").to_s.strip
+    @port = option("port")
+    @ssl    = option("ssl").to_s.strip == 'true'
+    @connect_timeout = option_to_f('connect_timeout')
+    @op_timeout      = option_to_f('op_timeout')
 
-    if server.empty?
-      server ||= "localhost"
+    if @server.empty?
+      @server ||= "localhost"
     end
 
-    if database.empty?
+    if @database.empty?
       return error( "A Mongo database name was not provided.",
                     "Slow query logging requires you to specify the database to profile." )
     end
 
     threshold_str = option("threshold").to_s.strip
     if threshold_str.empty?
-      threshold = 100
+      @threshold = 100
     else
-      threshold = threshold_str.to_i
+      @threshold = threshold_str.to_i
     end
 
-    db = Mongo::Connection.new(server, option("port").to_i, :ssl => ssl, :slave_ok => true, :connect_timeout => connect_timeout, :op_timeout => op_timeout).db(database)
-    db.authenticate(option(:username), option(:password)) if !option(:username).to_s.empty?
-    enable_profiling(db)
+    if using_gem_version_2?
+      get_slow_queries_v2
+    else
+      get_slow_queries_v1
+    end
+  end
 
+  def get_slow_queries_v1
+    db = Mongo::Connection.new(@server, @port.to_i, :ssl => @ssl, :slave_ok => true, :connect_timeout => @connect_timeout, :op_timeout => @op_timeout).db(@database)
+    db.authenticate(option(:username), option(:password)) if !option(:username).to_s.empty?
+    enable_profiling_v1(db)
+    report_slow_queries(db)
+  rescue Mongo::ConnectionFailure => error
+    error("Unable to connect to MongoDB","#{error.message}\n\n#{error.backtrace}")
+    return
+  rescue RuntimeError => error
+    if error.message =~/Error with profile command.+unauthorized/i
+      error("Invalid MongoDB Authentication", "The username/password for your MongoDB database are incorrect")
+      return
+    else
+      raise error
+    end
+  end
+
+  def get_slow_queries_v2
+    client = Mongo::Client.new(["#{@host}:#{@port}"], :database => @database, :ssl => @ssl, :connection_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1)
+    client = client.with(user: @username, password: @password) unless @username.nil?
+    enable_profiling_v2(client.database)
+    report_slow_queries(client.database)
+  rescue Mongo::Error::NoServerAvailable
+    return error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+  end
+
+  def report_slow_queries(db)
     slow_queries = []
     last_run = memory(:last_run) || Time.now
     current_time = Time.now
 
     # info
-    selector = { 'millis' => { '$gte' => threshold } }
-    cursor = Mongo::Cursor.new(db[Mongo::DB::SYSTEM_PROFILE_COLLECTION], :selector => selector,:slave_ok=>true).limit(20).sort([["$natural", "descending"]])
+    selector = { 'millis' => { '$gte' => @threshold } }
+    if using_gem_version_2?
+      queries = db['system.profile'].find(selector).limit(20).sort("$natural" => -1).to_a
+    else
+      queries = Mongo::Cursor.new(db[Mongo::DB::SYSTEM_PROFILE_COLLECTION], :selector => selector,:slave_ok=>true).limit(20).sort([["$natural", "descending"]])
+    end
 
     # reads most recent first
     # {"ts"=>Wed Dec 16 02:44:03 UTC 2009, "info"=>"query twitter_follow.system.profile ntoreturn:0 reslen:1236 nscanned:8  \nquery: { query: { millis: { $gte: 5 } }, orderby: { $natural: -1 } }  nreturned:8 bytes:1220", "millis"=>57.0}
-    cursor.each do |prof|
+    queries.each do |prof|
       ts = prof['ts']
       break if ts < last_run
 
@@ -114,16 +156,6 @@ class ScoutMongoSlow < Scout::Plugin
       alert(build_alert(slow_queries))
     end
     remember(:last_run,Time.now)
-  rescue Mongo::ConnectionFailure => error
-    error("Unable to connect to MongoDB","#{error.message}\n\n#{error.backtrace}")
-    return
-  rescue RuntimeError => error
-    if error.message =~/Error with profile command.+unauthorized/i
-      error("Invalid MongoDB Authentication", "The username/password for your MongoDB database are incorrect")
-      return
-    else
-      raise error
-    end
   end
 
   def build_alert(slow_queries)
@@ -144,6 +176,10 @@ class ScoutMongoSlow < Scout::Plugin
     def to_json(*args)
       inspect
     end
+  end
+
+  def using_gem_version_2?
+    @using_gem_version_2 ||= Mongo::constants.include?(:VERSION) && Mongo::VERSION.split(':').first.to_i >= 2
   end
 
 end

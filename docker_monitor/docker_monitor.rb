@@ -41,7 +41,7 @@ class DockerMonitor < Scout::Plugin
     # noop - simply ignore this container
   rescue Excon::Errors::SocketError => e # using exceptions for control flow. what a terrible idea.
     unless e.message.include?('stats gathered')
-      error("Invalid Stats API endpoint", "There was an error reading from the stats API. Are you running Docker version 1.5 or higher, and is /var/run/docker.sock readable by the user running scout?")
+      error("Invalid Stats API endpoint", "There was an error reading from the stats API. Are you running Docker version 1.5 or higher, and is /var/run/docker.sock readable by the user running scout?\n\nException:#{e.message}\n\n#{e.backtrace}")
     end
   end
 
@@ -81,10 +81,10 @@ class DockerMonitor < Scout::Plugin
     unless(stats_string.include?('no such container'))
       stats = JSON.parse(stats_string)
       @stats[:cpu_percent] += calculate_cpu_percent(container_id, stats["cpu_stats"]["cpu_usage"]["total_usage"], stats["cpu_stats"]["system_cpu_usage"], stats["cpu_stats"]["cpu_usage"]["percpu_usage"].count)
-      @stats[:memory_usage] += stats["memory_stats"]["usage"].to_f / 1024.0 / 1024.0
-      @stats[:memory_limit] += stats["memory_stats"]["limit"].to_f / 1024.0 / 1024.0
-      @stats[:network_in] += stats["network"]["rx_bytes"].to_f / 1024.0
-      @stats[:network_out] += stats["network"]["tx_bytes"].to_f / 1024.0
+      @stats[:memory_usage] += stats["memory_stats"]["usage"].to_f / 1024.0 / 1024.0 if stats["memory_stats"]
+      @stats[:memory_limit] += stats["memory_stats"]["limit"].to_f / 1024.0 / 1024.0 if stats["memory_stats"]
+      @stats[:network_in] += stats["network"]["rx_bytes"].to_f / 1024.0 if stats["network"]
+      @stats[:network_out] += stats["network"]["tx_bytes"].to_f / 1024.0 if stats["network"]
     end
   end
 

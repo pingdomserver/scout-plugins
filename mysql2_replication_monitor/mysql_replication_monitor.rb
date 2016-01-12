@@ -84,7 +84,11 @@ class MysqlReplicationMonitor < Scout::Plugin
       end
       remember(:down_at,down_at)
     rescue Mysql2::Error=>e
-      error("Unable to connect to MySQL",e.to_s)
+      if in_ignore_window?
+        res["Replication Running"]=1
+      else
+        error("Unable to connect to MySQL",e.to_s)
+      end
     end
     report(res)
   end

@@ -6,7 +6,7 @@ class SidekiqMonitor < Scout::Plugin
   # require is generally discouraged in Scout plugins (use "needs" to make loading more efficient and errors more consistent)
   # used here to allow rescuing the require for older versions of Sidekiq
   require 'rubygems'
-  require 'sidekiq/api' rescue nil
+  begin; require 'sidekiq/api'; rescue LoadError; nil; end
 
   OPTIONS = <<-EOS
   host:
@@ -65,7 +65,7 @@ class SidekiqMonitor < Scout::Plugin
     end
   rescue Exception => e
     return error( "Could not connect to Redis.",
-                  "#{e.message} \n\nMake certain you've specified the correct host and port, DB, username, and password, and that Redis is accepting connections." )
+                  "#{e.message} \n\nMake certain you've specified the correct host and port, DB, username, and password, and that Redis is accepting connections.\n\n#{e.backtrace}" )
   end
 end
 

@@ -25,8 +25,9 @@ class JavaHeapMonitor < Scout::Plugin
   end
     
   def jmap_histo(pid)
-    raise "jmap executable #{jmap} not found" if !File.exist?(jmap) 
-    raise "jmap not executable #{jmap} not found" if !File.executable?(jmap) 
+    non_sudo_jmap = jmap.gsub(/\Asudo /, '')
+    raise "jmap executable #{jmap} not found" if !File.exist?(non_sudo_jmap) 
+    raise "jmap executable #{jmap} not executable" if(jmap == non_sudo_jmap && !File.executable?(jmap)) # checking if a file is executable does not work w/ sudo
     # histo output of jmap, which loses all the newlines.  not sure why
     histo = `#{jmap} -histo:live #{pid} `
   end
