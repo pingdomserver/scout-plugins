@@ -100,10 +100,32 @@ class PassengerStatsTest < Test::Unit::TestCase
       inactive = 2
       Waiting on global queue: 0
     :status_4: |
+      Version : 4.0.41
+      Date    : 2016-01-12 11:21:14 -0500
+      Instance: 31713
+      ----------- General information -----------
       Max pool size : 6
       Processes     : 5
-      Requests in top-level queue : 4
+      Requests in top-level queue : 0
 
+      ----------- Application groups -----------
+      /srv/scout/current#default:
+        App root: /srv/scout/current
+        Requests in queue: 2
+        * PID: 20875   Sessions: 0       Processed: 0       Uptime: 1h 10m 1s
+          CPU: 0%      Memory  : 161M    Last used: 1h 10m 1s
+
+      scout_sinatra#default:
+        App root: /srv/scout_sinatra/current
+        Requests in queue: 3
+        * PID: 29428   Sessions: 1       Processed: 3794335   Uptime: 260h 41m 9s
+          CPU: 20%     Memory  : 85M     Last used: 0s ag
+
+      scout#default:
+        App root: /srv/scout/current
+        Requests in queue: 0
+        * PID: 20912   Sessions: 0       Processed: 2187    Uptime: 1h 10m 1s
+          CPU: 6%      Memory  : 549M    Last used: 4s ago
     :nginx_only: |
       ------- Apache processes --------
 
