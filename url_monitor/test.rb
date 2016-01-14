@@ -52,6 +52,39 @@ class UrlMonitorTest < Test::Unit::TestCase
     assert res[:alerts].first[:subject] =~ /is not responding/
   end
 
+  def test_500
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "the page", :status => ["500", "Error"])
+    @plugin=UrlMonitor.new(nil,{},{:url=>uri})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 500, res[:reports].find { |r| r.has_key?(:status) }[:status]
+    assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
+    assert res[:alerts].first[:subject] =~ /is not responding/
+  end
+
+  def test_503
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "the page", :status => ["503", "Error"])
+    @plugin=UrlMonitor.new(nil,{},{:url=>uri})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 503, res[:reports].find { |r| r.has_key?(:status) }[:status]
+    assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
+    assert res[:alerts].first[:subject] =~ /is not responding/
+  end
+  
+  def test_504
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "the page", :status => ["504", "Error"])
+    @plugin=UrlMonitor.new(nil,{},{:url=>uri})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 504, res[:reports].find { |r| r.has_key?(:status) }[:status]
+    assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
+    assert res[:alerts].first[:subject] =~ /is not responding/
+  end
+
   def test_bad_host
     uri = "http://fake"
     @plugin = UrlMonitor.new(nil,{},{:url=>uri})
