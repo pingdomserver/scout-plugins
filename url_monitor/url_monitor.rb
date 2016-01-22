@@ -20,6 +20,10 @@ class UrlMonitor < Scout::Plugin
     name: Timeout Length
     notes: "Seconds to wait until connection is opened."
     attributes: advanced
+  body_content:
+    default '.*'
+    name: 'Body content'
+    notes 'Regex used to check for valid content the url should return'
   request_method:
     default: 'HEAD'
     name: Request Method
@@ -54,8 +58,12 @@ class UrlMonitor < Scout::Plugin
     report(:status => (response.is_a?(String) ? nil : response.code.to_i),
            :response_time => response_time)
 
+    puts "alpha"
     is_up = valid_http_response?(response) ? 1 : 0
+    puts "beta"
     report(:up => is_up)
+    puts "charly"
+
 
     if is_up != memory(:was_up)
       if is_up == 0
@@ -87,7 +95,16 @@ class UrlMonitor < Scout::Plugin
   end
 
   def valid_http_response?(result)
-    [HTTPOK,HTTPFound].include?(result.class)
+    puts "first line in valid_http_response?"
+    valid_code = [HTTPOK,HTTPFound].include?(result.class)
+    puts "after valid_code assignment"
+    body = result.body || ''
+puts "body=#{body}"
+    what_the_user_has_said_they_want_to_see_in_the_body = option('body_content').to_s
+puts "what_the_user_has_said_they_want_to_see_in_the_body=#{what_the_user_has_said_they_want_to_see_in_the_body}"
+    valid_body = body.match(what_the_user_has_said_they_want_to_see_in_the_body)
+puts "valid_body=#{valid_body}"
+    valid_code && valid_body
   end
 
   # returns the http response from a url
