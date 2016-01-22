@@ -20,6 +20,9 @@ class UrlMonitor < Scout::Plugin
     name: Timeout Length
     notes: "Seconds to wait until connection is opened."
     attributes: advanced
+  content_check:
+    name: 'Content Check'
+    notes 'Regex used to check for valid content the url should return. A blank value performs no content check.'
   request_method:
     default: 'HEAD'
     name: Request Method
@@ -51,11 +54,10 @@ class UrlMonitor < Scout::Plugin
       response = http_response(url)
     end
 
-    report(:status => (response.is_a?(String) ? nil : response.code.to_i),
-           :response_time => response_time)
+    status = response.is_a?(String) ? nil : response.code.to_i
+    is_up = valid_http_response?(response) && valid_regex?(response) ? 1 : 0
 
-    is_up = valid_http_response?(response) ? 1 : 0
-    report(:up => is_up)
+    report(:status => status, :response_time => response_time, :up => is_up)
 
     if is_up != memory(:was_up)
       if is_up == 0
@@ -88,6 +90,11 @@ class UrlMonitor < Scout::Plugin
 
   def valid_http_response?(result)
     [HTTPOK,HTTPFound].include?(result.class)
+  end
+
+  def valid_regex?(result)
+    body = result.respond_to?(:body) && result.body ? result.body : ''
+    body.match(option('content_check').to_s)
   end
 
   # returns the http response from a url

@@ -3,11 +3,18 @@ require File.expand_path('../url_monitor.rb', __FILE__)
 
 require 'open-uri'
 class UrlMonitorTest < Test::Unit::TestCase
+  #test code
+  DEFAULT_OPTIONS = {:valid_http_status_codes =>'200',:body_content=>'.*'}
+  #end test code
   def setup
   end
 
   def teardown
     FakeWeb.clean_registry
+  end
+
+  def url_mon options
+    UrlMonitor.new(nil,{},DEFAULT_OPTIONS.merge(options))
   end
 
   def test_initial_run_with_non_reporting_server
@@ -73,7 +80,7 @@ class UrlMonitorTest < Test::Unit::TestCase
     assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
     assert res[:alerts].first[:subject] =~ /is not responding/
   end
-  
+
   def test_504
     uri="http://scoutapp.com"
     FakeWeb.register_uri(:head, uri, :body => "the page", :status => ["504", "Error"])
@@ -91,6 +98,33 @@ class UrlMonitorTest < Test::Unit::TestCase
     res = @plugin.run()
     assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
     assert res[:alerts].first[:subject] =~ /is not responding/
+  end
+
+  def test_200_regex
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "Everything is awesome", :status => ["200", "OK"])
+    @plugin=url_mon({:url=>uri,:content_check=>'Everything.*awesome'})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 1, res[:reports].find { |r| r.has_key?(:up)}[:up]
+  end
+
+  def test_200_regex_just_a_string
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "Everything is awesome", :status => ["200", "OK"])
+    @plugin=url_mon({:url=>uri,:content_check=>'awesome'})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 1, res[:reports].find { |r| r.has_key?(:up)}[:up]
+  end
+
+  def test_200_regex_invalid
+    uri="http://scoutapp.com"
+    FakeWeb.register_uri(:head, uri, :body => "error", :status => ["200", "OK"])
+    @plugin=url_mon({:url=>uri, :content_check=>'OK'})
+    res = @plugin.run()
+    assert res[:reports].any?
+    assert_equal 0, res[:reports].find { |r| r.has_key?(:up)}[:up]
   end
 
   def test_sends_head_request
