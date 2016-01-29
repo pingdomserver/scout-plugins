@@ -1,3 +1,4 @@
+Encoding.default_external = Encoding::UTF_8
 $VERBOSE=false
 class SidekiqMonitor < Scout::Plugin
   needs 'redis', 'sidekiq'
