@@ -52,8 +52,9 @@ class PassengerStats < Scout::Plugin
         stats["passenger_max_pool_size"] = $1
       elsif line =~ /^Processes  +: (\d+)/   # passenger 4
         stats["passenger_process_current"] = $1
-      elsif line =~ /^Requests in top-level queue +: (\d+)/   # passenger 4
-        stats["passenger_queue_depth"] = $1
+      elsif line =~ /^\s+Requests in queue: (\d+)/  # passenger 4
+        stats["passenger_queue_depth"] ||= 0
+        stats["passenger_queue_depth"] += $1.to_i  
       end
     end
 
