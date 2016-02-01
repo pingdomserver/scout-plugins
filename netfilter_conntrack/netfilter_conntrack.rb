@@ -10,7 +10,8 @@ class NetfilterConnTrack < Scout::Plugin
       return error("Error reading procfs data. Is the nf_conntrack module loaded?", "#{e.message}: #{e.backtrace.join('\n')}")
     end
 
-    percent = (count.to_f / max.to_f) * 100
+    # Don't divide by 0.
+    percent = max > 0 ? (count.to_f / max.to_f) * 100 : 0
 
     report(:conntrack_count => count, :conntrack_max => max, :conntrack_percent_used => percent)
   end
