@@ -78,7 +78,7 @@ class MongoServerStatus < Scout::Plugin
 
   def get_server_status_v2
     client = Mongo::Client.new(["#{@host}:#{@port}"], :database => 'admin', :ssl => @ssl, :connection_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1, :connect => :direct)
-    client = client.with(user: @username, password: @password) unless @username.nil?
+    client = client.with(:user => @username, :password => @password) unless @username.nil?
     stats = client.database.command(:serverStatus => 1).first
     get_server_status(stats)
   rescue Mongo::Error::NoServerAvailable
