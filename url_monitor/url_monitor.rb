@@ -22,7 +22,7 @@ class UrlMonitor < Scout::Plugin
     attributes: advanced
   content_check:
     name: 'Content Check'
-    notes 'Regex used to check for valid content the url should return. A blank value performs no content check.'
+    notes: 'Regex used to check for valid content the url should return. A blank value performs no content check.'
   request_method:
     default: 'HEAD'
     name: Request Method
