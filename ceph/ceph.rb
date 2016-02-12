@@ -3,7 +3,21 @@ class CephPlugin < Scout::Plugin
   def build_report
     report(CephStatus.new.to_h)
   rescue StatusError => e
-    error("Unable to fetch status information","An occur occurred trying to fetch ceph status information:\n#{e.message}")
+    # Errors contain timestamps, since on the server-side we only count an error as repeating if the body is unique, returning the 
+    # raw error message would result in an error every minute.
+    #
+    # Example Error:
+    # An occur occurred trying to fetch ceph status information: 
+    # 2016-02-12 12:27:19.267090 7f3aff317700 -1 monclient(hunting): ERROR: missing keyring, cannot use cephx for authentication 
+    # 2016-02-12 12:27:19.267098 7f3aff317700 0 librados: client.admin initialization error (2) No such file or directory 
+    # Error connecting to cluster: ObjectNotFound
+    message = e.message
+    matches = message.scan(/(error.+)/)
+    if matches.any?
+      error("Unable to fetch status information","Errors occured trying to fetch status information:\n#{matches.map {|m| m.first}}")
+    else
+      error("Unable to fetch status information","An occur occurred trying to fetch ceph status information. Ensure the scoutd user has permission to fetch status information.")
+    end
   end
 
   # Raised by #CephStatus if an error fetching status output.
