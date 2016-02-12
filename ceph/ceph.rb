@@ -12,7 +12,7 @@ class CephPlugin < Scout::Plugin
     # 2016-02-12 12:27:19.267098 7f3aff317700 0 librados: client.admin initialization error (2) No such file or directory 
     # Error connecting to cluster: ObjectNotFound
     message = e.message
-    matches = message.scan(/(error.+)/)
+    matches = message.scan(/(error.+)/i)
     if matches.any?
       error("Unable to fetch status information","Errors occured trying to fetch status information:\n#{matches.map {|m| m.first}}")
     else
