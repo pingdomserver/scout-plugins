@@ -1,13 +1,27 @@
 class CephPlugin < Scout::Plugin
   
+  def build_report
+    report(CephStatus.new.to_h)
+  rescue StatusError => e
+    error("Unable to fetch status information","An occur occurred trying to fetch ceph status information:\n#{e.message}")
+  end
+
+  # Raised by #CephStatus if an error fetching status output.
+  class StatusError < Exception
+  end
+  
   class CephStatus
   
     HEALTH_OK_STRING = "HEALTH_OK"
     HEALTH_OK = 1
     UNHEALTHY = 0
   
-    def initialize(status)
-      @status_text = status
+    def initialize(cmd = "ceph -s")
+      output = `#{cmd} 2>&1`
+      if $? and !$?.success?
+        raise StatusError, output
+      end
+      @status_text = output.chomp
       parse
     end
   
@@ -66,14 +80,6 @@ class CephPlugin < Scout::Plugin
       end
     end
   
-  end
-  
-  def new_ceph_status
-    CephStatus.new(`ceph -s`.chomp)
-  end
-  
-  def build_report
-    report(new_ceph_status.to_h)
   end
   
 end
