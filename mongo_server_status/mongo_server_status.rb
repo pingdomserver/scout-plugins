@@ -82,7 +82,7 @@ class MongoServerStatus < Scout::Plugin
     stats = client.database.command(:serverStatus => 1).first
     get_server_status(stats)
   rescue Mongo::Error::NoServerAvailable
-    return error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+    return error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@host}:#{@port}, the user and password are valid, and SSL is properly enabled or disabled in the plugin settings.")
   end
   
   def get_server_status(stats)
