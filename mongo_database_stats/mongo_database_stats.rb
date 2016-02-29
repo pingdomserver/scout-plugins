@@ -9,9 +9,6 @@ class MongoDatabaseStats < Scout::Plugin
     database:
       name: Mongo Database
       notes: Name of the MongoDB database to profile.
-    auth_source:
-      name: Authentication Source
-      notes: Name of the MongoDB database to authenticate the user against (defaults to database if none specified).
     host:
       name: Mongo Server
       notes: Where mongodb is running.
@@ -35,6 +32,10 @@ class MongoDatabaseStats < Scout::Plugin
     op_timeout:
       name: Operation Timeout
       notes: The number of seconds to wait for a read operation to time out. Disabled by default.
+      attributes: advanced
+    auth_source:
+      name: Authentication Source
+      notes: Name of the MongoDB database to authenticate the user against (defaults to database if none specified).
       attributes: advanced
   EOS
 
