@@ -9,6 +9,9 @@ class MongoDatabaseStats < Scout::Plugin
     database:
       name: Mongo Database
       notes: Name of the MongoDB database to profile.
+    auth_source:
+      name: Authentication Source
+      notes: Name of the MongoDB database to authenticate the user against (defaults to database if none specified).
     host:
       name: Mongo Server
       notes: Where mongodb is running.
@@ -44,6 +47,7 @@ class MongoDatabaseStats < Scout::Plugin
 
   def build_report 
     @database = option('database')
+    @auth_source = option('auth_source') || option('database')
     @host     = option('host') 
     @port     = option('port')
     @ssl      = option("ssl").to_s.strip == 'true'
@@ -99,11 +103,11 @@ class MongoDatabaseStats < Scout::Plugin
   def stats_mongo_v2
     # Mongo Gem >= 2.0
     begin
-      client = Mongo::Client.new(["#{@host}:#{@port}"], :database=>@database, :username=>@username, :password=>@password, :ssl=>@ssl, :connect_timeout=>@connect_timeout, :socket_timeout=>@op_timeout, :server_selection_timeout => 1, :connect=>:direct)
+      client = Mongo::Client.new(["#{@host}:#{@port}"], :database=>@database, :user=>@username, :password=>@password, :ssl=>@ssl, :connect_timeout=>@connect_timeout, :socket_timeout=>@op_timeout, :server_selection_timeout => 1, :connect=>:direct, :auth_source=> @auth_source)
       db_stats = client.database.command({'dbstats' => 1}).first
       return db_stats
     rescue
-      error("Unable to retrive MongoDB stats.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+      error("Unable to retrieve MongoDB stats.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
       return nil
     end
   end
