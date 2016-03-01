@@ -45,6 +45,10 @@ class ScoutMongoSlow < Scout::Plugin
       name: Operation Timeout
       notes: The number of seconds to wait for a read operation to time out. Disabled by default.
       attributes: advanced
+    auth_source:
+      name: Authentication Source
+      notes: Name of the MongoDB database to authenticate the user against (defaults to database if none specified).
+      attributes: advanced
   EOS
 
   # In order to limit the alert body size, only the first +MAX_QUERIES+ are listed in the alert body. 
@@ -70,7 +74,10 @@ class ScoutMongoSlow < Scout::Plugin
 
   def build_report
     @database = option("database").to_s.strip
+    @auth_source = option('auth_source') || option('database')
     @server = option("server").to_s.strip
+    @username = option(:username) || ''
+    @password = option(:password) || ''
     @port = option("port")
     @ssl    = option("ssl").to_s.strip == 'true'
     @connect_timeout = option_to_f('connect_timeout')
@@ -101,7 +108,7 @@ class ScoutMongoSlow < Scout::Plugin
 
   def get_slow_queries_v1
     db = Mongo::Connection.new(@server, @port.to_i, :ssl => @ssl, :slave_ok => true, :connect_timeout => @connect_timeout, :op_timeout => @op_timeout).db(@database)
-    db.authenticate(option(:username), option(:password)) if !option(:username).to_s.empty?
+    db.authenticate(@username, @password, nil, @auth_source) unless @username.empty?
     enable_profiling_v1(db)
     report_slow_queries(db)
   rescue Mongo::ConnectionFailure => error
@@ -117,8 +124,8 @@ class ScoutMongoSlow < Scout::Plugin
   end
 
   def get_slow_queries_v2
-    client = Mongo::Client.new(["#{@host}:#{@port}"], :database => @database, :ssl => @ssl, :connection_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1)
-    client = client.with(user: @username, password: @password) unless @username.nil?
+    client = Mongo::Client.new(["#{@host}:#{@port}"], :database => @database, :ssl => @ssl, :connect_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1)
+    client = client.with(user: @username, password: @password, auth_source: @auth_source) unless @username.empty?
     enable_profiling_v2(client.database)
     report_slow_queries(client.database)
   rescue Mongo::Error::NoServerAvailable
