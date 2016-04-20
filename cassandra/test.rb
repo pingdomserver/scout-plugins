@@ -5,6 +5,9 @@ class CassandraTest < Test::Unit::TestCase
 
   def setup
     @plugin = Cassandra.new(nil, {}, {:nodetool_path => "/usr/bin/nodetool"})
+    @plugin.stubs(:my_ips).returns(
+      ["127.0.0.1", "10.0.0.1"]
+    )
   end
 
   def test_successful_run_with_no_errors
@@ -46,9 +49,12 @@ class CassandraTest < Test::Unit::TestCase
     res = @plugin.run()
     assert_equal 1, res[:reports].first[:total_datacenters]
     assert_equal 7, res[:reports].first[:total_nodes]
+    assert_equal 7, res[:reports].first[:total_nodes_my_dc]
     assert_equal 10093, res[:reports].first[:avg_node_load]
-    assert_equal 7, res[:reports].first[:up_nodes]
-    assert_equal 0, res[:reports].first[:down_nodes]
+    assert_equal 7, res[:reports].first[:up_nodes_total]
+    assert_equal 0, res[:reports].first[:down_nodes_total]
+    assert_equal 7, res[:reports].first[:up_nodes_my_dc]
+    assert_equal 0, res[:reports].first[:down_nodes_my_dc]
   end
 
   def test_2_dcs_6_nodes
@@ -60,8 +66,11 @@ class CassandraTest < Test::Unit::TestCase
     res = @plugin.run()
     assert_equal 2, res[:reports].first[:total_datacenters]
     assert_equal 6, res[:reports].first[:total_nodes]
+    assert_equal 3, res[:reports].first[:total_nodes_my_dc]
     assert_equal 6258125264, res[:reports].first[:avg_node_load]
-    assert_equal 4, res[:reports].first[:up_nodes]
-    assert_equal 2, res[:reports].first[:down_nodes]
+    assert_equal 4, res[:reports].first[:up_nodes_total]
+    assert_equal 2, res[:reports].first[:down_nodes_total]
+    assert_equal 2, res[:reports].first[:up_nodes_my_dc]
+    assert_equal 1, res[:reports].first[:down_nodes_my_dc]
   end
 end

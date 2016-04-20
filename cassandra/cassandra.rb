@@ -22,14 +22,18 @@ class Cassandra < Scout::Plugin
   EOS
 
   def build_report
-    data_centers = process_data_centers(parse_output(execute_command))
+    parse_output(execute_command)
+    process_data_centers
 
     report(
-      :total_datacenters => data_centers.size,
-      :total_nodes       => data_centers.collect { |dc| dc[:nodes].size }.reduce(:+),
-      :avg_node_load     => avg_node_load(data_centers),
-      :up_nodes          => nodes_by_status(data_centers, 'UN'),
-      :down_nodes        => nodes_by_status(data_centers, 'DN')
+      :total_datacenters => @data_centers.size,
+      :total_nodes       => @data_centers.collect { |dc| dc[:nodes].size }.reduce(:+),
+      :total_nodes_my_dc => @data_centers.select { |dc| dc[:name] == my_dc }.collect { |dc| dc[:nodes].size }.reduce(:+),
+      :avg_node_load     => avg_node_load,
+      :up_nodes_total    => nodes_by_status('UN'),
+      :down_nodes_total  => nodes_by_status('DN'),
+      :up_nodes_my_dc    => nodes_by_status('UN', my_dc),
+      :down_nodes_my_dc  => nodes_by_status('DN', my_dc)
     )
   rescue BinaryNotFoundError => e
     alert("Cannot find Cassandra nodetool binary", e.message)
@@ -38,12 +42,21 @@ class Cassandra < Scout::Plugin
   end
 
   protected
-  def nodes_by_status(data_centers, status)
-    data_centers.collect{|dc| dc[:nodes].select{|n| n[:status] == status}.size }.reduce :+
+  def nodes_by_status(status, my_dc=nil)
+    if my_dc
+      @data_centers
+        .select { |dc| dc[:name] == my_dc }
+        .collect { |dc| dc[:nodes].select { |n| n[:status] == status}.size }
+        .reduce(:+)
+    else
+      @data_centers
+        .collect{|dc| dc[:nodes].select{|n| n[:status] == status}.size }
+        .reduce(:+)
+    end
   end
 
-  def avg_node_load(data_centers)
-    loads = data_centers.collect{|dc| dc[:nodes].collect{|n| n[:load] } }.flatten
+  def avg_node_load
+    loads = @data_centers.collect{|dc| dc[:nodes].collect{|n| n[:load] } }.flatten
     (loads.collect{|l| load_to_number(l) }.reduce(:+) / loads.size).to_i
   end
 
@@ -67,11 +80,23 @@ class Cassandra < Scout::Plugin
     { :exit_code => exit_code, :output => output }
   end
 
+  def my_ips
+    @ips ||=`ip -4 -o addr list`.lines.map { |line|
+      line
+        .split(/\s+/)[3]
+        .split('/')[0]
+    }
+  end
+
+  def my_dc
+    @my_dc ||= @data_centers.select { |dc| dc[:nodes].any? { |n| my_ips.include?(n[:address]) }}.first[:name]
+  end
+
   def parse_output(results)
     if results[:exit_code] != 0
       raise ConnectionError, results[:output].chomp
     else
-      data_centers = []
+      @data_centers = []
       current_data_center = nil
       results[:output].each_line do |line|
         next if line.strip.empty?
@@ -79,19 +104,18 @@ class Cassandra < Scout::Plugin
         when /Datacenter\:/
           current_data_center = {}
           current_data_center[:name] = line.match(/\: (.+)/)[1]
-          data_centers << current_data_center
+          @data_centers << current_data_center
         when /\-\-/
           current_data_center[:csv] = line
         end
         next unless current_data_center && current_data_center[:csv]
         current_data_center[:csv] << line
       end
-      return data_centers
     end
   end
 
-  def process_data_centers(data_centers)
-    data_centers.each do |data_center|
+  def process_data_centers
+    @data_centers.each do |data_center|
       data_center[:nodes] = []
       csv_string = data_center.delete(:csv)
       next unless csv_string
@@ -117,6 +141,5 @@ class Cassandra < Scout::Plugin
         end
       end
     end
-    data_centers
   end
 end
