@@ -23,6 +23,7 @@ class CassandraTest < Test::Unit::TestCase
 
     res = @plugin.run()
     assert_equal res[:alerts].first[:subject], "Cannot find Cassandra nodetool binary"
+    assert_equal res[:alerts].first[:body], "/usr/bin/nodetool"
   end
 
   def test_failed_run_with_errors

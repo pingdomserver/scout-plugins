@@ -31,8 +31,8 @@ class Cassandra < Scout::Plugin
       :up_nodes          => nodes_by_status(data_centers, 'UN'),
       :down_nodes        => nodes_by_status(data_centers, 'DN')
     )
-  rescue BinaryNotFoundError
-    alert("Cannot find Cassandra nodetool binary")
+  rescue BinaryNotFoundError => e
+    alert("Cannot find Cassandra nodetool binary", e.message)
   rescue ConnectionError => e
     alert("Unable to connect to Cassandra", e.message)
   end
@@ -56,7 +56,7 @@ class Cassandra < Scout::Plugin
   end
 
   def nodetool_bin
-    raise BinaryNotFoundError unless File.exist?(option(:nodetool_path))
+    raise(BinaryNotFoundError, option(:nodetool_path)) unless File.exist?(option(:nodetool_path))
     @nodetool ||= option(:nodetool_path)
   end
 
