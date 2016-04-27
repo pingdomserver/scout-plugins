@@ -61,7 +61,10 @@ class Cassandra < Scout::Plugin
   end
 
   def load_to_number(load)
-    value, suffix = load.match(/(\d+\.\d+) (['A-Z']{2})$/)[1..2]
+    match_data = load.match(/(\d+\.\d+) (['A-Z']{2})$/)
+    return 0 if match_data.nil?
+
+    value, suffix = match_data[1..2]
     value = value.to_f
     magnitude = SIZE_SUFFIXES.index(suffix) + 1
     magnitude.times{ value = value * 1024}
