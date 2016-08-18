@@ -72,7 +72,7 @@ class MongoReplicaSetMonitoring < Scout::Plugin
   end
 
   def get_replica_set_status_v2
-    client = Mongo::Client.new(["#{@host}:#{@port}"], :database => 'admin', :ssl => @ssl, :connection_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1)
+    client = Mongo::Client.new(["#{@host}:#{@port}"], :database => 'admin', :ssl => @ssl, :connection_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1, :connect => :direct)
     client = client.with(user: @username, password: @password) unless @username.nil?
     replset_status = client.database.command(:replSetGetStatus => 1).first
     report_replica_set_status(replset_status)
