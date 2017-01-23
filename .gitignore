@@ -6,3 +6,4 @@ active_website_monitor
 .bundle/
 .rvmrc
 .ruby-version
+.ruby-gemset

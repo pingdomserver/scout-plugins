@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 # for tests
 group :test do
-  # gem 'scout'
+  gem 'scout'
   gem 'fakeweb'
   gem 'mocha'
   gem 'timecop'

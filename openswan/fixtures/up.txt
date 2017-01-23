@@ -1,0 +1,4 @@
+IPsec running - pluto pid: 8745
+pluto pid 8745
+2 tunnels up
+some eroutes exist

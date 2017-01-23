@@ -1,0 +1,3 @@
+IPsec running - pluto pid: 30912
+pluto pid 30912
+no tunnels up
