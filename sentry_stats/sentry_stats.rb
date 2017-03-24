@@ -34,8 +34,9 @@ class SentryStats < Scout::Plugin
           data = JSON.parse(response_body)
           res = data.inject(0){|m, e| m += e[1]; m}
           report_data[stat.to_sym] = res
+          number_of_failed_api_calls = 0
         else
-          error("Problem getting stats from Sentry", response_body)
+          report_data[stat.to_sym] = nil
         end
       rescue Exception => e
         # sometimes the sentry API is slow. If it times out, return nil. Create an error if you get this multiple of these in a row
