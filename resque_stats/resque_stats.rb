@@ -27,6 +27,7 @@ class ResqueStats < Scout::Plugin
       :workers => info[:workers],
       :backtraces => Resque.redis.llen('failed')
     )
+    Resque.queues.map{|q| report("#{q}_queue".to_sym =>  Resque.size(q))}
     counter(:processed, info[:processed], :per => :second)
     counter(:failed, info[:failed], :per => :second)
   end
