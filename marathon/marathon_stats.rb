@@ -4,7 +4,7 @@
 # Created by Lukas Lachowski (lukasz.lachowski@solarwinds.com)
 #
 
-class MesosStats < Scout::Plugin
+class MarathonStats < Scout::Plugin
   needs "net/http", "uri", "json"
 
   OPTIONS=<<-EOS
@@ -15,9 +15,9 @@ class MesosStats < Scout::Plugin
   EOS
 
   def build_report
-    url = URI.parse(option("server_url")) 
+    mesos_url = option("server_url")
 
-    containers = JSON.parse(make_request(url))
+    containers = JSON.parse(make_request(mesos_url))
     for container_data in containers do
       app_id = container_data["executor_id"]
       app_name = get_app_name(app_id)
@@ -26,9 +26,9 @@ class MesosStats < Scout::Plugin
   end
 
   def get_app_name(app_id)
-    url = URI.parse("marathon url")
+    marathon_app_url = "marathon url/" + app_id
 
-    app_data = JSON.parse(make_request(url))
+    app_data = JSON.parse(make_request(marathon_app_url))
     return app_data["id"]
   end
 
@@ -44,8 +44,7 @@ class MesosStats < Scout::Plugin
 
   def publish_statsd(container_data, app_name)
     statistics = container_data["statistics"]
-    statsd_values = []
-    json_to_statsd(statistics, app_name, statsd_values)
+    statsd_values = json_to_statsd(statistics, app_name)
     statsd_values.each do |statsd|
       send_statsd(statsd)
     end
@@ -53,14 +52,12 @@ class MesosStats < Scout::Plugin
 
   # STATSD = Statsd.new 'localhost', 8125
 
-  def json_to_statsd(json_data, prefix, result)
+  def json_to_statsd(json_data, prefix)
+    results = []
     json_data.each do |k,v|
-      if v.is_a?(Hash) || v.is_a?(Array)
-        json_to_statsd(v, prefix + "." + k, result)
-      else
-        results << to_statsd_gauge(prefix, k, v)
-      end
+      results << to_statsd_gauge(prefix, k, v)
     end
+    return results
   end
 
   def to_statsd_gauge(prefix, key, value)
