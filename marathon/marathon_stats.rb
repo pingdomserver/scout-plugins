@@ -29,10 +29,6 @@ class MarathonStats < Scout::Plugin
   def build_report
     containers = get_containers()
     for container_data in containers do
-      if !container_data.key?(:executor_id)
-        raise "Missing the 'executor_id' attribute in data payload returned by Mesos."
-      end
-      app_id = container_data[:executor_id]
       app_name = get_app_name(app_id)
       publish_statsd(container_data, app_name)
     end
@@ -43,28 +39,47 @@ class MarathonStats < Scout::Plugin
       mesos_uri = URI.parse(option(:mesos_url))
       return JSON.parse(make_request(mesos_uri))
     rescue => ex
-      error = RuntimeError.new("Error while getting the list of Mesos containers.")
+      error = RuntimeError.new("Error while getting the list of Mesos containers. Original message: %s" % ex.message)
       error.set_backtrace(ex.backtrace)
       raise error
     end
   end
 
-  def get_app_name(app_id)
+  def get_app_name(container_data)
+    if !container_data.key?(:executor_id)
+      raise "Missing the 'executor_id' attribute in data payload returned by Mesos."
+    end
+    app_id = container_data[:executor_id]
+    app_id = parse_app_name(app_id)
     begin
       marathon_app_uri = URI.parse(option(:marathon_url)).join(app_id)
       app_data = JSON.parse(make_request(marathon_app_uri))
-      return app_data[:app][:id]
     rescue => ex
-      error = RuntimeError.new("Error while getting application's name.")
+      error = RuntimeError.new("Error while getting application's details from Marathon. Original message: %s" % ex.message)
       error.set_backtrace(ex.backtrace)
       raise error
     end
+    if !app_data.key?(:apps) || !app_data[:apps].is_a?(Array) || !app_data[:apps][0].key?(:id)
+      raise "Missing 'app' or 'id' attribute in data payload returned by Marathon."
+    end
+    return app_data[:apps][0][:id]
   end
 
-  def make_request(uri)
+  def parse_app_name(container_id)
+    app_name_match = container_id.match(/([^\.]+).*/)
+    if app_name_match.nil?
+      raise "Wrong 'container_id' format."
+    end
+    return "/%s" % app_name_match.captures[0]
+  end
+
+  def make_request(uri, username=nil, password=nil)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true if uri.scheme == "https"
     req = Net::HTTP::Get.new(uri.path)
+    if !username.nil? && !password.nil?
+      req.basic_auth username, password
+    end
     response = http.request(req)
     return response.body
   end
@@ -98,7 +113,7 @@ class MarathonStats < Scout::Plugin
       scoutd_port = option(:statsd_port)
       @socket.send(statsd, 0, scoutd_address, scoutd_port)
     rescue => ex
-      error = RuntimeError.new("Error while sending StatsD data to Scout.")
+      error = RuntimeError.new("Error while sending StatsD data to Scout. Original message: %s" % ex.message)
       error.set_backtrace(ex.backtrace)
       raise error
     end
