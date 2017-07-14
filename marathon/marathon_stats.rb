@@ -28,13 +28,33 @@ class MarathonStats < Scout::Plugin
 
   def build_report
     containers = get_containers()
-    for container_data in containers do
-      app_name = get_app_name(app_id)
-      publish_statsd(container_data, app_name)
+    apps = get_apps()
+    for app_data in apps do
+      raise "Missing 'id' attribute in apps data payload from Marathon." unless app_data.key?(:id)
+      app_id = app_data[:id]
+      app_data = get_app_data(app_id)
+      unless app_data.key?(:tasks) && app_data[:tasks].is_a?(Array)
+        raise "Invalid/missing 'tasks' attribute in data payload from Marathon." 
+      end
+      for task in app_data[:tasks] do
+        raise "Missing 'task.id' in data payload from Marathon." unless task.key?(:id)
+        task_id = task[:id]
+        container = find_container(task_id, containers)
+        if container.nil?
+          next
+        end
+        task_name = "%s.%s" % [app_name, task_id]
+
+        publish_statsd(container, task_name)
+      end
     end
   end
 
-  def get_containers()
+  def find_container(task_id, containers)
+    return containers.find{ |x| x[:executor_id] == task_id}
+  end
+
+  def get_containers
     begin
       mesos_uri = URI.parse(option(:mesos_url))
       return JSON.parse(make_request(mesos_uri))
@@ -45,12 +65,20 @@ class MarathonStats < Scout::Plugin
     end
   end
 
-  def get_app_name(container_data)
-    if !container_data.key?(:executor_id)
-      raise "Missing the 'executor_id' attribute in data payload returned by Mesos."
+  def get_apps
+    begin
+      marathon_apps_uri = URI.parse(:marathon_url)
+      apps = JSON.parse(make_request(marathon_apps_uri))
+    rescue => ex
+      error = RuntimeError.new("Error while downloading apps list from Marathon. Original message: %s" % ex.message)
+      error.set_backtrace(ex.backtrace)
+      raise error
     end
-    app_id = container_data[:executor_id]
-    app_id = parse_app_name(app_id)
+    raise "Missing 'apps' attribute in data payload returned by Marathon." unless apps.key?(:apps)
+    return apps[:apps]
+  end
+
+  def get_app_data(app_id)
     begin
       marathon_app_uri = URI.parse(option(:marathon_url)).join(app_id)
       app_data = JSON.parse(make_request(marathon_app_uri))
@@ -59,18 +87,9 @@ class MarathonStats < Scout::Plugin
       error.set_backtrace(ex.backtrace)
       raise error
     end
-    if !app_data.key?(:apps) || !app_data[:apps].is_a?(Array) || !app_data[:apps][0].key?(:id)
-      raise "Missing 'app' or 'id' attribute in data payload returned by Marathon."
-    end
-    return app_data[:apps][0][:id]
-  end
+    raise "Missing 'app' attribute in data payload returned by Marathon." unless app_data.key?(:app)
+    return app_data[:app]
 
-  def parse_app_name(container_id)
-    app_name_match = container_id.match(/([^\.]+).*/)
-    if app_name_match.nil?
-      raise "Wrong 'container_id' format."
-    end
-    return "/%s" % app_name_match.captures[0]
   end
 
   def make_request(uri, username=nil, password=nil)
@@ -85,8 +104,8 @@ class MarathonStats < Scout::Plugin
   end
 
   def publish_statsd(container_data, app_name)
-    if !container_data.key?(:statistics)
-      raise "Missing the 'statistics' attribute in data payload returned by Marathon."
+    unless container_data.key?(:statistics)
+      raise "Missing the 'statistics' attribute in data payload returned by Marathon." 
     end
     statistics = container_data[:statistics]
     statsd_values = json_to_statsd(statistics, app_name)
