@@ -24,6 +24,18 @@ class MarathonStats < Scout::Plugin
         name: Marathon REST API URL
         notes: Specify the URL for the Marathon's REST API.
         default: "http://localhost/v2/apps/"
+      marathon_username:
+        name: Marathon Username
+        default:
+      marathon_password:
+        name: Marathos Password
+        default:
+      mesos_username:
+        name: Mesos Useraname
+        default:
+      mesos_password:
+        name: Mesos Password
+        default:
   EOS
 
   def build_report
@@ -34,7 +46,7 @@ class MarathonStats < Scout::Plugin
       app_id = app_data[:id]
       app_data = get_app_data(app_id)
       unless app_data.key?(:tasks) && app_data[:tasks].is_a?(Array)
-        raise "Invalid/missing 'tasks' attribute in data payload from Marathon." 
+        raise "Invalid/missing 'tasks' attribute in data payload from Marathon."
       end
       for task in app_data[:tasks] do
         raise "Missing 'task.id' in data payload from Marathon." unless task.key?(:id)
@@ -56,10 +68,11 @@ class MarathonStats < Scout::Plugin
 
   def get_containers
     begin
-      mesos_uri = URI.parse(option(:mesos_url))
-      return JSON.parse(make_request(mesos_uri))
+      mesos_uri = URI.parse(option(:mesos_containers_url))
+      return JSON.parse(make_request(mesos_uri, option(:mesos_username), option(:mesos_password)))
     rescue => ex
-      error = RuntimeError.new("Error while getting the list of Mesos containers. Original message: %s" % ex.message)
+      error = RuntimeError.new("Error while getting the list of Mesos containers."\
+                               "Original message: %s" % ex.message)
       error.set_backtrace(ex.backtrace)
       raise error
     end
@@ -67,10 +80,12 @@ class MarathonStats < Scout::Plugin
 
   def get_apps
     begin
-      marathon_apps_uri = URI.parse(:marathon_url)
-      apps = JSON.parse(make_request(marathon_apps_uri))
+      marathon_apps_uri = URI.parse(option(:marathon_url))
+      apps = JSON.parse(make_request(marathon_apps_uri), option(:marathon_username),
+                        option(:marathon_password))
     rescue => ex
-      error = RuntimeError.new("Error while downloading apps list from Marathon. Original message: %s" % ex.message)
+      error = RuntimeError.new("Error while downloading apps list from Marathon."\
+                               "Original message: %s" % ex.message)
       error.set_backtrace(ex.backtrace)
       raise error
     end
@@ -81,9 +96,11 @@ class MarathonStats < Scout::Plugin
   def get_app_data(app_id)
     begin
       marathon_app_uri = URI.parse(option(:marathon_url)).join(app_id)
-      app_data = JSON.parse(make_request(marathon_app_uri))
+      app_data = JSON.parse(make_request(marathon_app_uri, option(:marathon_username),
+                                         option(:marathon_password)))
     rescue => ex
-      error = RuntimeError.new("Error while getting application's details from Marathon. Original message: %s" % ex.message)
+      error = RuntimeError.new("Error while getting application's details from Marathon."\
+                               "Original message: %s" % ex.message)
       error.set_backtrace(ex.backtrace)
       raise error
     end
@@ -115,11 +132,14 @@ class MarathonStats < Scout::Plugin
   end
 
   def json_to_statsd(json_data, prefix)
-    results = []
-    json_data.each do |k,v|
-      results << to_statsd_gauge(prefix, k, v)
+    # results = []
+    # json_data.each do |k,v|
+    #   results << to_statsd_gauge(prefix, k, v)
+    # end
+    # return results
+    return json_data.to_a.map do |v|
+      to_statsd_gauge(prefix, v[0], v[1])
     end
-    return results
   end
 
   def to_statsd_gauge(prefix, key, value)
