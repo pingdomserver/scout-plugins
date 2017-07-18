@@ -1,17 +1,67 @@
 require File.expand_path('../../test_helper.rb', __FILE__)
 require File.expand_path('../marathon_stats.rb', __FILE__)
+require 'mocha/api'
+include Mocha::API
 
 class MarathonStatsTest < Test::Unit::TestCase
 
   def test_json_to_statsd
     test_json = { 'a' => 1 }
     prefix = "test_app"
-    result = [prefix + ".a:1|g"]
+    result = ["test_app.a:1|g"]
 
     @plugin = MarathonStats.new(nil, {}, {})
     test_result = @plugin.container_data_to_statsd(test_json, prefix)
 
     assert_equal result, test_result
+  end
+
+  def test_get_app_data
+    url = "http://localhost/apps"
+    id = "/alexia-stage"
+    app_json='{
+    "app": {
+      "id": "/alexia-stage",
+      "tasks": [
+      {
+        "ipAddresses": [
+          {
+            "ipAddress": "172.17.0.2",
+            "protocol": "IPv4"
+          }
+        ],
+        "stagedAt": "2017-06-23T16:39:11.338Z",
+        "state": "TASK_RUNNING",
+        "ports": [
+          14218
+        ],
+        "startedAt": "2017-06-23T16:39:13.446Z",
+        "version": "2017-06-23T16:38:12.190Z",
+        "id": "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
+        "appId": "/alexia-stage",
+        "slaveId": "1ce5d6c3-1040-42c0-9a46-ccbaa42bc623-S0",
+        "host": "paas-slave1.test.us-west-1.plexapp.info",
+        "healthCheckResults": [
+          {
+            "alive": true,
+            "consecutiveFailures": 0,
+            "firstSuccess": "2017-06-23T16:39:22.608Z",
+            "lastFailure": null,
+            "lastSuccess": "2017-07-13T15:46:27.679Z",
+            "lastFailureCause": null,
+            "instanceId": "alexia-stage.marathon-7c32752c-5832-11e7-b955-02420aec263b"
+          }
+        ]
+      }
+    ]
+    }
+    }'
+
+    FakeWeb.register_uri(:get, url+"/%s" % id, :body => app_json)
+    @plugin = MarathonStats.new(nil, {}, {:marathon_url => url})
+    app_data = @plugin.get_app_data(id)
+    assert_equal id, app_data["id"]
+    assert_equal "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b", app_data["tasks"][0]["id"]
   end
 
   def test_get_containers
@@ -340,16 +390,20 @@ class MarathonStatsTest < Test::Unit::TestCase
 
     containers_url = "http://localhost/containers"
     apps_url = "http://localhost/apps"
-    app_url = "http://localhost/apps/alexia-stage"
+    app_url = "http://localhost/apps//alexia-stage"
+    scout_address = "localhost"
+    scout_port = 8125
     FakeWeb.register_uri(:get, containers_url, :body => containers_json)
     FakeWeb.register_uri(:get, apps_url, :body => apps_json)
     FakeWeb.register_uri(:get, app_url, :body => app_json)
+    udpsocket = mock()
+    udpsocket.expects(:send).times(6)
 
-    @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_url => apps_url, :scoutd_address => "localhost", :scoutd_port => 8125})
+    @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_url => apps_url, :scoutd_address => scout_address, :scoutd_port => scout_port})
+    @plugin.instance_variable_set("@socket", udpsocket)
+    # @plugin.expects(:send_statsd).times(6) # number of statistics for container
 
     @plugin.run()
-
-    # TODO mock udp socket of the plugin and check the result
   end
 
 end

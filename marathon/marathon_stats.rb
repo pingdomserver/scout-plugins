@@ -5,7 +5,7 @@
 #
 
 class MarathonStats < Scout::Plugin
-  needs "net/http", "uri", "json", "socket"
+  needs "net/http", "uri", "json", "socket", "logger"
 
   OPTIONS=<<-EOS
       mesos_containers_url:
@@ -38,32 +38,43 @@ class MarathonStats < Scout::Plugin
         default:
   EOS
 
-  def build_report
+  def initialize(last_run, memory, options)
+    super(last_run, memory, options)
     initialize_report()
-    containers = get_containers()
-    apps = get_apps()
-    for app_data in apps do
-      raise "Missing 'id' attribute in apps data payload from Marathon." unless app_data.key?("id")
-      app_id = app_data["id"]
-      app_data = get_app_data(app_id)
-      unless app_data.key?("tasks") && app_data["tasks"].is_a?(Array)
-        raise "Invalid/missing 'tasks' attribute in data payload from Marathon."
-      end
-      for task in app_data["tasks"] do
-        raise "Missing 'task.id' in data payload from Marathon." unless task.key?("id")
-        task_id = task["id"]
-        container = find_container(task_id, containers)
-        if container.nil?
-          next
-        end
-        task_name = "%s.%s" % [app_id, task_id]
+  end
 
-        publish_statsd(container, task_name)
+  def build_report
+    begin
+      containers = get_containers()
+      apps = get_apps()
+      for app_data in apps do
+        raise "Missing 'id' attribute in apps data payload from Marathon." unless app_data.key?("id")
+        app_id = app_data["id"]
+        app_data = get_app_data(app_id)
+        unless app_data.key?("tasks") && app_data["tasks"].is_a?(Array)
+          raise "Invalid/missing 'tasks' attribute in data payload from Marathon. Data: %s" % app_data.to_s
+        end
+        for task in app_data["tasks"] do
+          raise "Missing 'task.id' in data payload from Marathon." unless task.key?("id")
+          task_id = task["id"]
+          container = find_container(task_id, containers)
+          if container.nil?
+            next
+          end
+          task_name = "%s.%s" % [app_id, task_id]
+
+          publish_statsd(container, task_name)
+        end
       end
+    rescue => ex
+      log_debug(ex)
+      raise ex
     end
   end
 
   def initialize_report()
+    @logger = Logger.new(STDOUT)
+    @logger.level = Logger::DEBUG
     @socket = UDPSocket.new
   end
 
@@ -74,6 +85,7 @@ class MarathonStats < Scout::Plugin
   def get_containers
     begin
       mesos_uri = URI.parse(option(:mesos_containers_url))
+      log_debug("Downloading the list of Mesos containers - url: %s" % mesos_uri)
       return JSON.parse(make_request(mesos_uri, option(:mesos_username), option(:mesos_password)))
     rescue => ex
       error = RuntimeError.new("Error while getting the list of Mesos containers."\
@@ -86,6 +98,7 @@ class MarathonStats < Scout::Plugin
   def get_apps
     begin
       marathon_apps_uri = URI.parse(option(:marathon_url))
+      log_debug("Downloading the list of Marathon applications - url: %s" % marathon_apps_uri)
       apps = JSON.parse(make_request(marathon_apps_uri, option(:marathon_username),
                         option(:marathon_password)))
     rescue => ex
@@ -100,9 +113,10 @@ class MarathonStats < Scout::Plugin
 
   def get_app_data(app_id)
     begin
-      marathon_app_uri = URI.parse(option(:marathon_url) + app_id)
-      app_data = JSON.parse(make_request(marathon_app_uri, option(:marathon_username),
-                                         option(:marathon_password)))
+      marathon_app_uri = URI.parse("%s/%s" % [option(:marathon_url), app_id.to_s])
+      log_debug("Downloading details of some app with id=%s using url: %s" % [app_id.to_s, marathon_app_uri])
+      app_data_json = make_request(marathon_app_uri, option(:marathon_username),
+                                         option(:marathon_password))
     rescue => ex
       error = RuntimeError.new("Error while getting application's details from Marathon."\
                                " App_id: %s. URI: %s. Original message: %s" %
@@ -110,6 +124,7 @@ class MarathonStats < Scout::Plugin
       error.set_backtrace(ex.backtrace)
       raise error
     end
+    app_data  = JSON.parse(app_data_json)
     raise "Missing 'app' attribute in data payload returned by Marathon." unless app_data.key?("app")
     return app_data["app"]
 
@@ -149,6 +164,7 @@ class MarathonStats < Scout::Plugin
 
   def send_statsd(statsd, scoutd_address, scoutd_port)
     begin
+      log_debug("Sending statsd data to %s:%s. Data: %s" % [scoutd_address, scoutd_port, statsd])
       @socket.send(statsd, 0, scoutd_address, scoutd_port)
     rescue => ex
       error = RuntimeError.new("Error while sending StatsD data to Scout."\
@@ -156,6 +172,10 @@ class MarathonStats < Scout::Plugin
       error.set_backtrace(ex.backtrace)
       raise error
     end
+  end
+
+  def log_debug(message)
+    @logger.debug(message)
   end
 
 end
