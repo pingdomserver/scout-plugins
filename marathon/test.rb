@@ -116,9 +116,6 @@ class MarathonStatsTest < Test::Unit::TestCase
 
     containers = @plugin.get_containers()
 
-    # assert_not_nil containers
-    # assert_equal false, containers.empty?
-    # assert_equal "3963823d-da89-4dfd-80c5-4d2bbd9f3054", containers[0]["container_id"]
     assert_equal test_hash, containers
   end
 
@@ -401,7 +398,6 @@ class MarathonStatsTest < Test::Unit::TestCase
 
     @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_url => apps_url, :scoutd_address => scout_address, :scoutd_port => scout_port})
     @plugin.instance_variable_set("@socket", udpsocket)
-    # @plugin.expects(:send_statsd).times(6) # number of statistics for container
 
     @plugin.run()
   end
