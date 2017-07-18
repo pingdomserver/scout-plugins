@@ -20,7 +20,7 @@ class MarathonStats < Scout::Plugin
         name: StatsD daemon port.
         notes: Specify the port for the StatsD daemon.
         default: 8125
-      marathon_url:
+      marathon_apps_url:
         name: Marathon REST API URL
         notes: Specify the URL for the Marathon's REST API.
         default: "http://localhost/v2/apps/"
@@ -41,6 +41,10 @@ class MarathonStats < Scout::Plugin
   def initialize(last_run, memory, options)
     super(last_run, memory, options)
     initialize_report()
+  end
+
+  def get_marathon_app_url
+    return option(:marathon_apps_url)
   end
 
   def build_report
@@ -97,7 +101,7 @@ class MarathonStats < Scout::Plugin
 
   def get_apps
     begin
-      marathon_apps_uri = URI.parse(option(:marathon_url))
+      marathon_apps_uri = URI.parse(get_marathon_app_url)
       log_debug("Downloading the list of Marathon applications - url: %s" % marathon_apps_uri)
       apps = JSON.parse(make_request(marathon_apps_uri, option(:marathon_username),
                         option(:marathon_password)))
@@ -113,7 +117,7 @@ class MarathonStats < Scout::Plugin
 
   def get_app_data(app_id)
     begin
-      marathon_app_uri = URI.parse("%s/%s" % [option(:marathon_url), app_id.to_s])
+      marathon_app_uri = URI.parse("%s/%s" % [get_marathon_app_url, app_id.to_s])
       log_debug("Downloading details of some app with id=%s using url: %s" % [app_id.to_s, marathon_app_uri])
       app_data_json = make_request(marathon_app_uri, option(:marathon_username),
                                          option(:marathon_password))
@@ -148,7 +152,7 @@ class MarathonStats < Scout::Plugin
     statistics = container_data["statistics"]
     statsd_values = container_data_to_statsd(statistics, app_name)
     statsd_values.each do |statsd|
-      send_statsd(statsd, option(:scoutd_address), option(:scoutd_port))
+      send_statsd(statsd, option(:statsd_address), option(:statsd_port))
     end
   end
 
