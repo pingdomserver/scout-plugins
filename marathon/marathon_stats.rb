@@ -163,7 +163,7 @@ class MarathonStats < Scout::Plugin
   end
 
   def to_statsd_gauge(prefix, key, value)
-    return "%s.%s:%s|g" % [prefix, key.to_s, value.to_s]
+    return "%s.%s:%s|c" % [prefix, key.to_s, value.to_s]
   end
 
   def send_statsd(statsd, scoutd_address, scoutd_port)

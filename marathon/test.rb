@@ -8,7 +8,7 @@ class MarathonStatsTest < Test::Unit::TestCase
   def test_json_to_statsd
     test_json = { 'a' => 1 }
     prefix = "test_app"
-    result = ["test_app.a:1|g"]
+    result = ["test_app.a:1|c"]
 
     @plugin = MarathonStats.new(nil, {}, {})
     test_result = @plugin.container_data_to_statsd(test_json, prefix)
@@ -58,7 +58,7 @@ class MarathonStatsTest < Test::Unit::TestCase
     }'
 
     FakeWeb.register_uri(:get, url+"/%s" % id, :body => app_json)
-    @plugin = MarathonStats.new(nil, {}, {:marathon_url => url})
+    @plugin = MarathonStats.new(nil, {}, {:marathon_apps_url => url})
     app_data = @plugin.get_app_data(id)
     assert_equal id, app_data["id"]
     assert_equal "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b", app_data["tasks"][0]["id"]
@@ -66,45 +66,46 @@ class MarathonStatsTest < Test::Unit::TestCase
 
   def test_get_containers
     test_json = '[
-      {
-        "container_id": "3963823d-da89-4dfd-80c5-4d2bbd9f3054",
-        "executor_id": "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
-        "executor_name": "Command Executor (Task: alexia-stage.7c32752c-5832-11e7-b955-02420aec263b) (Command: sh -c \'npm run stage\')",
-        "framework_id": "462eeb66-d4c3-40b5-87aa-6255216f0dca-0001",
-        "source": "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
-        "statistics": {
-          "cpus_limit": 0.6,
-          "cpus_system_time_secs": 61989.46,
-          "cpus_user_time_secs": 65629.34,
-          "mem_limit_bytes": 570425344,
-          "mem_rss_bytes": 147062784,
-          "timestamp": 1499969552.69007
-        },
-        "status": {
-          "container_id": {
-            "value": "3963823d-da89-4dfd-80c5-4d2bbd9f3054"
-          }
-        }
-      }
+	{
+		"container_id": "3963823d-da89-4dfd-80c5-4d2bbd9f3054",
+		"executor_id": "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
+		"executor_name": "Command Executor (Task: alexia-stage.7c32752c-5832-11e7-b955-02420aec263b) (Command: sh -c \'npm run stage\')",
+		"framework_id": "462eeb66-d4c3-40b5-87aa-6255216f0dca-0001",
+		"source": "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
+		"statistics": {
+			"cpus_limit": 0.6,
+			"cpus_system_time_secs": 71541.88,
+			"cpus_user_time_secs": 74561.41,
+			"mem_limit_bytes": 570425344,
+			"mem_rss_bytes": 153878528,
+			"timestamp": 1500459915.60699
+		},
+		"status": {
+			"container_id": {
+				"value": "3963823d-da89-4dfd-80c5-4d2bbd9f3054"
+			}
+		}
+	}
     ]'
+
     test_hash = [
       {
-        "container_id" => "3963823d-da89-4dfd-80c5-4d2bbd9f3054",
-        "executor_id" => "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
-        "executor_name" => "Command Executor (Task: alexia-stage.7c32752c-5832-11e7-b955-02420aec263b) (Command: sh -c \'npm run stage\')",
-        "framework_id" => "462eeb66-d4c3-40b5-87aa-6255216f0dca-0001",
-        "source" => "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
-        "statistics" => {
-          "cpus_limit" => 0.6,
-          "cpus_system_time_secs" => 61989.46,
-          "cpus_user_time_secs" => 65629.34,
-          "mem_limit_bytes" => 570425344,
-          "mem_rss_bytes" => 147062784,
-          "timestamp" => 1499969552.69007
+        "container_id"=> "3963823d-da89-4dfd-80c5-4d2bbd9f3054",
+        "executor_id"=> "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
+        "executor_name"=> "Command Executor (Task: alexia-stage.7c32752c-5832-11e7-b955-02420aec263b) (Command: sh -c \'npm run stage\')",
+        "framework_id"=> "462eeb66-d4c3-40b5-87aa-6255216f0dca-0001",
+        "source"=> "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
+        "statistics"=> {
+          "cpus_limit"=> 0.6,
+          "cpus_system_time_secs"=> 71541.88,
+          "cpus_user_time_secs"=> 74561.41,
+          "mem_limit_bytes"=> 570425344,
+          "mem_rss_bytes"=> 153878528,
+          "timestamp"=> 1500459915.60699
         },
-        "status" => {
-          "container_id" => {
-            "value" => "3963823d-da89-4dfd-80c5-4d2bbd9f3054"
+        "status"=> {
+          "container_id"=> {
+            "value"=> "3963823d-da89-4dfd-80c5-4d2bbd9f3054"
           }
         }
       }
@@ -388,15 +389,15 @@ class MarathonStatsTest < Test::Unit::TestCase
     containers_url = "http://localhost/containers"
     apps_url = "http://localhost/apps"
     app_url = "http://localhost/apps//alexia-stage"
-    scout_address = "localhost"
+    scout_address = "127.0.0.1"
     scout_port = 8125
     FakeWeb.register_uri(:get, containers_url, :body => containers_json)
     FakeWeb.register_uri(:get, apps_url, :body => apps_json)
     FakeWeb.register_uri(:get, app_url, :body => app_json)
     udpsocket = mock()
-    udpsocket.expects(:send).times(6)
+    udpsocket.expects(:send).with() { |value, int, address, port| address == scout_address && port == scout_port }.times(6)
 
-    @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_url => apps_url, :scoutd_address => scout_address, :scoutd_port => scout_port})
+    @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_apps_url => apps_url, :statsd_address => scout_address, :statsd_port => scout_port})
     @plugin.instance_variable_set("@socket", udpsocket)
 
     @plugin.run()
