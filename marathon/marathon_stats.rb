@@ -11,11 +11,11 @@ class MarathonStats < Scout::Plugin
       mesos_containers_url:
         name: Mesos Server containers REST API URL
         notes: Specify the URL of the server's containers REST API to check.
-        default: "http://localhost/containers"
+        default: "http://paas-slave1.test.us-west-1.plexapp.info:5051/containers"
       marathon_apps_url:
         name: Marathon REST API URL
         notes: Specify the URL for the Marathon's REST API.
-        default: "http://localhost/v2/apps/"
+        default: "http://paas-master1.test.us-west-1.plexapp.info:8080/v2/apps"
       statsd_address:
         name: StatsD daemon ip address
         notes: Specify the address for the StatsD daemon.
