@@ -1,6 +1,5 @@
 require File.expand_path('../../test_helper.rb', __FILE__)
 require File.expand_path('../marathon_stats.rb', __FILE__)
-require 'mocha/api'
 include Mocha::API
 
 class MarathonStatsTest < Test::Unit::TestCase
@@ -395,14 +394,12 @@ class MarathonStatsTest < Test::Unit::TestCase
     FakeWeb.register_uri(:get, apps_url, :body => apps_json)
     FakeWeb.register_uri(:get, app_url, :body => app_json)
     udpsocket = mock()
-    udpsocket.expects(:send).with() { |value, int, address, port| address == scout_address && port == scout_port }.times(6)
+    udpsocket.expects(:send).with() { |value, int, address, port| address == scout_address && port == scout_port }.times(6) # magic number => number of metrics in the above json data
 
     @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_apps_url => apps_url, :statsd_address => scout_address, :statsd_port => scout_port})
     @plugin.instance_variable_set("@socket", udpsocket)
 
     @plugin.run()
   end
-
-  # TODO add test for udp send method
 
 end

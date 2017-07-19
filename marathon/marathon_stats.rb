@@ -12,6 +12,10 @@ class MarathonStats < Scout::Plugin
         name: Mesos Server containers REST API URL
         notes: Specify the URL of the server's containers REST API to check.
         default: "http://localhost/containers"
+      marathon_apps_url:
+        name: Marathon REST API URL
+        notes: Specify the URL for the Marathon's REST API.
+        default: "http://localhost/v2/apps/"
       statsd_address:
         name: StatsD daemon ip address
         notes: Specify the address for the StatsD daemon.
@@ -20,31 +24,11 @@ class MarathonStats < Scout::Plugin
         name: StatsD daemon port.
         notes: Specify the port for the StatsD daemon.
         default: 8125
-      marathon_apps_url:
-        name: Marathon REST API URL
-        notes: Specify the URL for the Marathon's REST API.
-        default: "http://localhost/v2/apps/"
-      marathon_username:
-        name: Marathon Username
-        default:
-      marathon_password:
-        name: Marathos Password
-        default:
-      mesos_username:
-        name: Mesos Useraname
-        default:
-      mesos_password:
-        name: Mesos Password
-        default:
   EOS
 
   def initialize(last_run, memory, options)
     super(last_run, memory, options)
     initialize_report()
-  end
-
-  def get_marathon_app_url
-    return option(:marathon_apps_url)
   end
 
   def build_report
@@ -76,6 +60,13 @@ class MarathonStats < Scout::Plugin
     end
   end
 
+  def get_marathon_app_url
+    return option(:marathon_apps_url)
+  end
+  def get_marathon_app_url
+    return option(:marathon_apps_url)
+  end
+
   def initialize_report()
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
@@ -90,7 +81,7 @@ class MarathonStats < Scout::Plugin
     begin
       mesos_uri = URI.parse(option(:mesos_containers_url))
       log_debug("Downloading the list of Mesos containers - url: %s" % mesos_uri)
-      return JSON.parse(make_request(mesos_uri, option(:mesos_username), option(:mesos_password)))
+      return JSON.parse(make_request(mesos_uri))
     rescue => ex
       error = RuntimeError.new("Error while getting the list of Mesos containers."\
                                "Original message: %s" % ex.message)
@@ -103,8 +94,7 @@ class MarathonStats < Scout::Plugin
     begin
       marathon_apps_uri = URI.parse(get_marathon_app_url)
       log_debug("Downloading the list of Marathon applications - url: %s" % marathon_apps_uri)
-      apps = JSON.parse(make_request(marathon_apps_uri, option(:marathon_username),
-                        option(:marathon_password)))
+      apps = JSON.parse(make_request(marathon_apps_uri))
     rescue => ex
       error = RuntimeError.new("Error while downloading apps list from Marathon."\
                                "Original message: %s" % ex.message)
@@ -119,8 +109,7 @@ class MarathonStats < Scout::Plugin
     begin
       marathon_app_uri = URI.parse("%s/%s" % [get_marathon_app_url, app_id.to_s])
       log_debug("Downloading details of some app with id=%s using url: %s" % [app_id.to_s, marathon_app_uri])
-      app_data_json = make_request(marathon_app_uri, option(:marathon_username),
-                                         option(:marathon_password))
+      app_data_json = make_request(marathon_app_uri)
     rescue => ex
       error = RuntimeError.new("Error while getting application's details from Marathon."\
                                " App_id: %s. URI: %s. Original message: %s" %
@@ -134,13 +123,10 @@ class MarathonStats < Scout::Plugin
 
   end
 
-  def make_request(uri, username=nil, password=nil)
+  def make_request(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true if uri.scheme == "https"
     req = Net::HTTP::Get.new(uri.path)
-    if !username.nil? && !password.nil?
-      req.basic_auth username, password
-    end
     response = http.request(req)
     return response.body
   end
