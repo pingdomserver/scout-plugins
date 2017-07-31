@@ -112,9 +112,9 @@ class MarathonStatsTest < Test::Unit::TestCase
     url = "http://localhost/containers"
     FakeWeb.register_uri(:get, url, :body => test_json)
 
-    @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => url})
+    @plugin = MarathonStats.new(nil, {}, {})
 
-    containers = @plugin.get_containers()
+    containers = @plugin.get_containers(url)
 
     assert_equal test_hash, containers
   end
@@ -358,7 +358,7 @@ class MarathonStatsTest < Test::Unit::TestCase
             "id": "alexia-stage.7c32752c-5832-11e7-b955-02420aec263b",
             "appId": "/alexia-stage",
             "slaveId": "1ce5d6c3-1040-42c0-9a46-ccbaa42bc623-S0",
-            "host": "paas-slave1.test.us-west-1.plexapp.info",
+            "host": "localhost",
             "healthCheckResults": [
               {
                 "alive": true,
@@ -385,16 +385,26 @@ class MarathonStatsTest < Test::Unit::TestCase
       }
     }'
 
+    # TODO change for real data
+    slave_metrics = '{
+	  "slave/cpus_percent": 0.3,
+	  "slave/mem_percent": 0.185919343814081
+    }'
+
     containers_url = "http://localhost/containers"
+    slave_url = "http://localhost/"
     apps_url = "http://localhost/apps"
     app_url = "http://localhost/apps//alexia-stage"
     scout_address = "127.0.0.1"
     scout_port = 8125
     FakeWeb.register_uri(:get, containers_url, :body => containers_json)
+    FakeWeb.register_uri(:get, slave_url, :body => slave_metrics)
     FakeWeb.register_uri(:get, apps_url, :body => apps_json)
     FakeWeb.register_uri(:get, app_url, :body => app_json)
     udpsocket = mock()
-    udpsocket.expects(:send).with() { |value, int, address, port| address == scout_address && port == scout_port }.times(6) # magic number => number of metrics in the above json data
+    udpsocket.expects(:send).with() {
+      |value, int, address, port| address == scout_address && port == scout_port
+    }.times(8) # magic number => number of metrics in the json data above (together with slave's metrics)
 
     @plugin = MarathonStats.new(nil, {}, {:mesos_containers_url => containers_url, :marathon_apps_url => apps_url, :statsd_address => scout_address, :statsd_port => scout_port})
     @plugin.instance_variable_set("@socket", udpsocket)

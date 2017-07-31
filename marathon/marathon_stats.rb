@@ -3,19 +3,22 @@
 #
 # Created by Lukas Lachowski (lukasz.lachowski@solarwinds.com)
 #
+# TODO: this version follows the algorithm described in README.md, with an exception that it sends
+# all metrics of a slave (slave's /metrics/snapshot rest endpoint) as mapped exclusively to a task
+# (1-to-1 slave/task mapping).
+#
 
 class MarathonStats < Scout::Plugin
   needs "net/http", "uri", "json", "socket", "logger"
 
   OPTIONS=<<-EOS
-      mesos_containers_url:
-        name: Mesos Server containers REST API URL
-        notes: Specify the URL of the server's containers REST API to check.
-        default: "http://paas-slave1.test.us-west-1.plexapp.info:5051/containers"
       marathon_apps_url:
         name: Marathon REST API URL
         notes: Specify the URL for the Marathon's REST API.
         default: "http://paas-master1.test.us-west-1.plexapp.info:8080/v2/apps"
+      mesos_port:
+        name: Mesos REST endpoint port
+        default: 5051
       statsd_address:
         name: StatsD daemon ip address
         notes: Specify the address for the StatsD daemon.
@@ -33,25 +36,19 @@ class MarathonStats < Scout::Plugin
 
   def build_report
     begin
-      containers = get_containers()
       apps = get_apps()
       for app_data in apps do
         raise "Missing 'id' attribute in apps data payload from Marathon." unless app_data.key?("id")
         app_id = app_data["id"]
         app_data = get_app_data(app_id)
         unless app_data.key?("tasks") && app_data["tasks"].is_a?(Array)
-          raise "Invalid/missing 'tasks' attribute in data payload from Marathon. Data: %s" % app_data.to_s
+          raise "Invalid/missing 'tasks' attribute in data payload from Marathon. Data: %s" %
+                app_data.to_s
         end
         for task in app_data["tasks"] do
-          raise "Missing 'task.id' in data payload from Marathon." unless task.key?("id")
-          task_id = task["id"]
-          container = find_container(task_id, containers)
-          if container.nil?
-            next
-          end
+          task_id, metrics = get_task_metrics(task)
           task_name = "%s.%s" % [app_id, task_id]
-
-          publish_statsd(container, task_name)
+          publish_statsd(metrics, task_name)
         end
       end
     rescue => ex
@@ -60,9 +57,49 @@ class MarathonStats < Scout::Plugin
     end
   end
 
-  def get_marathon_app_url
-    return option(:marathon_apps_url)
+  def get_task_metrics(task)
+    raise "Missing 'task.id' attribute in data payload from Marathon." unless task.key?("id")
+    task_id = task["id"]
+    raise "Missing 'host' attribute in data payload from Marathon." unless task.key?("host")
+    host = task["host"]
+    rest_endpoint = get_containers_uri(host)
+    containers = get_containers(rest_endpoint)
+    container = find_container(task_id, containers)
+    if container.nil?
+      raise "Unknown container: %s." % task_id
+    end
+    unless container.key?("statistics")
+      raise "Missing the 'statistics' attribute in data payload returned by Marathon."
+    end
+    slave_metrics = get_slave_metrics(host)
+    return task_id, container["statistics"].merge(slave_metrics)
   end
+
+  def get_slave_metrics(host)
+    begin
+      slave_uri = URI.parse(get_slave_uri(host) + "/")
+      log_debug("Downloading mesos slave's metrics - url: %s" % slave_uri)
+      return JSON.parse(make_request(slave_uri))
+    rescue => ex
+      error = RuntimeError.new("Error while getting mesos slave's metrics."\
+                               "Original message: %s" % ex.message)
+      error.set_backtrace(ex.backtrace)
+      raise error
+    end
+  end
+
+  def get_slave_uri(host)
+    return "http://%s:%s" % [host, get_mesos_port()]
+  end
+
+  def get_containers_uri(host)
+    return "%s%s" % [get_slave_uri(host), "/containers"]
+  end
+
+  def get_mesos_port
+    return option(:mesos_port)
+  end
+
   def get_marathon_app_url
     return option(:marathon_apps_url)
   end
@@ -77,9 +114,9 @@ class MarathonStats < Scout::Plugin
     return containers.find{ |x| x["executor_id"] == task_id}
   end
 
-  def get_containers
+  def get_containers(uri)
     begin
-      mesos_uri = URI.parse(option(:mesos_containers_url))
+      mesos_uri = URI.parse(uri)
       log_debug("Downloading the list of Mesos containers - url: %s" % mesos_uri)
       return JSON.parse(make_request(mesos_uri))
     rescue => ex
@@ -131,11 +168,7 @@ class MarathonStats < Scout::Plugin
     return response.body
   end
 
-  def publish_statsd(container_data, app_name)
-    unless container_data.key?("statistics")
-      raise "Missing the 'statistics' attribute in data payload returned by Marathon." 
-    end
-    statistics = container_data["statistics"]
+  def publish_statsd(statistics, app_name)
     statsd_values = container_data_to_statsd(statistics, app_name)
     statsd_values.each do |statsd|
       send_statsd(statsd, option(:statsd_address), option(:statsd_port))
