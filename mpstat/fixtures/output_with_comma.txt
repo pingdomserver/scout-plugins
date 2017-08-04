@@ -1,0 +1,2 @@
+10:47:51 AM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+10:47:56 AM  all    0,31    0,00    1,97    0,00    0,00    0,10    0,00    0,00    0,00   97,61

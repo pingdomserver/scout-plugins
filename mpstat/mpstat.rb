@@ -34,11 +34,15 @@ class MPstat < Scout::Plugin
     # Expected output format:
     # 04:38:34 PM  CPU   %user   %nice    %sys %iowait    %irq   %soft  %steal   %idle    intr/s
     # 04:38:34 PM  all    6.69    0.02    1.30    0.31    0.02    0.13    0.00   91.53    349.37
+    # or:
+    # 04:38:34 PM  CPU   %user   %nice    %sys %iowait    %irq   %soft  %steal   %idle    intr/s
+    # 04:38:34 PM  all    6,69    0,02    1,30    0,31    0,02    0,13    0,00   91,53    349,37
 
     # take the format fields
-    format=output.split("\n").grep(/CPU/).last.gsub(/\//,'p').gsub(/(%|:)/,'').downcase.split
-
+    format=output.split("\n").grep(/CPU/).last.gsub(/\//,'p').gsub(/(%|:)/,'')
+      .gsub('usr', 'user').downcase.split
     # take all the stat fields
+    output = output.gsub(',', '.')
     raw_stats=output.split("\n").grep(/[0-9]+\.[0-9]+$/).last.split
 
     stats={}
