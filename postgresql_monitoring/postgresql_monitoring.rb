@@ -24,15 +24,25 @@ class PostgresqlMonitoring < Scout::Plugin
       name: PostgreSQL port
       notes: Specify the port to connect to PostgreSQL with
       default: 5432
+    service:
+      name: PostgreSQL service name
+      notes: Defined in .pg_service.conf file.
+      default: 
   EOS
 
   NON_COUNTER_ENTRIES = ["numbackends"]
   
   def build_report
     report = {}
-    
+
+    if option(:service).nil?
+        connection_string = "host=#{option(:host)} user=#{option(:user)} password=#{option(:password)} port=#{option(:port).to_i} dbname=#{option(:dbname)}"
+    else
+        connection_string = "service=#{option(:service)}"
+    end
+
     begin
-      PGconn.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
+        PGconn.new(connection_string) do |pgconn|
 
         result = pgconn.exec('SELECT sum(idx_tup_fetch) AS "rows_select_idx", 
                                      sum(seq_tup_read) AS "rows_select_scan", 
