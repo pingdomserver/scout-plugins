@@ -30,7 +30,7 @@ class TestCassandraGCStats < Test::Unit::TestCase
   end
   
   def test_parsed_headers_should_have_right_values
-    @plugin.stubs(:gather_facts).returns(gcstats)
+    @plugin.stubs(:gather_facts).returns(gcstats.split(/\n/))
     
     result = @plugin.run
     

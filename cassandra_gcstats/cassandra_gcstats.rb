@@ -32,17 +32,17 @@ class CassandraGCStats < Scout::Plugin
   attr_reader :headers, :values
   
   def gather_facts
-    @facts ||= %x(nodetool #{options} gcstats)
+    @facts ||= %x(nodetool #{options} gcstats).split(/\n/)
   end
   
   def parsed_headers
-    header_line = gather_facts.lines.first.lstrip.chomp
+    header_line = gather_facts.first.lstrip.chomp
   
     @headers ||= header_line.split(/\)/).join(')  ').split(/\s{2,}/)
   end
   
   def parsed_values
-    @values ||= gather_facts.lines.last.lstrip.split(/\s+/)
+    @values ||= gather_facts.last.lstrip.split(/\s+/)
   end
   
   def ensure_data_consistency!
