@@ -1,17 +1,12 @@
 class EtcdStats < Scout::Plugin
-  needs 'curb', 'time', 'pry'
-
-  INFO = <<-EOS
-  This plugin is using 'curb' gem. To use the plugin, please install 'curb'.
-  EOS
+  needs 'net/http', 'time', 'pry'
 
 
   def build_report
     begin
-      c = Curl::Easy.new("http://127.0.0.1:2379/v2/stats/self")
-      c.perform
-      response = c.body_str
-      json = JSON.parse response
+      uri = URI("http://127.0.0.1:2379/v2/stats/self")
+      response = Net::HTTP.get_response(uri)
+      json = JSON.parse response.body
       report(:name => json['name'])
       report(:id => json['id'])
       report(:state => json['state'])
@@ -25,9 +20,12 @@ class EtcdStats < Scout::Plugin
         report(:rcv_bandwidth_rate => json['recvBandwidthRate'])
         report(:rcv_pkg_rate => json['recvPkgRate'])
       elsif (json['state'] == "StateLeader") then
-        #report(:send_bandwidth_rate => json['sendBandwidthRate'])
-        #report(:send_pkg_rate => json['sendPkgRate'])
+        report(:send_bandwidth_rate => json['sendBandwidthRate'])
+        report(:send_pkg_rate => json['sendPkgRate'])
       end
+    rescue Errno::ECONNREFUSED => e
+      return error("Connection refused, please verify if Etcd is running.",
+                    "#{e.message} ")
     rescue Exception=> e
       return error( "Error using Etcd plugin.",
                     "#{e.message} ")
