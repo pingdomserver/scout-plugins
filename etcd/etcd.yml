@@ -1,0 +1,23 @@
+metadata:
+  name:
+    label: Node name
+  id:
+    label: Node id
+  state:
+    label: Node state
+  start_time:
+    label: Node start time
+  leader_id:
+    label: Node's lider id
+  leader_uptime_sec:
+    label: Leader's uptime in seconds
+  leader_start_time:
+    label: Leader's start time
+  rcv_append_request_cnt:
+    label: Number of append requests processed
+  send_append_request_cnt:
+    label: Number of append requests sent
+  rcv_bandwidth_rate:
+    label: Number of bytes per second this node is receiving
+  rcv_pkg_rate:
+    label: Number of requests per second this node is receiving
