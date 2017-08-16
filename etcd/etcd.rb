@@ -1,5 +1,5 @@
 class EtcdStats < Scout::Plugin
-  needs 'net/http', 'time', 'pry'
+  needs 'net/http', 'time'
 
 
   def build_report
