@@ -9,7 +9,7 @@
 #
 
 class MarathonStats < Scout::Plugin
-  needs "net/http", "uri", "json", "socket", "logger"
+  needs "net/http", "uri", "json", "socket", "logger", "pry"
 
   OPTIONS=<<-EOS
       marathon_apps_url:
@@ -50,19 +50,21 @@ class MarathonStats < Scout::Plugin
            
 
           task_name = "%s.%s" % [app_id, task_id]
+          stats = {}
           
           mem = memory(:"#{task_name}_stats")
           if mem
+            
             cpu_usage = (
                     (metrics["cpus_system_time_secs"] - mem["cpus_system_time_secs"]) +
                     (metrics["cpus_user_time_secs"] - mem["cpus_user_time_secs"])) / 
                     (metrics["timestamp"] - mem["timestamp"])
                     
-            report(:"#{task_name}_cpu_usage_percent" => (cpu_usage * 100 ))
+            stats[:"#{task_name}_cpu_usage_percent"] = (cpu_usage * 100 )
                     
-            report(:"#{task_name}_memory_usage_bytes" => metrics["mem_rss_bytes"].to_f)
-            report(:"#{task_name}_memory_usage_percent" => (metrics["mem_rss_bytes"].to_f /  (metrics["slave/mem_total"].to_f * 1048576)) * 100.0)   
-            #publish_statsd(stats, task_name)      
+            stats[:"#{task_name}_memory_usage_bytes"] = metrics["mem_rss_bytes"].to_f
+            stats[:"#{task_name}_memory_usage_percent"] = (metrics["mem_rss_bytes"].to_f /  (metrics["slave/mem_total"].to_f * 1048576)) * 100.0   
+            publish_statsd(stats, task_name)     
           end
           remember(:"#{task_name}_stats" => metrics)
         end
