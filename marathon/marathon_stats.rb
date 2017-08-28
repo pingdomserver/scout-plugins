@@ -9,7 +9,7 @@
 #
 
 class MarathonStats < Scout::Plugin
-  needs "net/http", "uri", "json", "socket", "logger", "pry"
+  needs "net/http", "uri", "json", "socket", "logger"
 
   OPTIONS=<<-EOS
       marathon_apps_url:
@@ -63,7 +63,6 @@ class MarathonStats < Scout::Plugin
             stats[:memory_usage_bytes] = metrics["mem_rss_bytes"].to_f
             stats[:memory_usage_percent] = (metrics["mem_rss_bytes"].to_f /  metrics["mem_limit_bytes"].to_f) * 100.0
             stats[:slaves_cpu_percent] = metrics["slave/cpus_percent"]
-            binding.pry
             publish_statsd(stats, task_name)
           end
           remember(:"#{task_name}_stats" => metrics)
