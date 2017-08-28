@@ -49,22 +49,22 @@ class MarathonStats < Scout::Plugin
           task_id, metrics = get_task_metrics(task)
            
 
-          task_name = "%s.%s" % [app_id, task_id]
+          task_name = "%s@%s" % [task_id, metrics["slave_address"]]
           stats = {}
-          
           mem = memory(:"#{task_name}_stats")
           if mem
             
             cpu_usage = (
                     (metrics["cpus_system_time_secs"] - mem["cpus_system_time_secs"]) +
                     (metrics["cpus_user_time_secs"] - mem["cpus_user_time_secs"])) / 
-                    (metrics["timestamp"] - mem["timestamp"])
+                    (metrics["timestamp"] - mem["timestamp"])     
+            stats[:cpu_usage_percent] = (cpu_usage * 100 )
                     
-            stats[:"#{task_name}_cpu_usage_percent"] = (cpu_usage * 100 )
-                    
-            stats[:"#{task_name}_memory_usage_bytes"] = metrics["mem_rss_bytes"].to_f
-            stats[:"#{task_name}_memory_usage_percent"] = (metrics["mem_rss_bytes"].to_f /  (metrics["slave/mem_total"].to_f * 1048576)) * 100.0   
-            publish_statsd(stats, task_name)     
+            stats[:memory_usage_bytes] = metrics["mem_rss_bytes"].to_f
+            stats[:memory_usage_percent] = (metrics["mem_rss_bytes"].to_f /  metrics["mem_limit_bytes"].to_f) * 100.0
+            stats[:slaves_cpu_percent] = metrics["slave/cpus_percent"]
+            binding.pry
+            publish_statsd(stats, task_name)
           end
           remember(:"#{task_name}_stats" => metrics)
         end
@@ -83,6 +83,7 @@ class MarathonStats < Scout::Plugin
     rest_endpoint = get_containers_uri(host)
     containers = get_containers(rest_endpoint)
     container = find_container(task_id, containers)
+    containers_host = {"slave_address" => host}
     if container.nil?
       raise "Unknown container: %s." % task_id
     end
@@ -90,7 +91,7 @@ class MarathonStats < Scout::Plugin
       raise "Missing the 'statistics' attribute in data payload returned by Marathon."
     end
     slave_metrics = get_slave_metrics(host)
-    return task_id, container["statistics"].merge(slave_metrics)
+    return task_id, container["statistics"].merge(slave_metrics).merge(containers_host)
   end
 
   def get_slave_metrics(host)
