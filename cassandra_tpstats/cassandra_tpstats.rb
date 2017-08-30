@@ -1,4 +1,4 @@
-# Reports Cassandra thread pools statistics
+# Reports Cassandra ReadStage thread pools statistics
 #
 # Created by Oskar Kapusta on 2017-08-11.
 # ==============================================================================
@@ -20,10 +20,8 @@ class CassandraTPStats < Scout::Plugin
   EOS
   
   def build_report
-    gather_facts["ThreadPools"].each do |k, v|
-      v.each do |_k, _v|
-        report(:"#{k}#{_k}" => _v)
-      end
+    gather_facts["ThreadPools"]["ReadStage"].each do |k, v|
+      report(:"#{k}" => v)
     end
   end
   
