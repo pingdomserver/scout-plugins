@@ -37,7 +37,7 @@ class ElasticsearchClusterNodeStatus < Scout::Plugin
       return error("Please provide both username and password", "Both the elasticsearch username and password to monitor the protected cluster are required.\n\nUsername: #{option(:username)}\n\nPassword: #{option(:password)}")
     end
 
-    base_url = "#{option(:elasticsearch_host)}:#{option(:elasticsearch_port)}#{uri_path}/#{node_name}/stats?all=true"
+    base_url = "#{option(:elasticsearch_host)}:#{option(:elasticsearch_port)}#{uri_path}/#{node_name}/stats"
 
     response = get_response(base_url)
     resp = JSON.parse(response.body)
