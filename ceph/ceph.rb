@@ -41,7 +41,7 @@ class CephPlugin < Scout::Plugin
 
     def parse
       @lines = @status_text.split("\n").map { |line| line.strip }
-      s@status = {}
+      @status = {}
       @ceph_health = search_in_output(@lines, /\s*health\s.*/).to_s.split(' ')[1]
       @status[:health] = @ceph_health==HEALTH_OK_STRING ? HEALTH_OK : UNHEALTHY
       @unhealthy_reason = search_in_output(@lines, /\s*health\s.*/).to_s.split(' ')[2..-1].join(' ') rescue nil
