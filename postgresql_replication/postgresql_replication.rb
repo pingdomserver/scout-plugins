@@ -5,10 +5,10 @@ class PostgresqlReplication < Scout::Plugin
     user:
       name: PostgreSQL username
       notes: Specify the username to connect as.
-    password: 
+    password:
       name: PostgreSQL Password
       attributes: password
-    host: 
+    host:
       name: PostgreSQL Host
       notes: Specify the host name of the PostgreSQL server. If the value begins with
               a slash it is used as the directory for the Unix-domain socket. An empty
@@ -29,10 +29,14 @@ class PostgresqlReplication < Scout::Plugin
 
   def build_report
     report = {"synced" => 0}
-    
+
     begin
       PGconn.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
-        query = "select state, sent_location from pg_stat_replication;"
+        if check_psql_version >= 10
+          query = "select state, sent_lsn from pg_stat_replication;"
+        else
+          query = "select state, sent_location from pg_stat_replication;"
+        end
         result = pgconn.exec(query)
         row = result[0]
         row.each do |k,v|
@@ -58,7 +62,7 @@ class PostgresqlReplication < Scout::Plugin
       return errors << {:subject => "Unable to connect to PostgreSQL.",
                         :body => "Scout was unable to connect to the PostgreSQL server: \n\n#{e}\n\n#{e.backtrace}"}
     end
-   
+
     # And now we connect to the standby and see what we can get:
     unless option(:standby_host).nil? || option(:standby_host) == ""
       begin
@@ -91,6 +95,11 @@ class PostgresqlReplication < Scout::Plugin
       end
     end
     report(report) unless report.values.compact.empty?
+  end
+
+  def check_psql_version
+    version = `psql --version 2>/dev/null`
+    version.split[-1].split('.')[0].to_i unless version.empty?
   end
 
 end
