@@ -32,7 +32,7 @@ class PostgresqlReplication < Scout::Plugin
 
     begin
       PGconn.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
-        if check_psql_version >= 10
+        if (pgconn.server_version / 10000) >= 10
           query = "select state, sent_lsn from pg_stat_replication;"
         else
           query = "select state, sent_location from pg_stat_replication;"
@@ -61,6 +61,9 @@ class PostgresqlReplication < Scout::Plugin
     rescue PGError => e
       return errors << {:subject => "Unable to connect to PostgreSQL.",
                         :body => "Scout was unable to connect to the PostgreSQL server: \n\n#{e}\n\n#{e.backtrace}"}
+    rescue IndexError => e
+      return errors << {:subject => "Replication has not occured yet.",
+                        :body => "It seems that PostgreSQL hasn't registered any replication."}
     end
 
     # And now we connect to the standby and see what we can get:
@@ -96,10 +99,4 @@ class PostgresqlReplication < Scout::Plugin
     end
     report(report) unless report.values.compact.empty?
   end
-
-  def check_psql_version
-    version = `psql --version 2>/dev/null`
-    version.split[-1].split('.')[0].to_i unless version.empty?
-  end
-
 end
