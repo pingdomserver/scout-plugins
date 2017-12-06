@@ -124,12 +124,12 @@ class ScoutMongoSlow < Scout::Plugin
   end
 
   def get_slow_queries_v2
-    client = Mongo::Client.new(["#{@host}:#{@port}"], :database => @database, :ssl => @ssl, :connect_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1)
+    client = Mongo::Client.new(["#{@server}:#{@port}"], :database => @database, :ssl => @ssl, :connect_timeout => @connect_timeout, :socket_timeout => @op_timeout, :server_selection_timeout => 1)
     client = client.with(user: @username, password: @password, auth_source: @auth_source) unless @username.empty?
     enable_profiling_v2(client.database)
     report_slow_queries(client.database)
   rescue Mongo::Error::NoServerAvailable
-    return error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@host}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
+    return error("Unable to connect to the MongoDB Daemon.","Please ensure it is running on #{@server}:#{@port}\n\nException Message: #{$!.message}, also confirm if SSL should be enabled or disabled.")
   end
 
   def report_slow_queries(db)
