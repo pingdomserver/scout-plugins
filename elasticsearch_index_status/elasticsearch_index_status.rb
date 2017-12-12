@@ -22,7 +22,7 @@ class ElasticsearchIndexStatus < Scout::Plugin
       notes: Password used to log into elasticsearch host if authentication is enabled.
     index_name:
       name: Index name
-      notes: Name of the index you wish to monitor
+      notes: Name of the index or index alias you wish to monitor
   EOS
 
   needs 'net/http', 'net/https', 'json', 'open-uri'
