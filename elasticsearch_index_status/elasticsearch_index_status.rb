@@ -49,13 +49,15 @@ class ElasticsearchIndexStatus < Scout::Plugin
 
     # support elasticsearch before and after formatting change
     indices = (response['_all'] && response['_all']['indices']) || response['indices']
-    report(:primary_size => b_to_mb(indices[index_name]['primaries']['store']['size_in_bytes']) || 0)
-    report(:size => b_to_mb(indices[index_name]['total']['store']['size_in_bytes']) || 0)
-    report(:num_docs => indices[index_name]['primaries']['docs']['count'] || 0)
+    # support aliases
+    true_index_name = indices.keys[0]
+    report(:primary_size => b_to_mb(indices[true_index_name]['primaries']['store']['size_in_bytes']) || 0)
+    report(:size => b_to_mb(indices[true_index_name]['total']['store']['size_in_bytes']) || 0)
+    report(:num_docs => indices[true_index_name]['primaries']['docs']['count'] || 0)
 
-    search_metrics(indices, "search", "query")
-    search_metrics(indices, "indexing", "index")
-    search_metrics(indices, "indexing", "delete")
+    search_metrics(indices[true_index_name], "search", "query")
+    search_metrics(indices[true_index_name], "indexing", "index")
+    search_metrics(indices[true_index_name], "indexing", "delete")
 
   rescue OpenURI::HTTPError
     error("Stats URL not found", "Please ensure the base url for elasticsearch index stats is correct. Current URL: \n\n#{base_url}")
@@ -65,9 +67,8 @@ class ElasticsearchIndexStatus < Scout::Plugin
     error("Unable to connect", "Please ensure the host and port are correct. Current URL: \n\n#{base_url}")
   end
 
-  def search_metrics(indices, primaries_key, type)
-    index_name = option(:index_name)
-    stats = indices[index_name]['primaries'][primaries_key]
+  def search_metrics(index, primaries_key, type)
+    stats = index['primaries'][primaries_key]
     if stats
       # sample for index/delete
       # {"open_contexts"=>0, "query_total"=>319796, "query_time_in_millis"=>22074525, "query_current"=>0, "fetch_total"=>12014, "fetch_time_in_millis"=>698430, "fetch_current"=>0}
