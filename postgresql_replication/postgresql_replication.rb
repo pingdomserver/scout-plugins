@@ -33,7 +33,7 @@ class PostgresqlReplication < Scout::Plugin
     begin
       PGconn.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
         if (pgconn.server_version / 10000) >= 10
-          query = "select state, sent_lsn from pg_stat_replication;"
+          query = "select state, sent_lsn as sent_location from pg_stat_replication;"
         else
           query = "select state, sent_location from pg_stat_replication;"
         end
