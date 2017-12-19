@@ -70,7 +70,11 @@ class PostgresqlReplication < Scout::Plugin
     unless option(:standby_host).nil? || option(:standby_host) == ""
       begin
         PGconn.new(:host => option(:standby_host), :user => option(:user), :password => option(:password), :port => option(:port), :dbname => option(:dbname)) do |pgconn|
-          query = "select pg_last_xlog_receive_location(), now() - pg_last_xact_replay_timestamp() AS replication_delay;"
+          if (pgconn.server_version / 10000) >= 10
+            query = "select pg_last_wal_receive_lsn() AS pg_last_xlog_receive_location, now() - pg_last_xact_replay_timestamp() AS replication_delay;"
+          else
+            query = "select pg_last_xlog_receive_location(), now() - pg_last_xact_replay_timestamp() AS replication_delay;"
+          end
           result = pgconn.exec(query)
           row = result[0]
           report["standby_receive_location"] = row["pg_last_xlog_receive_location"]
