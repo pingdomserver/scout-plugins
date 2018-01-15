@@ -7,12 +7,11 @@ class NTPStat < Scout::Plugin
   EOS
 
   def build_report
-    init_values if memory(:within).nil?
-    output = `ntpstat`
-
-    if Time.now.to_i - memory(:last_run_time).to_i > option(:uptime_interval).to_i * 60
-
-      remember(:last_run_time => Time.now.to_i)
+    # Check the interval, add 10 seconds buffor
+    unless Time.now.to_i - memory(:last_run_time).to_i >= (option(:uptime_interval).to_i) * 60 - 10
+      report_from_memory
+    else
+      output = `ntpstat`
 
       if $?.success?
         report(:NSync => 1)
@@ -23,25 +22,26 @@ class NTPStat < Scout::Plugin
         interval = output[/polling server every (\d+) s/, 1].to_i
         report(:polling_interval_in_seconds => interval)
 
-        remember_values(interval, within, 1)
+        remember_values(interval, within, 1, Time.now.to_i)
       else
-        remember_values(memory(:interval), memory(:within), 0)
-        report(:NSync => 0, :accuracy_in_milliseconds => memory(:within), :polling_interval_in_seconds => memory(:interval))
+        report_from_memory(nsync=0)
       end
-    else
-      remember_values(memory(:interval), memory(:within), memory(:NSync))
-      report(:NSync => memory(:NSync), :accuracy_in_milliseconds => memory(:within), :polling_interval_in_seconds => memory(:interval))
     end
   rescue => boom
     error(boom.message)
   end
 
-  def remember_values(interval, within, nsync)
-    remember(:interval => interval, :within => within, :NSync => nsync)
+  def report_from_memory(nsync=memory(:NSync).to_i, time=memory(:last_run_time))
+    remember_values(memory(:interval).to_i, memory(:within).to_i, nsync, time)
+    report(:NSync => nsync,
+           :accuracy_in_milliseconds => memory(:within).to_i,
+           :polling_interval_in_seconds => memory(:interval).to_i)
   end
 
-  def init_values
-    remember(:last_run_time => Time.now.to_i - 2 * (option(:uptime_interval).to_i * 60))
-    remember(:interval => 0, :within => 0, :NSync => 0)
+  def remember_values(interval, within, nsync, time)
+    remember(:interval => interval,
+             :within => within,
+             :NSync => nsync,
+             :last_run_time => time)
   end
 end
