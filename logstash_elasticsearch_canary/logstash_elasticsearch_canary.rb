@@ -11,11 +11,11 @@ class LogstashElasticsearchCanary < Scout::Plugin
       name: Port
       notes: The port elasticsearch is running on
     username:
-      deault: nil
+      default: nil
       name: Username
       notes: Username used to log into elasticsearch host if authentication is enabled.
     password:
-      deault: nil
+      default: nil
       name: Password
       notes: Password used to log into elasticsearch host if authentication is enabled.
     index_name:
