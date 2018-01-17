@@ -16,15 +16,14 @@ EOS
   DEFAULT_NTP_HOST = 'pool.ntp.org'
 
   def build_report
-    unless Time.now.to_i - memory(:last_run_time).to_i >= (option(:uptime_interval).to_i) * 60 - 10
+    if Time.now.to_i - memory(:last_run_time).to_i < (option(:uptime_interval).to_i) * 60 - 10
       report_from_memory
     else
       host = option(:host) || DEFAULT_NTP_HOST
 
       ntpdate_result = `#{option(:ntpdate_binary)} -q #{host} 2>&1`
-      unless $?.success?
-        error("ntpdate failed to run: #{ntpdate_result}")
-      end
+
+      error("ntpdate failed to run: #{ntpdate_result}") unless $?.success?
 
       ntpdate_lines   = ntpdate_result.split("\n")
       ntpdate_report  = ntpdate_lines.pop
@@ -39,13 +38,13 @@ EOS
 
   def report_from_memory(time=memory(:last_run_time))
     remember_values(memory(:offset).to_f, memory(:servers).to_i, time)
-    report(:offset => memory(:offset).to_f,
+    report(:offset  => memory(:offset).to_f,
            :servers => memory(:servers).to_i)
   end
 
   def remember_values(offset, servers, time)
-    remember(:offset => offset,
-             :servers => servers,
+    remember(:offset        => offset,
+             :servers       => servers,
              :last_run_time => time)
   end
 end
