@@ -37,11 +37,11 @@ class SidekiqMonitor < Scout::Plugin
 
   def build_report
     protocol = 'redis://'
-    auth = [option(:username), option(:password)].compact.join(':')
+    auth = [(option(:username) || ""), option(:password)].compact.join(':')
     path = "#{option(:host)}:#{option(:port)}/#{option(:db)}"
 
     url = protocol
-    url += auth if auth && auth != ':'
+    url += "#{auth}@" if auth && auth != ':'
     url += path
 
     Sidekiq::Logging.logger = nil unless $VERBOSE
@@ -69,4 +69,3 @@ class SidekiqMonitor < Scout::Plugin
                   "#{e.message} \n\nMake certain you've specified the correct host and port, DB, username, and password, and that Redis is accepting connections.\n\n#{e.backtrace}" )
   end
 end
-
