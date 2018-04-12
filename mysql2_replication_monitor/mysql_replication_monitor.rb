@@ -91,6 +91,7 @@ class MysqlReplicationMonitor < Scout::Plugin
       end
     end
     report(res)
+    connection.close
   end
 
   def in_ignore_window?
