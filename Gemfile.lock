@@ -12,7 +12,7 @@ GEM
     memcache-client (1.8.5)
     metaclass (0.0.4)
     method_source (0.8.2)
-    mini_portile2 (2.0.0)
+    mini_portile2 (2.3.0)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     mongo (2.2.1)
@@ -20,8 +20,8 @@ GEM
     mono_logger (1.1.0)
     multi_json (1.11.2)
     mysql2 (0.4.2)
-    nokogiri (1.6.7.2)
-      mini_portile2 (~> 2.0.0.rc2)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
     pg (0.18.4)
     pry (0.10.3)
       coderay (~> 1.1.0)
@@ -30,8 +30,8 @@ GEM
     pry-doc (0.8.0)
       pry (~> 0.9)
       yard (~> 0.8)
-    rack (1.6.4)
-    rack-protection (1.5.3)
+    rack (1.6.10)
+    rack-protection (1.5.5)
       rack
     redis (3.2.2)
     redis-namespace (1.5.2)
@@ -60,7 +60,7 @@ GEM
     timecop (0.8.0)
     vegas (0.1.11)
       rack (>= 1.0.0)
-    yard (0.8.7.6)
+    yard (0.9.12)
 
 PLATFORMS
   ruby
@@ -73,13 +73,18 @@ DEPENDENCIES
   mocha
   mongo
   mysql2
-  nokogiri
+  nokogiri (~> 1.8.1)
   pg
   pry
   pry-doc
+  rack-protection (~> 1.5.5)
   redis
   request-log-analyzer
   resque
   scout
   sidekiq
   timecop
+  yard (~> 0.9.11)
+
+BUNDLED WITH
+   1.16.1
