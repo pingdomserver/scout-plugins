@@ -9,7 +9,7 @@ class DockerMonitor < Scout::Plugin
 
   def build_report
     containers = containers_from_options || running_container_ids
-    @stats = {:number_of_containers => number_of_running_containers, :cpu_percent => 0.0, :memory_usage => 0.0, :memory_limit => 0.0, :network_in => 0.0, :network_out => 0.0}
+    @stats = {:number_of_containers => number_of_running_containers, :cpu_percent => 0.0, :memory_usage => 0.0, :memory_limit => 0.0, :active_file => 0.0, :network_in => 0.0, :network_out => 0.0}
     containers.each do |container_id|
       add_container_stats(container_id)
     end
@@ -83,6 +83,7 @@ class DockerMonitor < Scout::Plugin
       @stats[:cpu_percent] += calculate_cpu_percent(container_id, stats["cpu_stats"]["cpu_usage"]["total_usage"], stats["cpu_stats"]["system_cpu_usage"], stats["cpu_stats"]["cpu_usage"]["percpu_usage"].count)
       @stats[:memory_usage] += stats["memory_stats"]["usage"].to_f / 1024.0 / 1024.0 if stats["memory_stats"]
       @stats[:memory_limit] += stats["memory_stats"]["limit"].to_f / 1024.0 / 1024.0 if stats["memory_stats"]
+      @stats[:active_file] += stats["memory_stats"]["stats"]["active_file"].to_f / 1024.0 / 1024.0 if stats["memory_stats"] && stats["memory_stats"]["stats"]
       @stats[:network_in] += stats["network"]["rx_bytes"].to_f / 1024.0 if stats["network"]
       @stats[:network_out] += stats["network"]["tx_bytes"].to_f / 1024.0 if stats["network"]
     end
