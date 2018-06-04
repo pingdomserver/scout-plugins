@@ -2,7 +2,7 @@ metadata:
   number_of_containers:
     label: Number of Containers
     precision: 0
-  cpu_percent:          
+  cpu_percent:
     label: CPU %
     units: "%"
     precision: 2
@@ -14,6 +14,10 @@ metadata:
     label: Memory Limit
     units: MB
     precision: 2
+  active_file:
+    label: Memory Active File
+    units: MB
+    precision: 2
   network_in:
     label: Network In
     units: KB/s
@@ -22,4 +26,3 @@ metadata:
     label: Network Out
     units: KB/s
     precision: 2
-
