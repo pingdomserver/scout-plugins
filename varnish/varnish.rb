@@ -35,7 +35,7 @@ class Varnish < Scout::Plugin
     end
     res.each_line do |line|
       #client_conn 211980 0.30 Client connections accepted
-      next unless /\A([\.\w]+)\s+(\d+)\s+(\d+\.\d+)\s(.+)\Z/.match(line)
+      next unless /\A([\.\w]+)\s+(\d+)\s+(\d*\.\d*)\s(.+)\Z/.match(line)
       stats[$1] = $2.to_i
     end
 
