@@ -18,6 +18,10 @@ class SidekiqMonitor < Scout::Plugin
     name: Port
     notes: Redis port to pass to the client library.
     default: 6379
+  rediss:
+    name: Rediss Protocol
+    notes: Whether to use the rediss protocol (specify 'true' to enable)
+    attributes: advanced
   db:
     name: Database
     notes: Redis database ID to pass to the client library.
@@ -36,7 +40,7 @@ class SidekiqMonitor < Scout::Plugin
   EOS
 
   def build_report
-    protocol = 'redis://'
+    protocol = options[:rediss].to_s.strip == 'true' ? 'rediss://' : 'redis://'
     auth = [(option(:username) || ""), option(:password)].compact.join(':')
     path = "#{option(:host)}:#{option(:port)}/#{option(:db)}"
 
