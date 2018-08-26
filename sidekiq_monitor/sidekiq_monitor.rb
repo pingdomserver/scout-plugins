@@ -40,7 +40,7 @@ class SidekiqMonitor < Scout::Plugin
   EOS
 
   def build_report
-    protocol = option[:rediss].to_s.strip == 'true' ? 'rediss://' : 'redis://'
+    protocol = option(:rediss).to_s.strip == 'true' ? 'rediss://' : 'redis://'
     auth = [(option(:username) || ""), option(:password)].compact.join(':')
     path = "#{option(:host)}:#{option(:port)}/#{option(:db)}"
 
