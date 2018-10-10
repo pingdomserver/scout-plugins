@@ -33,7 +33,17 @@ class PostgresqlMonitoring < Scout::Plugin
   NON_COUNTER_ENTRIES = ["numbackends"]
   
   def build_report
+    pg_version = Gem.loaded_specs["pg"].version
+
     report = {}
+
+    if Gem::Version.new(pg_version) > Gem::Version.new('0.20.0')
+      pg_conn_class = PG::Connection
+      pg_error_class = PG::Error
+    else
+      pg_conn_class = PGconn
+      pg_error_class = PGError
+    end
 
     if option(:service).nil?
         connection_string = "host=#{option(:host)} user=#{option(:user)} password=#{option(:password)} port=#{option(:port).to_i} dbname=#{option(:dbname)}"
@@ -42,11 +52,11 @@ class PostgresqlMonitoring < Scout::Plugin
     end
 
     begin
-        PGconn.new(connection_string) do |pgconn|
+      pg_conn_class.new(connection_string) do |pgconn|
 
-        result = pgconn.exec('SELECT sum(idx_tup_fetch) AS "rows_select_idx", 
-                                     sum(seq_tup_read) AS "rows_select_scan", 
-                                     sum(n_tup_ins) AS "rows_insert", 
+        result = pgconn.exec('SELECT sum(idx_tup_fetch) AS "rows_select_idx",
+                                     sum(seq_tup_read) AS "rows_select_scan",
+                                     sum(n_tup_ins) AS "rows_insert",
                                      sum(n_tup_upd) AS "rows_update",
                                      sum(n_tup_del) AS "rows_delete",
                                      (sum(idx_tup_fetch) + sum(seq_tup_read) + sum(n_tup_ins) + sum(n_tup_upd) + sum(n_tup_del)) AS "rows_total"
@@ -61,11 +71,11 @@ class PostgresqlMonitoring < Scout::Plugin
           end
         end
 
-        result = pgconn.exec('SELECT sum(numbackends) AS "numbackends", 
-                                     sum(xact_commit) AS "xact_commit", 
-                                     sum(xact_rollback) AS "xact_rollback", 
-                                     sum(xact_commit+xact_rollback) AS "xact_total", 
-                                     sum(blks_read) AS "blks_read", 
+        result = pgconn.exec('SELECT sum(numbackends) AS "numbackends",
+                                     sum(xact_commit) AS "xact_commit",
+                                     sum(xact_rollback) AS "xact_rollback",
+                                     sum(xact_commit+xact_rollback) AS "xact_total",
+                                     sum(blks_read) AS "blks_read",
                                      sum(blks_hit) AS "blks_hit"
                               FROM pg_stat_database;')
         row = result[0]
@@ -85,7 +95,7 @@ class PostgresqlMonitoring < Scout::Plugin
 
       end
 
-    rescue PGError => e
+    rescue pg_error_class => e
       return errors << {:subject => "Unable to connect to PostgreSQL.",
                         :body => "Scout was unable to connect to the PostgreSQL server: \n\n#{e}\n\n#{e.backtrace}"}
     end
