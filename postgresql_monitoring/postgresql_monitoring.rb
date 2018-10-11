@@ -33,17 +33,7 @@ class PostgresqlMonitoring < Scout::Plugin
   NON_COUNTER_ENTRIES = ["numbackends"]
   
   def build_report
-    pg_version = Gem.loaded_specs["pg"].version
-
     report = {}
-
-    if Gem::Version.new(pg_version) > Gem::Version.new('0.20.0')
-      pg_conn_class = PG::Connection
-      pg_error_class = PG::Error
-    else
-      pg_conn_class = PGconn
-      pg_error_class = PGError
-    end
 
     if option(:service).nil?
         connection_string = "host=#{option(:host)} user=#{option(:user)} password=#{option(:password)} port=#{option(:port).to_i} dbname=#{option(:dbname)}"
@@ -101,5 +91,19 @@ class PostgresqlMonitoring < Scout::Plugin
     end
 
     report(report) if report.values.compact.any?
+  end
+
+  private 
+
+  def pg_conn_class
+    Gem::Version.new(pg_gem_version) > Gem::Version.new('0.20.0') ? PG::Connection : PGconn
+  end
+
+  def pg_error_class
+    Gem::Version.new(pg_gem_version) > Gem::Version.new('0.20.0') ? PG::Error : PGError
+  end
+
+  def pg_gem_version
+    Gem.loaded_specs["pg"].version
   end
 end
