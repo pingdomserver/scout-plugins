@@ -52,7 +52,7 @@ class ScoutMysqlSlow < Scout::Plugin
         query_time = $1.to_f
         all_queries << {:query_time => query_time, :sql => sql.reverse}
         sql = []
-      elsif line =~ /^\# Time: (\d+ .*)$/
+      elsif line =~ /^\# Time: (\d+ .*|\d{2,4}\-\d{1,2}\-\d{1,2}.*)$/
         # We now have a complete entry. capture its timestamp:
         # split w/# is for ey compatibility. 
         temp_timestamp = Time.parse($1.split('#')[0]) {|y| y < 100 ? y + 2000 : y}
