@@ -175,7 +175,8 @@ class TomcatMonitor < Scout::Plugin
   # LOG PARSING
   #################
 
-  # assumes format:  10.162.73.221 - - [23/Apr/2011:00:00:40 +0000] "GET /client/appraisalWorkshopPrintSignReport.jsp HTTP/1.1" 200 80557
+  # assumes format: 10.162.73.221 - - [23/Apr/2011:00:00:40 +0000] 80557 "GET /client/appraisalWorkshopPrintSignReport.jsp HTTP/1.1" 200
+  # use this pattern in server.xml: '%h %l %u %t %D "%r" %s %b"'
   def parse_logs
     logs = ""
     begin
