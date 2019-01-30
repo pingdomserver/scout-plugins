@@ -39,8 +39,7 @@ class MPstat < Scout::Plugin
     # 04:38:34 PM  all    6,69    0,02    1,30    0,31    0,02    0,13    0,00   91,53    349,37
 
     # take the format fields and replace "usr" with "user"
-    format=output.split("\n").grep(/CPU/).last.gsub(/\//,'p').gsub(/(%|:)/,'')
-      .gsub('usr', 'user').downcase.split
+    format=output.split("\n").grep(/CPU/).last.gsub(/\//,'p').gsub(/(%|:)/,'').gsub('usr', 'user').downcase.split
     #convert commas to dots when mpstat outputs data with commas
     output = output.gsub(',', '.')
 
