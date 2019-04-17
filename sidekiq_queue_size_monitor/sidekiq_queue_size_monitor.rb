@@ -1,6 +1,6 @@
 Encoding.default_external = Encoding::UTF_8
 $VERBOSE=false
-class DataPushMonitor < Scout::Plugin
+class SidekiqQueueSizeMonitor < Scout::Plugin
   needs 'redis', 'sidekiq'
 
   # hack to load Sidekiq::Stats in version 3.0
@@ -37,6 +37,10 @@ class DataPushMonitor < Scout::Plugin
   namespace:
     name: Namespace
     notes: Redis namespace used for Sidekiq keys
+  queue:
+    name: Queue
+    notes: Sidekiq queue to be monitored
+    default: default
   EOS
 
   def build_report
@@ -47,6 +51,8 @@ class DataPushMonitor < Scout::Plugin
     url = protocol
     url += "#{auth}@" if auth && auth != ':'
     url += path
+    
+    queue = option(:queue)
 
     Sidekiq::Logging.logger = nil unless $VERBOSE
 
@@ -56,7 +62,7 @@ class DataPushMonitor < Scout::Plugin
 
     begin
       stats = Sidekiq::Stats.new
-      data_push_queue_size = stats.queues["data_push"]
+      data_push_queue_size = stats.queues[queue]
       report(:queue_size => data_push_queue_size)
       
     end
