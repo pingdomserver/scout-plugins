@@ -37,6 +37,9 @@ class SidekiqMonitor < Scout::Plugin
   namespace:
     name: Namespace
     notes: Redis namespace used for Sidekiq keys
+  queues:
+    name: Queues
+    notes: Sidekiq queues to be monitored for size (separated by ","), optional field
   EOS
 
   def build_report
@@ -67,6 +70,15 @@ class SidekiqMonitor < Scout::Plugin
         report(:running => running)
         counter(:running_per_minute, running, :per => :minute)
       end
+
+      if option(:queues)
+        queues = option(:queues).split(",")
+        queues.each do |queue|
+          data_push_queue_size = stats.queues[queue]
+          report("#{queue}_queue_size" => data_push_queue_size)
+        end
+      end
+
     end
   rescue Exception => e
     return error( "Could not connect to Redis.",
