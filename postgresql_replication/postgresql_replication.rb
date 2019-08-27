@@ -31,7 +31,7 @@ class PostgresqlReplication < Scout::Plugin
     report = {"synced" => 0}
 
     begin
-      PGconn.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
+      pg_conn_class.new(:host=>option(:host), :user=>option(:user), :password=>option(:password), :port=>option(:port).to_i, :dbname=>option(:dbname)) do |pgconn|
         if (pgconn.server_version / 10000) >= 10
           query = "select state, sent_lsn as sent_location from pg_stat_replication;"
         else
@@ -58,7 +58,7 @@ class PostgresqlReplication < Scout::Plugin
           report[k] = archive_mode
         end
       end
-    rescue PGError => e
+    rescue pg_error_class => e
       return errors << {:subject => "Unable to connect to PostgreSQL.",
                         :body => "Scout was unable to connect to the PostgreSQL server: \n\n#{e}\n\n#{e.backtrace}"}
     rescue IndexError => e
@@ -69,7 +69,7 @@ class PostgresqlReplication < Scout::Plugin
     # And now we connect to the standby and see what we can get:
     unless option(:standby_host).nil? || option(:standby_host) == ""
       begin
-        PGconn.new(:host => option(:standby_host), :user => option(:user), :password => option(:password), :port => option(:port), :dbname => option(:dbname)) do |pgconn|
+        pg_conn_class.new(:host => option(:standby_host), :user => option(:user), :password => option(:password), :port => option(:port), :dbname => option(:dbname)) do |pgconn|
           if (pgconn.server_version / 10000) >= 10
             query = "select pg_last_wal_receive_lsn() AS pg_last_xlog_receive_location, now() - pg_last_xact_replay_timestamp() AS replication_delay;"
           else
@@ -97,10 +97,24 @@ class PostgresqlReplication < Scout::Plugin
           end
 
         end
-      rescue PGError => e
+      rescue pg_error_class => e
         return errors << {:subject => "Could not connect to standby.", :body => "Scout was unable to connect to the standby server: \n\n#{e.backtrace}"}
       end
     end
     report(report) unless report.values.compact.empty?
+  end
+
+  private 
+
+  def pg_conn_class
+    Gem::Version.new(pg_gem_version) > Gem::Version.new('0.20.0') ? PG::Connection : PGconn
+  end
+
+  def pg_error_class
+    Gem::Version.new(pg_gem_version) > Gem::Version.new('0.20.0') ? PG::Error : PGError
+  end
+
+  def pg_gem_version
+    Gem.loaded_specs["pg"].version
   end
 end
