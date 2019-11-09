@@ -94,7 +94,7 @@ class ProcessUsage < Scout::Plugin
       report(:num_processes => 0)
       if alert_when_command_not_found
         unless in_ignore_window?
-          error( "Command not found.", "No processes found matching #{option(:command_name)}." )
+          alert( "Command not found.", "No processes found matching #{option(:command_name)}." )
         end
       end
     end
