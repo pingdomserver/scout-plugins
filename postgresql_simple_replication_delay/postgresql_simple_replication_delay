@@ -1,0 +1,51 @@
+class PostgresqlSimpleReplicationDelay < Scout::Plugin
+  needs 'pg'
+
+  OPTIONS=<<-EOS
+    user:
+      name: PostgreSQL username
+      notes: Specify the username to connect as.
+    password:
+      name: PostgreSQL Password
+      attributes: password
+    host:
+      name: PostgreSQL Host
+      notes: Specify the host name of the PostgreSQL server. If the value begins with
+              a slash it is used as the directory for the Unix-domain socket. An empty
+              string uses the default Unix-domain socket.
+      default: localhost
+    dbname:
+      name: Database
+      notes: The database to connect to
+      default: postgres
+    port:
+      name: PostgreSQL port
+      notes: Specify the port to connect to PostgreSQL with
+      default: 5432
+  EOS
+
+  def build_report
+    begin
+      PGconn.new(:host => option(:host), :user => option(:user), :password => option(:password), :port => option(:port).to_i, :dbname => option(:dbname)) do |pgconn|
+        query = "select case when pg_last_xlog_receive_location() = pg_last_xlog_replay_location() THEN NULL else now() - pg_last_xact_replay_timestamp() end AS replication_delay"
+        result = pgconn.exec(query)
+        row = result[0]
+        delay = row["replication_delay"]
+
+        if delay && delay.include?(":")
+           arr = delay.split(":")
+           hours = arr.first.to_i * 3600
+           minutes = arr[1].to_i * 60
+           seconds = arr.last.to_f
+           delay = hours + minutes + seconds
+        end
+
+	report({:replication_delay => delay.to_f})
+      end
+    rescue PGError => e
+      return errors << {:subject => e.class.name, :body => e.to_s}
+    end
+
+  end
+
+end

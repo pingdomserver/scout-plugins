@@ -1,0 +1,5 @@
+metadata:
+  replication_delay:
+    label: Replication Delay
+    units: seconds
+    precision: 1
