@@ -1,0 +1,12 @@
+Plugin for the scoutapp.com monitoring framework.
+
+Reports number of matched occurrences in log content since last check.
+Handles rolling log files where rolling is handled by renaming the log file
+(e.g. server.log renamed to server.log.1, then resume logging to new file server.log).
+
+Uses grep to find matching patterns.  Administrator specifies grep args in the
+plugin configuration.
+
+Derived from Yaroslav Lazor's Log Watcher plugin:
+https://raw.github.com/highgroove/scout-plugins/master/log_watcher/log_watcher.rb
+
