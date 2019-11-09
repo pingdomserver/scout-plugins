@@ -1,85 +1,91 @@
-#!/usr/bin/env ruby
-# Purpose:  Count the messages in the mail queue and report on them
-require 'scout'
+#################################################
+# MailMonitor
+#
+#   Report on sendmail/postfix mail queue lengths
+#
+# Created by dbrown 2015-04-28
+# Updated by Matt Chesler 2016-04-06
+#################################################
 
-#Below this comment is what needs to be uploaded to scout plugins via web
-class Mail_monitor < Scout::Plugin
-  attr_accessor :count, :mail_bin_options
+class MailMonitor < Scout::Plugin
+  attr_accessor :total, :active, :deferred, :hold
 
-  #Find the mail binary to show the message queue
-  def mail_bin()
-    @mail_bin_options = [ 'sendmail', 'mailq' ] #sendmail set first as preference, optional
+  OPTIONS=<<-EOS
+    mail_binary:
+      name: Mail Binary
+      default: postqueue,sendmail,mailq
+      notes: Command to view mail queues without any arguments, e.g. postqueue, sendmail, or mailq
+  EOS
 
-    bin = nil
+  def bin_options
+    error("'mail_binary' option not provided") unless option(:mail_binary) && !option(:mail_binary).to_s.empty?
 
-    #set mail bin if found
-    @mail_bin_options.each do |b|
-      bin = `which #{b}`.chomp if $?.to_i == 0
-    end
-
-    #Error out if no mail bin found or set appropiate switch for sendmail
-    if bin.nil?
-      error("mail binary cannot be found for #{@mail_bin_options}")
-    elsif bin =~ /sendmail/
-      bin = "#{bin} -bp"
-    end
-
-    return "#{bin}"
+    @bin_options ||= option(:mail_binary).to_s.split(',')
   end
 
-  #execute mail command
-  def execute_command(mail_bin)
-    begin
-      @command_result = `#{mail_bin} 2> /dev/null`
-      exit_code = $?.to_i
-      #command_return_code = $?.to_i
+  def mail_binary
+    @mail_binary ||= bin_options.reverse.reduce(nil) do |out, b|
+      out if out
+      e = `which #{b} 2>/dev/null`.chomp
+      e if $? == 0
+    end
+  end
 
-    rescue StandardError=>e
-      error("#{e}")
+  def mail_bin
+
+    return case
+    when mail_binary == nil
+      error("mail binary cannot be found for #{bin_options.join(', ')}")
+      ""
+    when mail_binary.match(/sendmail/)
+      mail_binary + " -bp"
+    when mail_binary.match(/postqueue/)
+      mail_binary + " -p"
+    else
+      mail_binary
+    end
+  end
+
+  def execute_command
+    begin
+      output = `#{mail_bin} 2>&1`
+      exit_code = $?.to_i
+    rescue StandardError => e
+      error(e)
       exit
     end
 
-    return exit_code
+    { :exit_code => exit_code, :output => output }
   end
 
-  def get_command_result()
-    return @command_result
-  end
+  def parse_output(results)
 
-  def parse_output(exit_code)
+    @total = @active = @deferred = @hold = 0
 
-    @count = 0
-
-    #if the return code is anything other than 0 it should fail
-    if exit_code.to_i != 0
-      error("Bad exit code from '#{mail_bin}'")
-
-    #if the return code is 0, proceed with parsing the output
-    elsif exit_code.to_i == 0
-      #split each line of output into an array and then iterate
-      get_command_result.split(/\n/).each do |line|
-        #If there are no messages, report 0
-        if "#{line}" =~ /Mail queue is empty/
-          @count = 0
-
-        #Look for timestamp in message queue ex. Apr 22 10:00:00
-        elsif "#{line}" =~ /\w{3}\s\d\d?\s\d{2}:\d{2}:\d{2}/i
-          #depending on how many messages are found, count them
-          @count += 1
+    if results[:exit_code] != 0
+      error("Bad exit code from '#{mail_bin}'", results[:output].chomp)
+    else
+      results[:output].split(/\n/).each do |line|
+        if line.match(/Mail queue is empty/)
+          @total = 0
+        elsif match_data = line.match(/\A[a-z0-9]+(?<status>\*|\!)?\W+\d+\W+\w{3}\W+\w{3}\W+\d{1,2}\W+\d{2}:\d{2}:\d{2}/i)
+          @total += 1
+          @active += 1 if match_data[:status] == '*'
+          @hold += 1 if match_data[:status] == "!"
+          @deferred += 1 if match_data[:status] == nil
         end
       end
     end
   end
 
-  def command_exit_code()
-    return execute_command(mail_bin())
-  end
-
   def build_report()
-    #@command_exit_code = execute_command(mail_bin())
-    parse_output(execute_command(mail_bin()))
+    parse_output(execute_command)
 
-    #Report back to scout in minute intervals
-    counter(:messages, @count, :per => :minute)
+    report(
+      :total    => @total,
+      :active   => @active,
+      :hold     => @hold,
+      :deferred => @deferred
+    )
   end
 end
