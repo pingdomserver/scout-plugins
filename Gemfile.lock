@@ -12,7 +12,7 @@ GEM
     memcache-client (1.8.5)
     metaclass (0.0.4)
     method_source (0.8.2)
-    mini_portile2 (2.3.0)
+    mini_portile2 (2.5.1)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     mongo (2.2.1)
@@ -20,8 +20,9 @@ GEM
     mono_logger (1.1.0)
     multi_json (1.11.2)
     mysql2 (0.4.2)
-    nokogiri (1.8.2)
-      mini_portile2 (~> 2.3.0)
+    nokogiri (1.11.4)
+      mini_portile2 (~> 2.5.0)
+      racc (~> 1.4)
     pg (0.18.4)
     pry (0.10.3)
       coderay (~> 1.1.0)
@@ -30,6 +31,7 @@ GEM
     pry-doc (0.8.0)
       pry (~> 0.9)
       yard (~> 0.8)
+    racc (1.5.2)
     rack (1.6.10)
     rack-protection (1.5.5)
       rack
@@ -73,7 +75,7 @@ DEPENDENCIES
   mocha
   mongo
   mysql2
-  nokogiri (~> 1.8.1)
+  nokogiri (~> 1.11.4)
   pg
   pry
   pry-doc
